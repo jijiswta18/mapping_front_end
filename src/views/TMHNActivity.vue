@@ -14,9 +14,14 @@
                         <v-container>
                             <v-row class="my-2">
 
-                                <v-col class="text-center">
-
+                                <v-col cols="12" md="6" class="text-center px-0 py-0">
+                                    <span>HNACtivity</span>
+                                </v-col>
+                                <v-col cols="12" md="6" class="px-0 py-0"></v-col>
+                                <v-col cols="12" md="6" class="text-center">
+                                  
                                     <InputSearchHN 
+                                        ref="HNActivityField"
                                         title="HN Activity"
                                         label="HNActivity Code / HNActivity Name" 
                                         code="HNActivity Code" 
@@ -25,14 +30,13 @@
                                         @childEvent="getselectedItemHNOne"
                                     />
 
-                                    <!-- <InputSearchHN label="HNActivity Code / HNActivity Name" type="Activity"  @childEvent="getselectedItemHNOne"/> -->
                                 </v-col>
 
-                                <v-col class="d-flex justify-space-between align-center">
+                                <v-col cols="12" md="6"  class="d-flex justify-space-between align-center">
                                     
-                                    <span class="f-16">HNActivity Name : {{ selectedItemHNOne.LocalName }}</span>
+                                    <span class="f-12 pr-3">HNActivity Name : {{ selectedItemHNOne.LocalName }}</span>
                                     <v-btn @click="checkHNActivity" class="bg-orange">Check</v-btn>
-                                    <!-- <v-btn @click="checkHNActivity(selectedItemHNOne.Code)" class="bg-orange">Check</v-btn> -->
+
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -60,25 +64,20 @@
                         <h1 class="f-20 mb-1">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
 
-                        <v-form
-                            ref="formMapping"
-                            v-model="valid"
-                            lazy-validation
-                        
-                        >
+                        <v-form ref="formMapping" v-model="valid" lazy-validation>
 
                      
                         <v-row class="mb-3">
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <SelectCompanyCode ref="selectCompanyCode"/>
                             </v-col>
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <SelectSystemCode ref="selectSystemCode"/>
                             </v-col>
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <v-row class="mt-3">
                                     <v-col>
                                         <span class="f-12">Posting Key</span>
@@ -106,7 +105,7 @@
                 
                         <v-row class="my-2">
                             
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <h2 class="f-16">HN Activity</h2>
                                 <v-row class="mt-3">
                                     <v-col>
@@ -121,7 +120,9 @@
                                             label="Text" 
                                             code="HNActivity Code" 
                                             name="HNActivity name"
-                                            type="Activity" 
+                                            type="Activity"
+                                            ref="selectHNActivity"
+                                            :isError="isError" 
                                             @childEvent="getselectedItemHNTwo"
                                         />
 
@@ -134,13 +135,13 @@
                                         <span class="f-12">HNActivity Name</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemHNTwo.LocalName}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25 line-height" :class="{ 'text-error': isError}">{{selectedItemHNTwo.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
                             </v-col>
                           
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <h2 class="f-16">G/L Account OPD</h2>
                                 <v-row class="mt-3">
                                     <v-col>
@@ -153,7 +154,9 @@
                                             label="Text" 
                                             code="GL OPD Code" 
                                             name="GL OPD Name" 
-                                            ref="inputFieldRef" 
+                                            ref="slectGLOPD" 
+                                            type="SapGL"
+                                            :isError="isError"
                                             @childEvent="getselectedItemGLOPD"
                                         />
 
@@ -166,13 +169,18 @@
                                         <span class="f-12">GL Name</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemGLOPD.GLDes}}</p>
+                                        <p 
+                                            class="f-12 border-bottom pb-0 h25 line-height"
+                                            :class="{ 'text-error': isError}"
+                                        >
+                                            {{selectedItemGLOPD.GLDes}}
+                                        </p>
                                     </v-col>
                                 </v-row>
 
                             </v-col>
 
-                            <v-col md="4" sm="12" >
+                            <v-col cols="12" md="4">
                                 <h2 class="f-16">G/L Account IPD</h2>
                                 <v-row class="mt-3">
                                     <v-col>
@@ -185,6 +193,9 @@
                                             label="Text" 
                                             code="GL IPD Code" 
                                             name="GL IPD Name" 
+                                            type="SapGL"
+                                            ref="slectGLIPD" 
+                                            :isError="isError"
                                             @childEvent="getselectedItemGLIPD"
                                         />
 
@@ -197,14 +208,20 @@
                                         <span class="f-12">GL Name</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemGLIPD.GLDes}}</p>
+                                        <p 
+                                            class="f-12 border-bottom pb-0 h25 line-height"
+                                            :class="{ 'text-error': isError}"
+                                        >
+                                            {{selectedItemGLIPD.GLDes}}
+                                        </p>
                                     </v-col>
                                 </v-row>
                                 
                             
                             </v-col>
-
+                         
                         </v-row>
+                        <p v-if="isError" class="text-error f-13">*ข้อมูลไม่ถูกต้อง</p>
                         <v-btn @click="MappingActivityGL" class="bg-orange" block>Update Data</v-btn>
                         </v-form>
 
@@ -226,7 +243,7 @@
                         </v-col>
 
                         <v-col class="text-right">
-                            <v-btn class="bg-blue"  @click="exportToExcel">Export</v-btn>
+                            <v-btn class="bg-blue"  @click="exportToExcel(filteredData, 'TMHNActivity')">Export</v-btn>
                         </v-col>
                     </v-row>
                     
@@ -239,127 +256,100 @@
                         :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                         class="style-table"
                     >
+                       
                         <!-- Header Template for CompanyCode -->
                         <template v-slot:[`header.CompanyCode`]="{ header }">
-                        <div class="d-flex align-center justify-space-between">
-                            <span class="text-back mr-1">{{ header.text }}</span>
-                            <v-select
-                                v-model="selectedCompanyCode"
-                                :items="selectOptionsForColumn('CompanyCode')"
-                                multiple
-                                hide-details
-                                class="custom-v-select"
-                            >
-                            </v-select>
-
-            
-                        </div>
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedCompanyCode"
+                                :select-items="selectOptionsForColumn('CompanyCode')"
+                                @update:selectedValue="updateSelectedCompanyCode"
+                                @search="searchCompanies('CompanyCode', $event)"
+                                @sort="handleSort('CompanyCode', $event)"
+                            />
                         </template>
 
                         <!-- Header Template for SystemCode -->
                         <template v-slot:[`header.SystemCode`]="{ header }">
-                        <div class="d-flex align-center justify-space-between">
-                            <span class="text-back mr-1">{{ header.text }}</span>
-                            <v-select
-                            v-model="selectedSystemCode"
-                            :items="selectOptionsForColumn('SystemCode')"
-                            multiple
-                            hide-details
-                            class="custom-v-select"
-                            >
-                            </v-select>
-                        </div>
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedSystemCode"
+                                :select-items="selectOptionsForColumn('SystemCode')"
+                                @update:selectedValue="updateSelectedSystemCode"
+                                @search="searchCompanies('SystemCode', $event)"
+                                @sort="handleSort('SystemCode', $event)"
+                            />
                         </template>
 
                         <!-- Header Template for HNActivity Code -->
                         <template v-slot:[`header.HNActivityCode`]="{ header }">
-                        <div class="d-flex align-center justify-space-between">
-                            <span class="text-back mr-1">{{ header.text }}</span>
-                            <v-select
-                            v-model="selectedHNActivity"
-                            :items="selectOptionsForColumn('HNActivityCode')"
-                            multiple
-                            hide-details
-                            class="custom-v-select"
-                            >
-
-                            </v-select>
-                        </div>
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedHNActivity"
+                                :select-items="selectOptionsForColumn('HNActivityCode')"
+                                @update:selectedValue="updateSelectedHNActivity"
+                                @search="searchCompanies('HNActivityCode', $event)"
+                            />
                         </template>
 
                         <!-- Header Template for HNActivity Name -->
                         <template v-slot:[`header.LocalName`]="{ header }">
-                        <div class="d-flex align-center justify-space-between">
-                            <span class="text-back mr-1">{{ header.text }}</span>
-                            <v-select
-                            v-model="selectedHNActivityName"
-                            :items="selectOptionsForColumn('LocalName')"
-                            multiple
-                            hide-details
-                            class="custom-v-select"
-                            >
-                            </v-select>
-                        </div>
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedHNActivityName"
+                                :select-items="selectOptionsForColumn('LocalName')"
+                                @update:selectedValue="updateSelectedHNActivityName"
+                                @search="searchCompanies('LocalName', $event)"
+                            />
                         </template>
+
+           
 
                         <!-- Header Template for GLSAPCodeOPD -->
                         <template v-slot:[`header.GLSAPCodeOPD`]="{ header }">
-                        <div class="d-flex align-center justify-space-between">
-                            <span class="text-back mr-1">{{ header.text }}</span>
-                            <v-select
-                            v-model="selectedGLOPDCode"
-                            :items="selectOptionsForColumn('GLSAPCodeOPD')"
-                            multiple
-                            hide-details
-                            class="custom-v-select"
-                            >
-                            </v-select>
-                        </div>
+
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedGLOPDCode"
+                                :select-items="selectOptionsForColumn('GLSAPCodeOPD')"
+                           
+                                @update:selectedValue="updateSelectedGLOPDCode"
+                                @search="searchCompanies('GLSAPCodeOPD', $event)"
+                                @sort="handleSort('GLSAPCodeOPD', $event)"
+                            />
                         </template>
 
                         <!-- Header Template for GLSAPNameOPD -->
                         <template v-slot:[`header.GLSAPNameOPD`]="{ header }">
-                        <div class="d-flex align-center justify-space-between">
-                            <span class="text-back mr-1">{{ header.text }}</span>
-                            <v-select
-                            v-model="selectedGLOPDName"
-                            :items="selectOptionsForColumn('GLSAPNameOPD')"
-                            multiple
-                            hide-details
-                            class="custom-v-select"
-                            >
-                            </v-select>
-                        </div>
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedGLOPDName"
+                                :select-items="selectOptionsForColumn('GLSAPNameOPD')"
+                                @update:selectedValue="updateSelectedGLOPDName"
+                                @search="searchCompanies('GLSAPNameOPD', $event)"
+                            />
                         </template>
 
                         <!-- Header Template for GLSAPCodeIPD -->
                         <template v-slot:[`header.GLSAPCodeIPD`]="{ header }">
-                        <div class="d-flex align-center justify-space-between">
-                            <span class="text-back mr-1">{{ header.text }}</span>
-                            <v-select
-                            v-model="selectedGLIPDCode"
-                            :items="selectOptionsForColumn('GLSAPCodeIPD')"
-                            multiple
-                            hide-details
-                            class="custom-v-select"
-                            >
-                            </v-select>
-                        </div>
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedGLIPDCode"
+                                :select-items="selectOptionsForColumn('GLSAPCodeIPD')"
+                                @update:selectedValue="updateSelectedGLIPDCode"
+                                @search="searchCompanies('GLSAPCodeIPD', $event)"
+                            />
                         </template>
 
                         <!-- Header Template for GLSAPNameIPD -->
                         <template v-slot:[`header.GLSAPNameIPD`]="{ header }">
-                        <div class="d-flex align-center justify-space-between">
-                            <span class="text-back mr-1">{{ header.text }}</span>
-                            <v-select
-                            v-model="selectedGLIPDName"
-                            :items="selectOptionsForColumn('GLSAPNameIPD')"
-                            multiple
-                            hide-details
-                            class="custom-v-select"
-                            >
-                            </v-select>
-                        </div>
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedGLIPDName"
+                                :select-items="selectOptionsForColumn('GLSAPNameIPD')"
+                                @update:selectedValue="updateSelectedGLIPDName"
+                                @search="searchCompanies('GLSAPNameIPD', $event)"
+                            />
                         </template>
 
                     </v-data-table>
@@ -374,14 +364,15 @@
 </template>
 <script>
 import axios from "axios";
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
 import SelectSystemCode from '@/components/SelectSystemCode.vue';
 import InputSearch from '@/components/InputSearch.vue';
 import InputSearchHN from '@/components/InputSearchHN.vue';
+import HeaderSelect from '@/components/HeaderSelect.vue';
 export default{
-    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN},
+    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
     data: () => ({
         tab: null, // Selected tab
         tabs: [
@@ -434,135 +425,96 @@ export default{
             { text: 'GL IPD Code', align: 'left', sortable: false, value: 'GLSAPCodeIPD' },
             { text: 'GL IPD  Name', align: 'left', sortable: false, value: 'GLSAPNameIPD' },
         ],
+        searchCompanyCode: '', 
+        searchSystemCode: '', 
+        searchHNActivityCode: '', 
+        searchHNActivityName: '', 
+        searchGLOPDCode: '',
+        searchGLOPDName: '',
+        searchGLIPDCode: '',
+        searchGLIPDName: '',
+        isError: false
 
+        // classGLSAPCodeIPD: false,
+        // classGLSAPCodeOPD: false
     
     }),
     watch: {
         selectedCompanyCode: {
-        handler() {
-            this.filterData();
-        },
-        deep: true,
+            handler() {
+                this.filterData();
+            },
+            deep: true,
         },
     
         selectedSystemCode: {
-        handler() {
-            this.filterData();
-        },
-        deep: true,
+            handler() {
+                this.filterData();
+            },
+            deep: true,
         },
 
         selectedHNActivity: {
-        handler() {
-            this.filterData();
+            handler() {
+                this.filterData();
+            },
+            deep: true,
         },
-        deep: true,
-        },
+
         selectedHNActivityName: {
-        handler() {
-            this.filterData();
+            handler() {
+                this.filterData();
+            },
+            deep: true,
         },
-        deep: true,
-        },
+
         selectedGLOPDCode: {
-        handler() {
-            this.filterData();
+            handler() {
+                this.filterData();
+            },
+            deep: true,
         },
-        deep: true,
-        },
+
         selectedGLOPDName: {
-        handler() {
-            this.filterData();
+            handler() {
+                this.filterData();
+            },
+            deep: true,
         },
-        deep: true,
-        },
+
         selectedGLIPDCode: {
-        handler() {
-            this.filterData();
+            handler() {
+                this.filterData();
+            },
+            deep: true,
         },
-        deep: true,
-        },
+
         selectedGLIPDName: {
-        handler() {
-            this.filterData();
-        },
-        deep: true,
+            handler() {
+                this.filterData();
+            },
+            deep: true,
         },
     },
 
     methods: {
-        selectOptionsForColumn(columnName) {
-
-            // Extract all values from datasExport for the specified column
-            const allValues = this.datasExport.map(item => item[columnName]);
-
-            // Filter unique values using a Set
-            const uniqueValues = [...new Set(allValues)];
-
-            // Map unique values to select options
-            return uniqueValues.map(value => ({
-            text: value,
-            value: value.toLowerCase(), // Optionally transform to lowercase or format as needed
-            }));
-        },
-
-        filterData() {
-
-            this.filteredData = this.datasExport.filter(item =>
-
-            (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
-            (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
-            (this.selectedHNActivity.length === 0 || this.selectedHNActivity.includes(item.HNActivityCode)) &&
-            (this.selectedHNActivityName.length === 0 || this.selectedHNActivityName.includes(item.LocalName)) &&
-            (this.selectedGLOPDCode.length === 0 || this.selectedGLOPDCode.includes(item.GLSAPCodeOPD)) &&
-            (this.selectedGLOPDName.length === 0 || this.selectedGLOPDName.includes(item.GLSAPNameOPD)) &&
-            (this.selectedGLIPDCode.length === 0 || this.selectedGLIPDCode.includes(item.GLSAPCodeIPD)) &&
-            (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD))
-            );
-        },
-
-
-        handleTabClick(tab) {
-            switch (tab.name) {
-                case "Create/Change":
-                    break;
-                case "Export":
-                    this.getExportActivityGL()
-                    break;
-                default:
-                    // Default action
-                    break;
-            }
-            console.log('Clicked on tab:', tab);
-            // Add custom logic here, such as updating data or calling methods
-        },
-
         async getExportActivityGL(){
             try {
                 this.loading        = await true
                 let ActivityGLPath = '/api/SAP/ActivityGL'
                 let response        = await axios.get(ActivityGLPath);
-                await setTimeout(() => {
+                setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
                     this.filteredData = this.datasExport.slice();
                 
                    
-                }, 300);
+                }, 500);
             } catch (error) {
                 this.loading = await false
                 console.error('Error fetching data:', error);
             }
         },
-        exportToExcel() {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(this.filterData);
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-            /* generate XLSX file and send to client */
-            XLSX.writeFile(wb, 'TMHNActivity.xlsx');
-        },
-
         async removeHNActivity(value){
             console.log(value);
             await Swal.fire({
@@ -611,91 +563,58 @@ export default{
                 }
             });
         },
-
         async checkHNActivity(){
-            try {
+          
+            if(!this.selectedItemHNOne.Code){                 
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณาเลือก HNACtivity',
+                // text: message
+                }).then(() => {
+                    const input = this.$refs.HNActivityField.$el.querySelector('input');
+                    input.focus();
+                });
+            }else{
+                try {
                 this.loading                = await true
                 let GetTmActivityIDPath     = `/api/SAP/GetTmActivityID?HNActivityCode=${this.selectedItemHNOne.Code}`
                 let response                = await axios.get(GetTmActivityIDPath);
                 this.dataHNActivity         = response.data;
 
-                console.log(this.dataHNActivity);
-                // await setTimeout(() => {
-                //     this.loading = false;
-                //     this.datasExport = response.data;
-                // }, 300);
-            } catch (error) {
-                this.loading = await false
-                console.error('Error fetching data:', error);
+                    // await setTimeout(() => {
+                    //     this.loading = false;
+                    //     this.datasExport = response.data;
+                    // }, 300);
+                } catch (error) {
+                    this.loading = await false
+                    console.error('Error fetching data:', error);
+                }
             }
-        },
-        
-        async MappingActivityGL(){
 
-            const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
-            const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
+        },
+        async MappingActivityGL(){
 
             // เช็ค value
             if(this.$refs.formMapping.validate()){
 
-                const GLSAPCodeIPD = this.dataHNActivity[0].GLSAPCodeIPD
-                const selectedItemGLIPD = this.selectedItemGLIPD.GLNo
+                // เช็คค่า dataHNActivity ใน Table ที่จะ Mapping
+                if(this.dataHNActivity.length > 0){
 
-                const GLSAPCodeOPD = this.dataHNActivity[0].GLSAPCodeOPD
-                const selectedItemGLOPD = this.selectedItemGLOPD.GLNo
-                
-                // เช็คค่า value ที่่เลือกว่าเหมือนข้อมูที่มีอยู่
-                if(GLSAPCodeIPD === selectedItemGLIPD && GLSAPCodeOPD === selectedItemGLOPD){
+                    const HNActivity = this.dataHNActivity[0].Code
+                    const selectedHNActivity = this.selectedItemHNTwo.Code
 
-                    Swal.fire({
-                        icon: "error",
-                        title: "Incomplete",
-                        text: "Unable to update . Please check data agian.",
-                        customClass: {
-                            title: 'text-error' // Add your custom class here
-                        }
-                    });
+                    const GLSAPCodeIPD = this.dataHNActivity[0].GLSAPCodeIPD
+                    const selectedItemGLIPD = this.selectedItemGLIPD.GLNo
 
-                }else{
+                    const GLSAPCodeOPD = this.dataHNActivity[0].GLSAPCodeOPD
+                    const selectedItemGLOPD = this.selectedItemGLOPD.GLNo
+                 
+                    const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
+                    const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
+                    
+                    // เช็คค่า HNActivity ในตารางต้องตรงกับ selectedHNActivity ที่เลือก หรือ GLSAPCodeIPD และ GLSAPCodeOPD ข้อมูลต้องไม่เหมือนกัน
+                    if(HNActivity !== selectedHNActivity || GLSAPCodeIPD === selectedItemGLIPD && GLSAPCodeOPD === selectedItemGLOPD){
 
-                    let fd  = {
-
-                        "companyCode"       : selectCompanyCode != null ? selectCompanyCode : this.dataHNActivity[0].companyCode,
-                        "systemCode"        : selectSystemCode!= null ? selectSystemCode : this.dataHNActivity[0].systemCode,
-                        "hnActivityCode"    : this.selectedItemHNTwo.Code,
-                        "localName"         : this.selectedItemHNTwo.LocalName,
-                        "englishName"       : this.selectedItemHNTwo.EnglishName,
-                        "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
-                        "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
-                        "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
-                        "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
-                        "postingKey"        : this.posting_key != null ? this.posting_key : this.dataHNActivity[0].postingKey
-                    }
-
-                    console.log(fd);
-
-                    try {
-                     
-
-                            const MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
-                            const response                    =    await axios.post(`${MappingActivityGLPath}`, fd)
-                            console.log(response);
-                        
-                            
-
-                            Swal.fire({
-                                icon: "success",
-                                title: "Complete",
-                                text: "You data was saved.",
-                                customClass: {
-                                    title: 'text-success' // Add your custom class here
-                                }
-                            });
-
-                            this.checkHNActivity()
-
-
-                    } catch (error) {
                         Swal.fire({
                             icon: "error",
                             title: "Incomplete",
@@ -703,9 +622,104 @@ export default{
                             customClass: {
                                 title: 'text-error' // Add your custom class here
                             }
+                        }).then((result) => {
+                                        if (result.isConfirmed) {
+
+                                            // GLSAPCodeOPD === selectedItemGLOPD ? this.classGLSAPCodeOPD = true  : false
+                                            // GLSAPCodeIPD === selectedItemGLIPD ? this.classGLSAPCodeIPD = true  : false
+                                            this.isError = true
+
+                        //                     if(GLSAPCodeOPD === selectedItemGLOPD){
+                        //     this.classGLSAPCodeOPD = true 
+                        // }
+
+                        // if(GLSAPCodeIPD === selectedItemGLIPD){
+                        //     this.classGLSAPCodeIPD = true 
+                        // }
+                       
+                                        }
+                                    });
+
+                    }else{
+
+                    await Swal.fire({
+                        title: "Warning",
+                        text: "Data has already map. Are you sure to map again? ",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#52A1DB",
+                        cancelButtonColor: "#52A1DB",
+                        confirmButtonText: "OK",
+                        customClass: {
+                            title: 'text-warning' // Add your custom class here
+                        }
+                        }).then(async(result) => {
+                            if (result.isConfirmed) {
+                                let fd  = {
+
+                                "companyCode"       : selectCompanyCode != null ? selectCompanyCode : this.dataHNActivity[0].companyCode,
+                                "systemCode"        : selectSystemCode!= null ? selectSystemCode : this.dataHNActivity[0].systemCode,
+                                "hnActivityCode"    : this.selectedItemHNTwo.Code,
+                                "localName"         : this.selectedItemHNTwo.LocalName,
+                                "englishName"       : this.selectedItemHNTwo.EnglishName,
+                                "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
+                                "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
+                                "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
+                                "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
+                                "postingKey"        : this.posting_key != null ? this.posting_key : this.dataHNActivity[0].postingKey
+                                }
+
+                                try {
+
+
+                                    const MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
+                                    await axios.post(`${MappingActivityGLPath}`, fd)
+
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Complete',
+                                        text: 'Your data was saved.',
+                                        customClass: {
+                                        title: 'text-success', // Example of adding custom class
+                                        },
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            this.clearData(); // Call method to clear data
+                                            this.checkHNActivity()
+                                        }
+                                    });
+                                 
+                                   
+                                
+                                } catch (error) {
+
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Incomplete",
+                                        text: "Unable to update . Please check data agian.",
+                                        customClass: {
+                                            title: 'text-error' // Add your custom class here
+                                        }
+                                    });
+                                }
+
+                            }
+                        
                         });
+
                     }
+                }else{
+                    Swal.fire({
+                            icon: "error",
+                            title: "Incomplete",
+                            text: "Unable to update . Please check data agian.",
+                            customClass: {
+                                title: 'text-error' // Add your custom class here
+                            }
+                        });
+
                 }
+             
 
             }else{
             
@@ -718,46 +732,175 @@ export default{
                     }
                 })
 
-
-                // const inputSearchElement = this.$refs.inputFieldRef.$el;
-
-                // Example: Add red border style to the InputSearch component
-                // inputSearchElement.style.borderColor = 'red';
-
-                // this.$refs.inputFieldRef.setTextFieldError();
-                // .then((result) => {
-
-                //     console.log(result);
-                //     if (result.isConfirmed) {
-                //         // User clicked "OK"
-                //         this.$nextTick(() => {
-                //         this.$refs.inputFieldRef.setTextFieldError();
-                //         });
-                //     }
-                // });
             }
         },
+
+        selectOptionsForColumn(columnName) {
+            let filteredOptions = this.datasExport;
+            let searchTerm = '';
+
+            // Determine which search term to use based on the column name
+            switch (columnName) {
+                case 'CompanyCode':
+                searchTerm = this.searchCompanyCode;
+                break;
+                case 'SystemCode':
+                searchTerm = this.searchSystemCode;
+                break;
+                case 'HNActivityCode':
+                searchTerm = this.searchHNActivityCode;
+                break;
+                case 'LocalName':
+                searchTerm = this.searchHNActivityName;
+                break;
+                case 'GLSAPCodeOPD':
+                searchTerm = this.searchGLOPDCode;
+                break;
+                case 'GLSAPNameOPD':
+                searchTerm = this.searchGLOPDName;
+                break;
+                case 'GLSAPCodeIPD':
+                searchTerm = this.searchGLIPDCode;
+                break;
+                case 'GLSAPNameIPD':
+                searchTerm = this.searchGLIPDName;
+                break;
+                // Add more cases for other columns if needed
+                default:
+                searchTerm = '';
+                break;
+            }
+
+            if (searchTerm) {
+                const searchTermLowerCase = searchTerm.toLowerCase();
+                filteredOptions = filteredOptions.filter(item =>
+                item[columnName].toLowerCase().includes(searchTermLowerCase)
+                );
+            }
+
+            const allValues = filteredOptions.map(item => ({
+                text: item[columnName],
+                value: item[columnName],
+            }));
+
+            // Remove duplicates based on 'value'
+            const uniqueValues = allValues.filter((value, index, self) =>
+                index === self.findIndex(t => t.value === value.value)
+            );
+
+            return uniqueValues;
+        },
+
+        filterData() {
+
+            this.filteredData = this.datasExport.filter(item =>
+
+            (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
+            (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
+            (this.selectedHNActivity.length === 0 || this.selectedHNActivity.includes(item.HNActivityCode)) &&
+            (this.selectedHNActivityName.length === 0 || this.selectedHNActivityName.includes(item.LocalName)) &&
+            (this.selectedGLOPDCode.length === 0 || this.selectedGLOPDCode.includes(item.GLSAPCodeOPD)) &&
+            (this.selectedGLOPDName.length === 0 || this.selectedGLOPDName.includes(item.GLSAPNameOPD)) &&
+            (this.selectedGLIPDCode.length === 0 || this.selectedGLIPDCode.includes(item.GLSAPCodeIPD)) &&
+            (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD))
+            );
+        },
+
+        handleTabClick(tab) {
+            switch (tab.name) {
+                case "Create/Change":
+                    break;
+                case "Export":
+                    this.getExportActivityGL()
+                    break;
+                default:
+                    // Default action
+                    break;
+            }
+        },
+        // exportToExcel() {
+        //     const wb = XLSX.utils.book_new();
+        //     const ws = XLSX.utils.json_to_sheet(this.filteredData);
+        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+        //     /* generate XLSX file and send to client */
+        //     XLSX.writeFile(wb, 'TMHNActivity.xlsx');
+        // },
+
         getselectedItemHNOne(data) {
               this.selectedItemHNOne = data;
         },
         getselectedItemHNTwo(data) {
-            
-           
-              this.selectedItemHNTwo = data;
-              console.log(this.selectedItemHNTwo);
+            this.selectedItemHNTwo = data;
         },
         getselectedItemGLOPD(data){
             this.selectedItemGLOPD = data;
-            console.log(this.selectedItemGLOPD);
-
         },
         getselectedItemGLIPD(data){
-
-
             this.selectedItemGLIPD = data;
-            console.log('this.$refs.GL_IPD',this.$refs.GL_IPD);
         },
        
+        updateSelectedCompanyCode(value) {
+            this.selectedCompanyCode = value;
+        },
+        updateSelectedSystemCode(value) {
+            this.selectedSystemCode = value;
+        },
+        updateSelectedHNActivity(value) {
+            this.selectedHNActivity = value;
+        },
+        updateSelectedHNActivityName(value) {
+            this.selectedHNActivityName = value;
+        },
+        updateSelectedGLOPDCode(value) {
+            this.selectedGLOPDCode = value;
+        },
+        updateSelectedGLOPDName(value) {
+            this.selectedGLOPDName = value;
+        },
+        updateSelectedGLIPDCode(value) {
+            this.selectedGLIPDCode = value;
+        },
+        updateSelectedGLIPDName(value) {
+            this.selectedGLIPDName = value;
+        },
+        searchCompanies(columnName, searchTerm) {
+            if(columnName === 'CompanyCode'){
+                this.searchCompanyCode = searchTerm;
+            }else if (columnName === 'SystemCode') {
+                this.searchSystemCode = searchTerm;
+            }else if (columnName === 'HNActivityCode') {
+                this.searchHNActivityCode = searchTerm;
+            } else if (columnName === 'LocalName') {
+                this.searchHNActivityName = searchTerm;
+            } else if (columnName === 'GLSAPCodeOPD') {
+                this.searchGLOPDCode = searchTerm;
+            } else if (columnName === 'GLSAPNameOPD') {
+                this.searchGLOPDName = searchTerm;
+            } else if (columnName === 'GLSAPCodeIPD') {
+                this.searchGLIPDCode = searchTerm; 
+            } else if (columnName === 'GLSAPNameIPD') {
+                this.searchGLIPDName = searchTerm;  
+            }
+
+            this.filterData();
+        },
+        clearData(){
+            this.$refs.formMapping.resetValidation()
+            this.$refs.selectHNActivity.selectedItem = {}
+            this.$refs.slectGLOPD.selectedItem = {},
+            this.$refs.slectGLIPD.selectedItem = {},
+            this.$refs.selectCompanyCode.selecItem = null 
+            this.$refs.selectSystemCode.selecItem = null 
+            this.selectedItemHNTwo = {},
+            this.selectedItemGLIPD = {},
+            this.selectedItemGLOPD = {},
+            this.posting_key = null,
+            this.isError = false
+        }
+
+
+      
     }
 }
 </script>
@@ -848,5 +991,8 @@ export default{
       border-style: none;
     }
     
+    .line-height{
+        line-height: 1.8;
+    }
     
 </style>

@@ -12,6 +12,7 @@
             hide-details="auto"
             clearable 
             @click:append="onClick"
+            :class="{ 'text-danger': isError }"
         ></v-text-field>
           
         <v-dialog
@@ -34,12 +35,13 @@
                         </v-col>
                         <v-col cols="8">
                             <v-text-field
-                                v-model="selectedItem.Code"
+                                v-model="searchCode"
                                 dense
                                 outlined
                                 single-line
                                 hide-details="auto"
                                 clearable 
+                       
                             ></v-text-field>
 
                         </v-col>
@@ -50,12 +52,13 @@
                         </v-col>
                         <v-col cols="8">
                             <v-text-field
-                                v-model="selectedItem.LocalName"
+                                v-model="searchName"
                                 dense
                                 outlined
                                 single-line
                                 hide-details="auto"
                                 clearable 
+                               
                             ></v-text-field>
 
                         </v-col>
@@ -66,7 +69,7 @@
                 <div class="table-container">
                     <v-data-table
                         :headers="header"
-                        :items="selectData"
+                        :items="filteredData"
                         :search="search"
                         :loading="loading"
                         compact
@@ -74,6 +77,7 @@
                         :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                         class="dialog-table"
                         @click:row="selectRow"
+
                     >
                 
                     </v-data-table>
@@ -86,12 +90,12 @@
         </v-dialog>
 
     </div>
-   
+
 </template>
 <script>
 import axios from "axios";
 export default{
-    props: ['title', 'label', 'code', 'name',  'type'],
+    props: ['title', 'label', 'code', 'name',  'type', 'isError'],
     data: () => ({
         dialogSearch: false,
         selectData: [],
@@ -103,10 +107,23 @@ export default{
             LocalName: ''
             // Add more fields as needed
         },
+        searchCode:'',
+        searchName:'',
+        
     }),
     mounted() {
         this.generateHeader();
+
     },
+    computed: {
+    filteredData() {
+        return this.selectData.filter(item => {
+            const codeMatch = (!this.searchCode || item.Code?.toLowerCase().includes(this.searchCode.toLowerCase()));
+            const nameMatch = (!this.searchName || item.LocalName?.toLowerCase().includes(this.searchName.toLowerCase()));
+            return codeMatch && nameMatch;
+        });
+    }
+},
     methods:{
         generateHeader() {
             this.header = [
@@ -128,24 +145,52 @@ export default{
             try {
                 this.loading        = await true
                 let LoadDataPath    = null 
-                console.log(this.type);
-                if(this.type === 'Receive'){
-                    LoadDataPath = '/api/SAP/CashAndGL/LoadSSB'
-                }else { 
-                    LoadDataPath = '/api/SAP/LoadHISActivity'
+
+                switch (this.type) {
+                    case 'Term Of Payment':
+                        LoadDataPath = ''
+                    break;
+                    case 'AR Compose Category':
+                        LoadDataPath = ''
+                    break;
+                    case 'StoreMedecine':
+                        LoadDataPath = ''
+                    break;
+                    case 'Activity':
+                        LoadDataPath = '/api/SAP/LoadHISActivity'
+                    break;
+                    case 'Receive':
+                        LoadDataPath = '/api/SAP/CashAndGL/LoadSSB'
+                    break;
+                    case 'EmployeeStatus':
+                        LoadDataPath = ''
+                    break;
+                
+                    default:
+                        break;
                 }
+
+
+                // if(this.type === 'Receive'){
+                //     LoadDataPath = '/api/SAP/CashAndGL/LoadSSB'
+                // }else { 
+                //     LoadDataPath = '/api/SAP/LoadHISActivity'
+                // }
              
                 let response        = await axios.get(LoadDataPath);
+                
                 await setTimeout(() => {
                     this.loading = false;
                     this.selectData = response.data;
-
                 }, 300);
 
             } catch (error) {
-                console.error('Error fetching data:', error);
+                // console.error('Error fetching data:', error);
+                 this.loading = false;
             }
-        }  
+        },
+   
+     
     }
 }
 </script>
@@ -192,6 +237,9 @@ export default{
         border-bottom-width: thin;
         border-bottom-color: #D9D9D9;
         height: 25px;
+    }
+    ::v-deep .text-danger input{
+        color: #C72C2C;
     }
  
 </style>

@@ -26,5 +26,10 @@ export default{
         selecItem: null,
         options: [{ code: '1000', name: '1000' }]
     }),
+    methods: {
+    // clearData() {
+    //     this.selecItem = null; // Method to clear data
+    // },
+    },
 }
 </script>

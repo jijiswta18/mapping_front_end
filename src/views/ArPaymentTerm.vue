@@ -14,7 +14,12 @@
                         <v-container>
                             <v-row class="my-2">
 
-                                <v-col class="text-center">
+                                <v-col cols="12" md="6" class="text-center px-0 py-0">
+                                    <span>Term of Payment</span>
+                                </v-col>
+                                <v-col cols="12" md="6" class="px-0 py-0"></v-col>
+
+                                <v-col cols="12" md="6" class="text-center">
                                     <InputSearchHN 
                                         title="Term Of Payment"
                                         label="Term Of Payment / Term Of Payment Description" 
@@ -23,15 +28,13 @@
                                         type="Term Of Payment" 
                                         @childEvent="getselectedItemHNOne"
                                     />
-
-                                    <!-- <InputSearchHN label="Term Of Payment / Term Of Payment Description" type="Receive"  @childEvent="getselectedItemHNOne"/> -->
-                                    <!-- <InputSearch label="Term Of Payment / Term Of Payment Description" type="Receive"  @childEvent="getselectedItemHNOne"/> -->
                                 </v-col>
 
-                                <v-col align-self="center" class="d-flex justify-space-between">
+                                <v-col cols="12" md="6"  align-self="center" class="d-flex justify-space-between align-center">
                                     
-                                    <span>Term of Payment Des. : {{ selectedItemHNOne.LocalName }}</span>
+                                    <span class="f-12 pr-3">Term of Payment Des. : {{ selectedItemHNOne.LocalName }}</span>
                                     <v-btn @click="checkHNReceive(selectedItemHNOne.Code)" class="bg-orange">Check</v-btn>
+                                
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -68,18 +71,18 @@
                      
                         <v-row class="mb-3">
 
-                            <v-col md="2" sm="12"></v-col>
+                            <v-col cols="12" md="2"></v-col>
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <SelectSystemCode ref="selectSystemCode"/>
                             
                             </v-col>
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <SelectCompanyCode ref="selectCompanyCode"/>
                             </v-col>
 
-                            <v-col md="2" sm="12"></v-col>
+                            <v-col cols="12" md="2"></v-col>
                          
 
                         </v-row>
@@ -88,13 +91,13 @@
 
                         <v-row class="my-2">  
                          
-                            <v-col>
+                            <v-col cols="12" md="6">
                                 <h2 class="f-16">Term of Payment</h2>
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Term of Payment</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
 
                                         <InputSearchHN 
                                             title="Term Of Payment"
@@ -111,32 +114,32 @@
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Term of Payment Description</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
                             </v-col>
-                            <div class=" border-right"></div>
-                            <v-col >
+                            <!-- <div class=" border-right"></div> -->
+                            <v-col cols="12" md="6">
                                 <h2 class="f-16">Term of Payment in SAP</h2>
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Term of Payment in SAP</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
                                         <InputSearch @childEvent="getselectedTermPaymentSAP" title="Term of Payment in SAP"  ref="GL_OPD"/>
                                     </v-col>
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Description</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedTermPaymentSAP.GLDes}}</p>
                                     </v-col>
                                     
@@ -172,14 +175,86 @@
                     </v-row>
                     <v-data-table
                         :headers="headersExport"
-                        :items="datasExport"
+                        :items="filteredData"
                         :loading="loading"
                         density="compact"
                         item-key="name"
                         :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                         class="style-table"
                     >
-                    <template v-slot:[`header.HNActivityCode`]="{ header }">
+                        <!-- Header Template for CompanyCode -->
+                        <template v-slot:[`header.CompanyCode`]="{ header }">
+                                <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedCompanyCode"
+                                :select-items="selectOptionsForColumn('CompanyCode')"
+                                @update:selectedValue="updateSelectedCompanyCode"
+                                @search="searchCompanies('CompanyCode', $event)"
+                                @sort="handleSort('CompanyCode', $event)"
+                            />
+                        </template>
+
+                         <!-- Header Template for SystemCode -->
+                         <template v-slot:[`header.SystemCode`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedSystemCode"
+                                :select-items="selectOptionsForColumn('SystemCode')"
+                                @update:selectedValue="updateSelectedSystemCode"
+                                @search="searchCompanies('SystemCode', $event)"
+                                @sort="handleSort('SystemCode', $event)"
+                            />
+                        </template>
+
+                         <!-- Header Template for TermOfPayment -->
+                         <template v-slot:[`header.TermOfPayment`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedTermPayment"
+                                :select-items="selectOptionsForColumn('TermOfPayment')"
+                                @update:selectedValue="updateSelectedTermPayment"
+                                @search="searchCompanies('TermOfPayment', $event)"
+                                @sort="handleSort('TermOfPayment', $event)"
+                            />
+                        </template>
+
+                         <!-- Header Template for TermOfPaymentDes -->
+                         <template v-slot:[`header.TermOfPaymentDes`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedTermPaymentDes"
+                                :select-items="selectOptionsForColumn('TermOfPaymentDes')"
+                                @update:selectedValue="updateSelectedTermPaymentDes"
+                                @search="searchCompanies('TermOfPaymentDes', $event)"
+                                @sort="handleSort('TermOfPaymentDes', $event)"
+                            />
+                        </template>
+
+                          <!-- Header Template for TermOfPaymentSAP -->
+                          <template v-slot:[`header.TermOfPaymentSAP`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedTermPaymentSAP"
+                                :select-items="selectOptionsForColumn('TermOfPaymentSAP')"
+                                @update:selectedValue="updateSelectedTermPaymentSAP"
+                                @search="searchCompanies('TermOfPaymentSAP', $event)"
+                                @sort="handleSort('TermOfPaymentSAP', $event)"
+                            />
+                        </template>
+
+                          <!-- Header Template for Description -->
+                          <template v-slot:[`header.Description`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedDescription"
+                                :select-items="selectOptionsForColumn('Description')"
+                                @update:selectedValue="updateSelectedDescription"
+                                @search="searchCompanies('Description', $event)"
+                                @sort="handleSort('Description', $event)"
+                            />
+                        </template>
+
+                    <!-- <template v-slot:[`header.HNActivityCode`]="{ header }">
                         <div>
                         {{ header.text }}
 
@@ -222,7 +297,7 @@
                            
 
                         </div>
-                    </template>
+                    </template> -->
 
                     </v-data-table>
                 </v-card>
@@ -241,8 +316,9 @@ import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
 import SelectSystemCode from '@/components/SelectSystemCode.vue';
 import InputSearch from '@/components/InputSearch.vue';
 import InputSearchHN from '@/components/InputSearchHN.vue';
+import HeaderSelect from '@/components/HeaderSelect.vue';
 export default{
-    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN},
+    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
     data: () => ({
         tab: null, // Selected tab
         tabs: [
@@ -260,10 +336,16 @@ export default{
         loading: true,
         dataTermPayment : [],
         selectedItemHNOne: {},
-        selectedTermPayment: {},
-        selectedTermPaymentSAP: {},
+        selectedItemTermPayment: {},
+        selectedItemTermPaymentSAP: {},
         datasExport : [],
-        SelectHNActivity:[],
+        filteredData: [],
+        selectedCompanyCode: [], 
+        selectedSystemCode: [], 
+        selectedTermPayment: [], 
+        selectedTermPaymentDes: [], 
+        selectedTermPaymentSAP: [], 
+        selectedDescription: [], 
         posting_key: null,
         posting_key2: null,
         headersDataHNActivity: [
@@ -285,65 +367,52 @@ export default{
         
     
         ],
+        searchCompanyCode: '', 
+        searchSystemCode: '', 
+        searchTermPayment: '', 
+        searchTermPaymentDes: '', 
+        searchTermPaymentSAP: '',
+        searchDescription: '',
     
     }),
 
-    computed: {
-        dropdownOptions() {
-        // Transform datasExport to dropdown options format
-        return this.datasExport.map(item => ({
-            HNActivityCode: item.HNActivityCode, // Adjust based on your data structure
-          id: item.id // Adjust with your unique identifier if necessary
-        }));
-      }
 
-
-  },
-   
     methods: {
-        selectItem(item) {
-        this.selectedItem = item;
-        //   this.menu = false; // Close the dropdown menu after selecting an item
-        },
         handleTabClick(tab) {
             switch (tab.name) {
                 case "Create/Change":
-                   console.log(tab);
                     break;
                 case "Export":
-                    this.getExportCashAndGL()
+                    this.getExportArPaymentTerm()
                     break;
                 default:
                     // Default action
                     break;
             }
-            console.log('Clicked on tab:', tab);
             // Add custom logic here, such as updating data or calling methods
         },
-        async getExportCashAndGL(){
+        async getExportArPaymentTerm(){
             try {
                 this.loading        = await true
-                let ActivityGLPath = '/api/SAP/CashAndGL'
+                let ActivityGLPath = '/api/SAP/PaymentTerm'
                 let response        = await axios.get(ActivityGLPath);
-                console.log(response);
                 await setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
-
-                    console.log(this.datasExport);
+                    this.filteredData = this.datasExport.slice();
                 }, 300);
             } catch (error) {
                 this.loading = await false
-                console.error('Error fetching data:', error);
+                // console.error('Error fetching data:', error);
             }
         },
         exportToExcel() {
             const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(this.datasExport);
+            const ws = XLSX.utils.json_to_sheet(this.filteredData);
             XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
             /* generate XLSX file and send to client */
-            XLSX.writeFile(wb, 'TMHNActivity.xlsx');
+            XLSX.writeFile(wb, 'ArPaymentTerm.xlsx');
         },
 
         removeHNActivity(value){
@@ -352,15 +421,12 @@ export default{
 
         async checkHNReceive(code){
 
-            console.log(code);
-
             try {
                 this.loading                = await true
                 let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
                 let response                = await axios.get(GetTmCashAndGLIDPath);
                 this.dataTermPayment         = response.data;
 
-                console.log(this.dataTermPayment);
                 // await setTimeout(() => {
                 //     this.loading = false;
                 //     this.datasExport = response.data;
@@ -411,9 +477,8 @@ export default{
                                 }
 
                                 let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                let response                    =    await axios.post(`${MappingCashGLPath}`, fd)
-                                console.log(response);
-                                console.log(fd);
+                                await axios.post(`${MappingCashGLPath}`, fd)
+
 
                                 // if(response){
                                     Swal.fire({
@@ -468,16 +533,113 @@ export default{
               this.selectedItemHNOne = data;
         },
         getselectedTermPayment(data) {
-              this.selectedTermPayment = data;
-        
+              this.selectedItemTermPayment = data;
         },
     
         getselectedTermPaymentSAP(data){
-
-            console.log('=========',this.$refs.GL_OPD);
-            this.selectedTermPaymentSAP = data;
-        
+            this.selectedItemTermPaymentSAP = data;
         },
+
+        updateSelectedSystemCode(value) {
+            this.selectedSystemCode = value;
+        },
+        updateSelectedCompanyCode(value) {
+            this.selectedCompanyCode = value;
+        },
+        updateSelectedTermPayment(value) {
+            this.SelectedTermPayment = value;
+        },
+        updateSelectedTermPaymentDes(value) {
+            this.selectedTermPaymentDes = value;
+        },
+        updateSelectedTermPaymentSAP(value) {
+            this.selectedTermPaymentSAP = value;
+        },
+        updateSelectedDescription(value) {
+            this.selectedDescription = value;
+        },
+
+        selectOptionsForColumn(columnName) {
+            let filteredOptions = this.datasExport;
+            let searchTerm = '';
+
+            // Determine which search term to use based on the column name
+            switch (columnName) {
+                case 'CompanyCode':
+                searchTerm = this.searchCompanyCode;
+                break;
+                case 'SystemCode':
+                searchTerm = this.searchSystemCode;
+                break;
+                case 'TermOfPayment':
+                searchTerm = this.searchTermPayment;
+                break;
+                case 'TermOfPaymentDes':
+                searchTerm = this.searchTermPaymentDes;
+                break;
+                case 'TermOfPaymentSAP':
+                searchTerm = this.searchTermPaymentSAP;
+                break;
+                case 'Description':
+                searchTerm = this.searchDescription;
+                break;
+                default:
+                searchTerm = '';
+                break;
+            }
+
+            if (searchTerm) {
+                const searchTermLowerCase = searchTerm.toLowerCase();
+                filteredOptions = filteredOptions.filter(item =>
+                item[columnName].toLowerCase().includes(searchTermLowerCase)
+                );
+            }
+
+            const allValues = filteredOptions.map(item => ({
+                text: item[columnName],
+                value: item[columnName],
+            }));
+
+            // Remove duplicates based on 'value'
+            const uniqueValues = allValues.filter((value, index, self) =>
+                index === self.findIndex(t => t.value === value.value)
+            );
+
+            return uniqueValues;
+        },
+        
+        searchCompanies(columnName, searchTerm) {
+            if(columnName === 'CompanyCode'){
+                this.searchCompanyCode = searchTerm;
+            }else if (columnName === 'SystemCode') {
+                this.searchSystemCode = searchTerm;
+            }else if (columnName === 'TermOfPayment') {
+                this.searchTermPayment = searchTerm;
+            } else if (columnName === 'TermOfPaymentDes') {
+                this.searchTermPaymentDes = searchTerm;
+            } else if (columnName === 'TermOfPaymentSAP') {
+                this.searchTermPaymentSAP = searchTerm;
+            } else if (columnName === 'Description') {
+                this.searchDescription = searchTerm;
+            }
+
+            this.filterData();
+        },
+
+        filterData() {
+
+            this.filteredData = this.datasExport.filter(item =>
+
+            (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
+            (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
+            (this.selectedTermPayment.length === 0 || this.selectedTermPayment.includes(item.TermOfPayment)) &&
+            (this.selectedTermPaymentDes.length === 0 || this.selectedTermPaymentDes.includes(item.TermOfPaymentDes)) &&
+            (this.selectedTermPaymentSAP.length === 0 || this.selectedTermPaymentSAP.includes(item.TermOfPaymentSAP)) &&
+            (this.selectedDescription.length === 0 || this.selectedDescription.includes(item.Description))
+            );
+        },
+
+
        
     }
 }

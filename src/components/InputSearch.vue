@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <v-text-field
             v-model="selectedItem.GLNo"
             :rules="[v => !!v || '']"
@@ -13,6 +12,7 @@
             clearable 
             @click:append="onClick"
             class="input-search"
+            :class="{ 'text-danger': isError === true }"
         ></v-text-field>
 
         <v-dialog
@@ -35,7 +35,7 @@
                         </v-col>
                         <v-col cols="8">
                             <v-text-field
-                                v-model="search"
+                                v-model="searchCode"
                                 dense
                                 outlined
                                 single-line
@@ -52,7 +52,7 @@
                         </v-col>
                         <v-col cols="8">
                             <v-text-field
-                               v-model="selectedItem.LocalName"
+                               v-model="searchName"
                                 dense
                                 outlined
                                 single-line
@@ -69,7 +69,7 @@
                 <div class="table-container">
                     <v-data-table
                     :headers="header"
-                    :items="selectData"
+                    :items="filteredData"
                     :search="search"
                     :loading="loading"
                     compact
@@ -94,7 +94,7 @@
 <script>
 import axios from "axios";
 export default{
-    props: ['title', 'label', 'code', 'name', 'type'],
+    props: ['title', 'label', 'code', 'name', 'type', 'isError'],
     data: () => ({
         search: '',
         dialogSearch: false,
@@ -109,10 +109,21 @@ export default{
             // Add more fields as needed
         },
         textFieldValue: '',
-      textFieldClass: '', // Dynamic class binding for input field
+        textFieldClass: '', // Dynamic class binding for input field
+        searchCode:'',
+        searchName:'',
     }),
     mounted() {
         this.generateHeader();
+    },
+    computed: {
+        filteredData() {
+            return this.selectData.filter(item => {
+                const codeMatch = (!this.searchCode || item.GLNo?.toLowerCase().includes(this.searchCode.toLowerCase()));
+                const nameMatch = (!this.searchName || item.GLDes?.toLowerCase().includes(this.searchName.toLowerCase()));
+                return codeMatch && nameMatch;
+            });
+        }
     },
     methods:{
  
@@ -131,7 +142,23 @@ export default{
         onClick () {
             
             this.dialogSearch = true
-            this.getSAPGL()
+            // this.getSAPGL()
+            switch(this.type){
+                case "GLSAP": 
+                setTimeout(() => {
+                    this.loading = false;
+                    this.selectData = [{ GLNo: 'SAPArCode', GLDes: 'SAPArCode',}]
+                }, 300);
+              
+                break;
+                case "SapGL" :
+                    this.getSAPGL()
+                break;
+
+                default:
+                // Default action
+                break;
+            }
             // switch (title) {
             //     case "OPD":
             //         this.getSAPGL()
@@ -165,7 +192,6 @@ export default{
             try {
                 let LoadSapGLPath = '/api/SAP/SapGL'
                 let response        = await axios.get(LoadSapGLPath);
-                console.log(response);
                 await setTimeout(() => {
                     this.loading = false;
                     this.selectData = response.data;
@@ -216,6 +242,9 @@ export default{
         border-bottom-width: thin;
         border-bottom-color: #D9D9D9;
         height: 25px;
+    }
+    ::v-deep .text-danger input{
+        color: #C72C2C;
     }
   
 

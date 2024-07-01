@@ -14,7 +14,12 @@
                         <v-container>
                             <v-row class="my-2">
 
-                                <v-col class="text-center">
+                                <v-col cols="12" md="6" class="text-center px-0 py-0">
+                                    <span>HNReceive Code</span>
+                                </v-col>
+                                <v-col cols="12" md="6" class="px-0 py-0"></v-col>
+
+                                <v-col cols="12" md="6"  class="text-center">
 
                                     <InputSearchHN 
                                         title="HN Receive"
@@ -27,10 +32,10 @@
                                     <!-- <InputSearchHN label="HNReceive Code / HNReceive Name" type="Receive"  @childEvent="getselectedItemHNOne"/> -->
                                 </v-col>
 
-                                <v-col align-self="center" class="d-flex justify-space-between align-center">
+                                <v-col cols="12" md="6"  align-self="center" class="d-flex justify-space-between align-center">
                                     
-                                    <span class="f-16">HNReceive Name : {{ selectedItemHNOne.LocalName }}</span>
-                                    <v-btn @click="checkHNReceive(selectedItemHNOne.Code)" class="bg-orange">Check</v-btn>
+                                    <span class="f-12 pr-3">HNReceive Name : {{ selectedItemHNOne.LocalName }}</span>
+                                    <v-btn @click="checkHNReceive" class="bg-orange">Check</v-btn>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -67,15 +72,15 @@
                      
                         <v-row class="mb-3">
 
-                            <v-col md="3" sm="12">
+                            <v-col cols="12" md="3">
                                 <SelectCompanyCode ref="selectCompanyCode"/>
                             </v-col>
 
-                            <v-col md="3" sm="12">
+                            <v-col cols="12" md="3">
                                 <SelectSystemCode ref="selectSystemCode"/>
                             </v-col>
 
-                            <v-col md="3" sm="12">
+                            <v-col cols="12" md="3">
                                 <v-row class="mt-3">
                                     <v-col>
                                         <span class="f-12">Posting Key</span>
@@ -96,7 +101,7 @@
                                  
                             </v-col>
 
-                            <v-col md="3" sm="12">
+                            <v-col cols="12" md="3">
                                 <v-row class="mt-3">
                                     <v-col>
                                         <span class="f-12">Posting Key 2</span>
@@ -120,10 +125,11 @@
                         </v-row>
 
                         <div class=" border-bottom pb-0"></div>
+                        <p v-if="isError" class="text-error f-13 mt-3">*ข้อมูลไม่ถูกต้อง</p>
 
                         <v-row class="my-2">  
-                            <v-col md="2" sm="12"></v-col>
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="2"></v-col>
+                            <v-col cols="12" md="4">
                                 <h2 class="f-16">HN Receive</h2>
                                 <v-row class="mt-3">
                                     <v-col>
@@ -137,6 +143,8 @@
                                             code="HNReceive Code" 
                                             name="HNReceive name"
                                             type="Receive" 
+                                            ref="selectHNReceive"
+                                            :isError="isError"
                                             @childEvent="getselectedItemHNTwo"
                                         />
 
@@ -150,25 +158,28 @@
                                         <span class="f-12">HNReceive Name</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemHNTwo.LocalName}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25" :class="{ 'text-error': isError}">{{selectedItemHNTwo.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
                             </v-col>
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <h2 class="f-16">GLSAR Code</h2>
                                 <v-row class="mt-3">
                                     <v-col>
                                         <span class="f-12">GLSAR Code</span>
                                     </v-col>
                                     <v-col cols="8">
-
+                                     
                                         <InputSearch 
                                             title="GLSAR"
                                             label="Text" 
                                             code="GLSAR Code" 
                                             name="GLSAR Name" 
+                                            type="SapGL"
+                                            ref="selectGLSAR"
+                                            :isError="isError"
                                             @childEvent="getselectedItemGLSAR"
                                         />
 
@@ -180,17 +191,17 @@
                                         <span class="f-12">GLSAR Name</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemGLSAR.GLDes}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25 line-height" :class="{ 'text-error': isError}">{{selectedItemGLSAR.GLDes}}</p>
                                     </v-col>
                                     
                                 </v-row>
                             </v-col>
-                            <v-col md="2" sm="12"></v-col>
+                            <v-col cols="12" md="2"></v-col>
                         </v-row>
                         
                         <v-row class="my-2">  
-                            <v-col md="2" sm="12"></v-col>
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="2"></v-col>
+                            <v-col cols="12" md="4">
                                 <h2 class="f-16">GLSAP Code</h2>
                                 <v-row class="mt-3">
                                     <v-col>
@@ -203,6 +214,9 @@
                                             label="Text" 
                                             code="GLSAP Code" 
                                             name="GLSAP Name" 
+                                            type="SapGL"
+                                            ref="selectGLSAP"
+                                            :isError="isError"
                                             @childEvent="getselectedItemGLSAP"
                                         />
 
@@ -214,13 +228,13 @@
                                         <span class="f-12">GLSAP Name</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemGLSAP.LocalName}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25 line-height" :class="{ 'text-error': isError}">{{selectedItemGLSAP.GLDes}}</p>
                                     </v-col>
                                 </v-row>
 
                             </v-col>
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <h2 class="f-16">SpecialGL Code</h2>
                                 <v-row class="mt-3">
                                     <v-col>
@@ -231,7 +245,10 @@
                                             title="SpecialGL"
                                             label="Text" 
                                             code="SpecialGL Code" 
-                                            name="SpecialGL Name" 
+                                            name="SpecialGL Name"
+                                            type="SapGL"
+                                            ref="selectSpecialGL"
+                                            :isError="isError"
                                             @childEvent="getselectedItemSpecialGL"
                                         />
 
@@ -243,13 +260,13 @@
                                         <span class="f-12">SpecialGL Name</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemSpecialGL.GLDes}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25 line-height" :class="{ 'text-error': isError}">{{selectedItemSpecialGL.GLDes}}</p>
                                     </v-col>
                                 </v-row>
                             </v-col>
-                            <v-col md="2" sm="12"></v-col>
+                            <v-col cols="12" md="2"></v-col>
                         </v-row>
-
+                       
                         <v-btn @click="MappingCashGL" class="bg-orange" block>Update Data</v-btn>
                         </v-form>
 
@@ -271,62 +288,128 @@
                         </v-col>
 
                         <v-col class="text-right">
-                            <v-btn class="bg-blue"  @click="exportToExcel">Export</v-btn>
+                            <v-btn class="bg-blue"  @click="exportToExcel(filteredData, 'CashAndGL')">Export</v-btn>
                         </v-col>
                     </v-row>
                     <v-data-table
                         :headers="headersExport"
-                        :items="datasExport"
+                        :items="filteredData"
                         :loading="loading"
                         density="compact"
                         item-key="name"
                         :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                         class="style-table"
                     >
-                    <template v-slot:[`header.HNActivityCode`]="{ header }">
-                        <div>
-                        {{ header.text }}
-
-                        <v-menu
-                            v-model="menu"
-                            :close-on-content-click="false"
-                            :nudge-right="40"
-                            :return-value.sync="selectedItem"
-                            transition="scale-transition"
-                            offset-y
-                            min-width="290px"
-                        >
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                                v-bind="attrs"
-                                v-on="on"
-                                id="menu-activator"
-                                class="btn-with-icon"
-                                text
-                            >
-                                <i class="fas fa-caret-down"></i>
-                            </v-btn>
+               
+                        <!-- Header Template for CompanyCode -->
+                        <template v-slot:[`header.CompanyCode`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedCompanyCode"
+                                :select-items="selectOptionsForColumn('CompanyCode', datasExport)"
+                                @update:selectedValue="updateSelectedCompanyCode"
+                                @search="searchCompanies('CompanyCode', $event)"
+                            />
                         </template>
 
-                        <v-list>
-                        
-                                <v-list-item
-                                    v-for="(item, index) in dropdownOptions"
-                                    :key="index"
-                                    @click="selectItem(item)"
-                                >
-                                    <v-checkbox v-model="selectedItems" :label="item.HNActivityCode" :value="item"></v-checkbox>
-                                </v-list-item>
-                            
-                          
-                        </v-list>
-                        
-                        </v-menu>
+                        <!-- Header Template for SystemCode -->
+                        <template v-slot:[`header.SystemCode`]="{ header }">
+                        <HeaderSelect
+                            :header-text="header.text"
+                            :selected-value="selectedSystemCode"
+                            :select-items="selectOptionsForColumn('SystemCode')"
+                            @update:selectedValue="updateSelectedSystemCode"
+                            @search="searchCompanies('SystemCode', $event)"
+                        />
+                        </template>
 
-                           
+                        <!-- Header Template for HNReceiveCode -->
+                        <template v-slot:[`header.HNReceiveCode`]="{ header }">
+                        <HeaderSelect
+                            :header-text="header.text"
+                            :selected-value="selectedHNReceiveCode"
+                            :select-items="selectOptionsForColumn('HNReceiveCode')"
+                            @update:selectedValue="updateSelectedHNReceiveCode"
+                            @search="searchCompanies('HNReceiveCode', $event)"
+                        />
+                        </template>
 
-                        </div>
-                    </template>
+                        <!-- Header Template for HNReceive Name -->
+                        <template v-slot:[`header.LocalName`]="{ header }">
+                        <HeaderSelect
+                            :header-text="header.text"
+                            :selected-value="selectedHNReceiveName"
+                            :select-items="selectOptionsForColumn('LocalName')"
+                            @update:selectedValue="updateSelectedHNReceiveName"
+                            @search="searchCompanies('LocalName', $event)"
+                        />
+                        </template>
+
+                        <!-- Header Template for EnglishName -->
+                        <template v-slot:[`header.EnglishName`]="{ header }">
+                        <HeaderSelect
+                            :header-text="header.text"
+                            :selected-value="selectedEnglishName"
+                            :select-items="selectOptionsForColumn('EnglishName')"
+                            @update:selectedValue="updateSelectedEnglishName"
+                            @search="searchCompanies('EnglishName', $event)"
+                        />
+                        </template>
+
+                         <!-- Header Template for GLSARCode -->
+                         <template v-slot:[`header.GLSARCode`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedGLSARCode"
+                                :select-items="selectOptionsForColumn('GLSARCode')"
+                                @update:selectedValue="updateSelectedGLSARCode"
+                                @search="searchCompanies('GLSARCode', $event)"
+                            />
+                        </template>
+
+                         <!-- Header Template for GLSARName -->
+                         <template v-slot:[`header.GLSARName`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedGLSARName"
+                                :select-items="selectOptionsForColumn('GLSARName')"
+                                @update:selectedValue="updateSelectedGLSARName"
+                                @search="searchCompanies('GLSARName', $event)"
+                            />
+                        </template>
+
+                         <!-- Header Template for GLSAPCode -->
+                         <template v-slot:[`header.GLSAPCode`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedGLSAPCode"
+                                :select-items="selectOptionsForColumn('GLSAPCode')"
+                                @update:selectedValue="updateSelectedGLSAPCode"
+                                @search="searchCompanies('GLSAPCode', $event)"
+                            />
+                        </template>
+
+                         <!-- Header Template for GLSAPName -->
+                         <!-- <template v-slot:[`header.GLSAPName`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedGLSAPName"
+                                :select-items="selectOptionsForColumn('GLSAPName')"
+                                @update:selectedValue="updateSelectedGLSAPName"
+                                @search="searchCompanies('GLSAPName', $event)"
+                            />
+                        </template> -->
+
+                         <!-- Header Template for SpecialGL -->
+                         <template v-slot:[`header.SpecialGL`]="{ header }">
+                        <HeaderSelect
+                            :header-text="header.text"
+                            :selected-value="selectedSpecialGL"
+                            :select-items="selectOptionsForColumn('SpecialGL')"
+                            @update:selectedValue="updateSelectedSpecialGL"
+                            @search="searchCompanies('SpecialGL', $event)"
+                        />
+                        </template>
 
                     </v-data-table>
                 </v-card>
@@ -339,27 +422,23 @@
 </template>
 <script>
 import axios from "axios";
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
 import SelectSystemCode from '@/components/SelectSystemCode.vue';
 import InputSearch from '@/components/InputSearch.vue';
 import InputSearchHN from '@/components/InputSearchHN.vue';
+import HeaderSelect from '@/components/HeaderSelect.vue';
 export default{
-    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN},
+    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
     data: () => ({
         tab: null, // Selected tab
         tabs: [
             { name: 'Create/Change' },
             { name: 'Export' },
         ],
-
         menu: false,
-        selectedItem: null,
         search: '',
-        selectedItems: [],
-        scrollTo: null,
-
         valid:true,
         loading: true,
         dataHNReceive : [],
@@ -369,20 +448,32 @@ export default{
         selectedItemGLSAP: {},
         selectedItemSpecialGL: {},
         datasExport : [],
-        SelectHNActivity:[],
+        filteredData: [],
+        selectedCompanyCode: [],
+        selectedSystemCode: [],
+        selectedHNReceiveCode: [],
+        selectedHNReceiveName: [],
+        // selectedEnglishName: [],
+        selectedGLSARCode: [],
+        selectedGLSARName: [],
+        selectedGLSAPCode: [],
+        // selectedGLSAPName: [],
+        selectedSpecialGL: [],
         posting_key: null,
         posting_key2: null,
         headersDataHNActivity: [
-        { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
+            { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
             { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
             { text: 'HNReceive Code', align: 'left', sortable: false, value: 'HNReceiveCode' },
             { text: 'HNReceive Name', align: 'left', sortable: false, value: 'LocalName' },
+            // { text: 'English Name', align: 'left', sortable: false, value: 'EnglishName' },
             { text: 'GLSAR Code', align: 'left', sortable: false, value: 'GLSARCode' },
             { text: 'GLSAR Name', align: 'left', sortable: false, value: 'GLSARName' },
             { text: 'GLSAP Code', align: 'left', sortable: false, value: 'GLSAPCode' },
-            { text: 'GLSAP Name', align: 'left', sortable: false, value: 'GLSAPName' },
-            { text: 'SpecialGL Code', align: 'left', sortable: false, value: 'SpecialGLCode' },
-            { text: 'SpecialGL Name', align: 'left', sortable: false, value: 'SpecialGLName' },
+            // { text: 'Key2Description', align: 'left', sortable: false, value: 'Key2Description' },
+            { text: 'SpecialGL', align: 'left', sortable: false, value: 'SpecialGL' },
+            { text: 'Posting Key', align: 'left', sortable: false, value: 'PostingKey' },
+            { text: 'Posting Key2', align: 'left', sortable: false, value: 'PostingKey2' },
             { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
         ],
         headersExport: [
@@ -390,76 +481,123 @@ export default{
             { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
             { text: 'HNReceive Code', align: 'left', sortable: false, value: 'HNReceiveCode' },
             { text: 'HNReceive Name', align: 'left', sortable: false, value: 'LocalName' },
+            // { text: 'English Name', align: 'left', sortable: false, value: 'EnglishName' },
             { text: 'GLSAR Code', align: 'left', sortable: false, value: 'GLSARCode' },
             { text: 'GLSAR Name', align: 'left', sortable: false, value: 'GLSARName' },
             { text: 'GLSAP Code', align: 'left', sortable: false, value: 'GLSAPCode' },
-            { text: 'GLSAP Name', align: 'left', sortable: false, value: 'GLSAPName' },
+            // { text: 'GLSAP Name', align: 'left', sortable: false, value: 'GLSAPName' },
             { text: 'SpecialGL', align: 'left', sortable: false, value: 'SpecialGL' },
     
         ],
+        searchCompanyCode: '', 
+        searchSystemCode: '', 
+        searchHNReceiveCode: '', 
+        searchHNReceiveName: '', 
+        // searchEnglishName: '', 
+        searchGLSARCode: '',
+        searchGLSARName: '',
+        searchGLSAPCode: '',
+        // searchGLSAPName: '',
+        searchGLSpecialGL: '',
+        isError: false
     
     }),
 
-    computed: {
-        dropdownOptions() {
-        // Transform datasExport to dropdown options format
-        return this.datasExport.map(item => ({
-            HNActivityCode: item.HNActivityCode, // Adjust based on your data structure
-          id: item.id // Adjust with your unique identifier if necessary
-        }));
-      }
+    watch: {
+      
+        selectedCompanyCode: {
+            handler() {
+                this.filterData();
+            },
+            deep: true,
+        },
+    
+        selectedSystemCode: {
+            handler() {
+                this.filterData();
+            },
+            deep: true,
+        },
+
+        selectedHNReceiveCode: {
+            handler() {
+                this.filterData();
+            },
+            deep: true,
+        },
+
+        selectedHNReceiveName: {
+            handler() {
+                this.filterData();
+            },
+            deep: true,
+        },
+
+        // selectedEnglishName: {
+        //     handler() {
+        //         this.filterData();
+        //     },
+        //     deep: true,
+        // },
+
+        selectedGLSARCode: {
+            handler() {
+                this.filterData();
+            },
+            deep: true,
+        },
+
+        selectedGLSARName: {
+            handler() {
+                this.filterData();
+            },
+            deep: true,
+        },
+
+        selectedGLSAPCode: {
+            handler() {
+                this.filterData();
+            },
+            deep: true,
+        },
+
+        // selectedGLSAPName: {
+        //     handler() {
+        //         this.filterData();
+        //     },
+        //     deep: true,
+        // },
+
+        selectedSpecialGL: {
+            handler() {
+                this.filterData();
+            },
+            deep: true,
+        },
 
 
-  },
-   
+      
+    },
+
     methods: {
-        selectItem(item) {
-        this.selectedItem = item;
-        //   this.menu = false; // Close the dropdown menu after selecting an item
-        },
-        handleTabClick(tab) {
-            switch (tab.name) {
-                case "Create/Change":
-                   console.log(tab);
-                    break;
-                case "Export":
-                    this.getExportCashAndGL()
-                    break;
-                default:
-                    // Default action
-                    break;
-            }
-            console.log('Clicked on tab:', tab);
-            // Add custom logic here, such as updating data or calling methods
-        },
         async getExportCashAndGL(){
             try {
                 this.loading        = await true
                 let ActivityGLPath = '/api/SAP/CashAndGL'
                 let response        = await axios.get(ActivityGLPath);
-                console.log(response);
-                await setTimeout(() => {
+                setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
-
-                    console.log(this.datasExport);
-                }, 300);
+                    this.filteredData = this.datasExport.slice();
+                   
+                }, 500);
             } catch (error) {
                 this.loading = await false
                 console.error('Error fetching data:', error);
             }
         },
-        exportToExcel() {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(this.datasExport);
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        async removeCashGL(){
 
-            /* generate XLSX file and send to client */
-            XLSX.writeFile(wb, 'TMHNActivity.xlsx');
-        },
-
-        async removeCashGL(value){
-            console.log(value);
             await Swal.fire({
                 title: "Warning",
                 text: "Are you sure you want to delete this item? ",
@@ -507,17 +645,12 @@ export default{
             });
         },
 
-        async checkHNReceive(code){
-
-            console.log(code);
-
+        async checkHNReceive(){
             try {
                 this.loading                = await true
-                let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
+                let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${this.selectedItemHNOne.Code}`
                 let response                = await axios.get(GetTmCashAndGLIDPath);
                 this.dataHNReceive         = response.data;
-
-                console.log(this.dataHNReceive);
                 // await setTimeout(() => {
                 //     this.loading = false;
                 //     this.datasExport = response.data;
@@ -530,15 +663,44 @@ export default{
         
         async MappingCashGL(){
 
-            const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
-            const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
-
+         
+            // เช็ค value
             if(this.$refs.formMapping.validate()){
 
-                try {
+                // เช็คค่า dataHNReceive ใน Table ที่จะ Mapping
+                if(this.dataHNReceive.length > 0){
 
-                    if(this.dataHNReceive.length > 0){
+        
 
+                    const HNReceive = this.dataHNReceive[0].HNReceiveCode
+                    const selectedHNReceive = this.selectedItemHNTwo.Code
+
+                    
+                    const GLSAR = this.dataHNReceive[0].GLSARCode
+                    const selectedItemGLSAR = this.selectedItemGLSAR.GLNo
+
+                    const GLSAP = this.dataHNReceive[0].GLSAPCode
+                    const selectedItemGLSAP = this.selectedItemGLSAP.GLNo
+
+                    const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
+                    const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
+
+                    // เช็คค่า HNReceive ในตารางต้องตรงกับ selectedHNReceive ที่เลือก หรือ GLSAR และ GLSAP ข้อมูลต้องไม่เหมือนกัน
+                    if(HNReceive !== selectedHNReceive || GLSAR === selectedItemGLSAR && GLSAP === selectedItemGLSAP){
+                        Swal.fire({
+                            icon: "error",
+                            title: "Incomplete",
+                            text: "Unable to update . Please check data agian.",
+                            customClass: {
+                                title: 'text-error' // Add your custom class here
+                            }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    this.isError = true
+                                }
+                            });
+
+                    }else{
                         await Swal.fire({
                             title: "Warning",
                             text: "Data has already map. Are you sure to map again? ",
@@ -550,99 +712,275 @@ export default{
                             customClass: {
                                 title: 'text-warning' // Add your custom class here
                             }
-                            }).then(async(result) => {
+                        }).then(async(result) => {
                             if (result.isConfirmed) {
                                 let fd  = {
                                     "companyCode": selectCompanyCode,
                                     "systemCode": selectSystemCode,
-                                    "hnReceiveCode": this.selectedItemHNTwo.Code,
-                                    "localName": this.selectedItemHNTwo.LocalName,
-                                    "englishName": this.selectedItemHNTwo.EnglishName,
+                                    "hnReceiveCode": this.dataHNReceive[0].HNReceiveCode === null ? '' : this.dataHNReceive[0].HNReceiveCode,
+                                    "localName": this.dataHNReceive[0].LocalName === null ? '' : this.dataHNReceive[0].LocalName,
+                                    "englishName": this.dataHNReceive[0].EnglishName === null ? '' : this.dataHNReceive[0].EnglishName,
                                     "glsarCode": this.selectedItemGLSAR.GLNo,
                                     "glsarName": this.selectedItemGLSAR.GLDes,
                                     "postingKey": this.posting_key,
                                     "postingKey2": this.posting_key2,
                                     "glsapCode": this.selectedItemGLSAP.GLNo,
-                                    "key2Description": "string",
-                                    "specialGL":this.selectedItemspecialGL.GLNo,
+                                    "glsapName": this.selectedItemGLSAP.GLDes,
+                                    "key2Description": "",
+                                    "specialGL":this.selectedItemSpecialGL.GLNo,
+                                    // "specialGL":this.selectedItemSpecialGL.GLDes,
                                 }
+                                try {
+                                    
+                                    const MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
+                                    await axios.post(`${MappingCashGLPath}`, fd)
 
-                                let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                let response                    =    await axios.post(`${MappingCashGLPath}`, fd)
-                                console.log(response);
-                                console.log(fd);
-
-                                // if(response){
+                                    
+                                
                                     Swal.fire({
-                                        icon: "success",
-                                        title: "Complete",
-                                        text: "You data was saved.",
+                                        icon: 'success',
+                                        title: 'Complete',
+                                        text: 'Your data was saved.',
                                         customClass: {
-                                            title: 'text-success' // Add your custom class here
+                                        title: 'text-success', // Example of adding custom class
+                                        },
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            this.clearData(); // Call method to clear data
+                                            this.checkHNReceive()
                                         }
                                     });
-                                // }
 
-                        
-                            }
-                        });
+                                } catch (error) {
+                                    console.log(error);
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Incomplete",
+                                        text: "Unable to update . Please check data agian.",
+                                        customClass: {
+                                            title: 'text-error' // Add your custom class here
+                                        }
+                                    });
+                                }
 
-                    }else{
-                         Swal.fire({
-                            icon: "error",
-                            title: "Incomplete",
-                            text: "Unable to update . Please check data agian.",
-                            customClass: {
-                                title: 'text-error' // Add your custom class here
                             }
+
                         });
                     }
-
-                } catch (error) {
-                    console.log('MappingCashGL',error);
+                }else{
                     Swal.fire({
                         icon: "error",
                         title: "Incomplete",
-                        text: "Unable to update . Please check data agian.",
+                        text: "Unable to update. Please check data again.",
                         customClass: {
                             title: 'text-error' // Add your custom class here
                         }
-                    });
+                    })
                 }
-
+               
             }else{
                 Swal.fire({
                     icon: "error",
                     title: "Incomplete",
-                    text: "Unable to update . Please check data agian.",
+                    text: "Unable to update. Please check data again.",
                     customClass: {
                         title: 'text-error' // Add your custom class here
                     }
-                });
+                })
             }
         },
+
+        handleTabClick(tab) {
+            switch (tab.name) {
+                case "Create/Change":
+                    break;
+                case "Export":
+                    this.getExportCashAndGL()
+                    break;
+                default:
+                    // Default action
+                    break;
+            }
+            // Add custom logic here, such as updating data or calling methods
+        },
+
+        // exportToExcel() {
+        //     const wb = XLSX.utils.book_new();
+        //     const ws = XLSX.utils.json_to_sheet(this.filteredData);
+        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+        //     /* generate XLSX file and send to client */
+        //     XLSX.writeFile(wb, 'CashAndGL.xlsx');
+        // },
 
         getselectedItemHNOne(data) {
               this.selectedItemHNOne = data;
         },
         getselectedItemHNTwo(data) {
               this.selectedItemHNTwo = data;
-              console.log(this.selectedItemHNTwo);
         },
         getselectedItemGLSAR(data) {
-              this.selectedItemHNTwo = data;
-              console.log(this.selectedItemHNTwo);
+              this.selectedItemGLSAR = data;
         },
     
         getselectedItemGLSAP(data){
             this.selectedItemGLSAP = data;
-            console.log(this.selectedItemGLSAP);
         },
         getselectedItemSpecialGL(data){
             this.selectedItemSpecialGL = data;
-            console.log(this.selectedItemSpecialGL);
         },
-       
+        updateSelectedCompanyCode(value) {
+            this.selectedCompanyCode = value;
+        },
+        updateSelectedSystemCode(value) {
+            this.selectedSystemCode = value;
+        },
+        updateSelectedHNReceiveCode(value) {
+            this.selectedHNReceiveCode = value;
+        },
+        updateSelectedHNReceiveName(value) {
+            this.selectedHNReceiveName = value;
+        },
+        // updateSelectedEnglishName(value) {
+        //     this.selectedEnglishName = value;
+        // },
+        updateSelectedGLSARCode(value) {
+            this.selectedGLSARCode = value;
+        },
+        updateSelectedGLSARName(value) {
+            this.selectedGLSARName = value;
+        },
+        updateSelectedGLSAPCode(value) {
+            this.selectedGLSAPCode = value;
+        },
+        // updateSelectedGLSAPName(value) {
+        //     this.selectedGLSAPName = value;
+        // },
+        updateSelectedSpecialGL(value) {
+            this.selectedSpecialGL = value;
+        },
+        selectOptionsForColumn(columnName) {
+            let filteredOptions = this.datasExport;
+            let searchTerm = '';
+
+
+            // Determine which search term to use based on the column name
+            switch (columnName) {
+                case 'CompanyCode':
+                searchTerm = this.searchCompanyCode;
+                break;
+                case 'SystemCode':
+                searchTerm = this.searchSystemCode;
+                break;
+                case 'HNReceiveCode':
+                searchTerm = this.searchHNReceiveCode;
+                break;
+                case 'LocalName':
+                searchTerm = this.searchHNReceiveName;
+                break;
+                // case 'EnglishName':
+                // searchTerm = this.searchEnglishName;
+                // break;
+                case 'GLSARCode':
+                searchTerm = this.searchGLSARCode;
+                break;
+                case 'GLSARName':
+                searchTerm = this.searchGLSARName;
+                break;
+                case 'GLSAPCode':
+                searchTerm = this.searchGLSAPCode;
+                break;
+                // case 'GLSAPName':
+                // searchTerm = this.searchGLSAPName;
+                // break;
+                case 'SpecialGL':
+                searchTerm = this.searchSpecialGL;
+                break;
+                // Add more cases for other columns if needed
+                default:
+                searchTerm = '';
+                break;
+            }
+
+            if (searchTerm) {
+                const searchTermLowerCase = searchTerm.toLowerCase();
+                filteredOptions = filteredOptions.filter(item =>
+                item[columnName].toLowerCase().includes(searchTermLowerCase)
+                );
+            }
+
+            const allValues = filteredOptions.map(item => ({
+                text: item[columnName],
+                value: item[columnName],
+            }));
+
+            // Remove duplicates based on 'value'
+            const uniqueValues = allValues.filter((value, index, self) =>
+                index === self.findIndex(t => t.value === value.value)
+            );
+
+            return uniqueValues;
+        },
+        searchCompanies(columnName, searchTerm) {
+            if(columnName === 'CompanyCode'){
+                this.searchCompanyCode = searchTerm;
+            }else if (columnName === 'SystemCode') {
+                this.searchSystemCode = searchTerm;
+            }else if (columnName === 'HNReceiveCode') {
+                this.searchHNReceiveCode = searchTerm;
+            } else if (columnName === 'LocalName') {
+                this.searchHNReceiveName = searchTerm;
+            // } else if (columnName === 'EnglishName') {
+            //     this.searchEnglishName = searchTerm;
+            } else if (columnName === 'GLSARCode') {
+                this.searchGLSARCode = searchTerm;
+            } else if (columnName === 'GLSARName') {
+                this.searchGLSARName = searchTerm;
+            } else if (columnName === 'GLSAPCode') {
+                this.searchGLSAPCode = searchTerm; 
+            // } else if (columnName === 'GLSAPName') {
+            //     this.searchGLSAPName = searchTerm;  
+            } else if (columnName === 'SpecialGL') {
+                this.searchSpecialGL = searchTerm;  
+            }
+
+            this.filterData();
+        }, 
+        filterData() {
+
+            this.filteredData = this.datasExport.filter(item =>
+
+            (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
+            (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
+            (this.selectedHNReceiveCode.length === 0 || this.selectedHNReceiveCode.includes(item.HNReceiveCode)) &&
+            (this.selectedHNReceiveName.length === 0 || this.selectedHNReceiveName.includes(item.LocalName)) &&
+            // (this.selectedEnglishName.length === 0 || this.selectedEnglishName.includes(item.EnglishName)) &&
+            (this.selectedGLSARCode.length === 0 || this.selectedGLSARCode.includes(item.GLSARCode)) &&
+            (this.selectedGLSARName.length === 0 || this.selectedGLSARName.includes(item.GLSARName)) &&
+            (this.selectedGLSAPCode.length === 0 || this.selectedGLSAPCode.includes(item.GLSAPCode)) &&
+            // (this.selectedGLSAPName.length === 0 || this.selectedGLSAPName.includes(item.GLSAPName)) &&
+            (this.selectedSpecialGL.length === 0 || this.selectedSpecialGL.includes(item.SpecialGL))
+            
+            );
+        },
+        clearData(){
+            this.$refs.formMapping.resetValidation()
+            this.$refs.selectHNReceive.selectedItem = {}
+            this.$refs.selectGLSAR.selectedItem = {},
+            this.$refs.selectGLSAP.selectedItem = {},
+            this.$refs.selectSpecialGL.selectedItem = {},
+            this.$refs.selectCompanyCode.selecItem = null 
+            this.$refs.selectSystemCode.selecItem = null 
+            this.selectedItemHNTwo = {},
+            this.selectedItemGLSAR = {},
+            this.selectedItemGLSAP = {},
+            this.selectedItemSpecialGL = {},
+            this.posting_key = null,
+            this.posting_key2 = null,
+            this.isError = false
+        }
+
+
     }
 }
 </script>
@@ -709,6 +1047,10 @@ export default{
         height: auto!important;
         min-width: auto!important;
         padding: 0!important;
+    }
+
+    .line-height{
+        line-height: 1.8;
     }
    
     

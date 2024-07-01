@@ -14,13 +14,26 @@
                         <v-container>
                             <v-row class="my-2">
 
-                                <v-col class="text-center">
-                                    <InputSearchHN label="Employee Status Code / Employee Status Name" type="Receive"  @childEvent="getselectedItemHNOne"/>
+                                <v-col cols="12" md="6" class="text-center px-0 py-0">
+                                    <span>Employee Status</span>
+                                </v-col>
+                                <v-col cols="12" md="6" class="px-0 py-0"></v-col>
+
+                                <v-col cols="12" md="6"  class="text-center">
+                                    <InputSearchHN 
+                                        title="Active Status"
+                                        label="Employee Status Code / Employee Status Name" 
+                                        code="Active Status Code" 
+                                        name="Active Status name"
+                                        type="EmployeeStatus" 
+                                        @childEvent="getselectedItemHNOne"
+                                    />
+                                  
                                 </v-col>
 
-                                <v-col align-self="center" class="d-flex justify-space-between">
+                                <v-col cols="12" md="6" align-self="center" class="d-flex justify-space-between align-center">
                                     
-                                    <span>Employee Status Name : {{ selectedItemHNOne.LocalName }}</span>
+                                    <span class="f-12 pr-3">Employee Status Name : {{ selectedItemHNOne.LocalName }}</span>
                                     <v-btn @click="checkHNReceive(selectedItemHNOne.Code)" class="bg-orange">Check</v-btn>
                                 </v-col>
                             </v-row>
@@ -58,18 +71,18 @@
                      
                         <v-row class="mb-3">
 
-                            <v-col md="2" sm="12"></v-col>
+                            <v-col cols="12" md="2"></v-col>
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <SelectSystemCode ref="selectSystemCode"/>
                             
                             </v-col>
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <SelectCompanyCode ref="selectCompanyCode"/>
                             </v-col>
 
-                            <v-col md="2" sm="12"></v-col>
+                            <v-col cols="12" md="2"></v-col>
                          
 
                         </v-row>
@@ -78,46 +91,62 @@
 
                         <v-row class="my-2">  
                          
-                            <v-col>
+                            <v-col cols="12" md="6">
                                 <h2 class="f-16">Active Status SSB</h2>
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Active Status Code</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
 
-                                        <InputSearch @childEvent="getselectedTermPayment" type="Term of Payment"/>
+                                        <InputSearch 
+                                            title="Active Status"
+                                            label="Active Status" 
+                                            code="Active Status Code" 
+                                            name="Active Status name"
+                                            type="EmployeeStatus" 
+                                            @childEvent="getselectedTermPayment"
+                                        />
+
                                        
                                     </v-col>
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Active Status Name</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
                             </v-col>
 
-                            <v-col >
+                            <v-col cols="12" md="6">
                                 <h2 class="f-16">Active Status SAP</h2>
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Active Status Code</span>
                                     </v-col>
-                                    <v-col cols="8">
-                                        <InputSearch @childEvent="getselectedTermPaymentSAP" title="Term of Payment in SAP"  ref="GL_OPD"/>
+                                    <v-col cols="12" md="8">
+                                        
+                                        <InputSearch 
+                                            title="Active Status"
+                                            label="Active Status" 
+                                            code="Active Status Code" 
+                                            name="Active Status name"
+                                            type="EmployeeStatus" 
+                                            @childEvent="getselectedTermPayment"
+                                        />
                                     </v-col>
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Active Status Name</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedTermPaymentSAP.GLDes}}</p>
                                     </v-col>
                                     
@@ -269,49 +298,28 @@ export default{
     
     }),
 
-    computed: {
-        dropdownOptions() {
-        // Transform datasExport to dropdown options format
-        return this.datasExport.map(item => ({
-            HNActivityCode: item.HNActivityCode, // Adjust based on your data structure
-          id: item.id // Adjust with your unique identifier if necessary
-        }));
-      }
-
-
-  },
    
     methods: {
-        selectItem(item) {
-        this.selectedItem = item;
-        //   this.menu = false; // Close the dropdown menu after selecting an item
-        },
         handleTabClick(tab) {
             switch (tab.name) {
                 case "Create/Change":
-                   console.log(tab);
                     break;
                 case "Export":
-                    this.getExportCashAndGL()
+                    // this.getExportCashAndGL()
                     break;
                 default:
                     // Default action
                     break;
             }
-            console.log('Clicked on tab:', tab);
-            // Add custom logic here, such as updating data or calling methods
         },
         async getExportCashAndGL(){
             try {
                 this.loading        = await true
                 let ActivityGLPath = '/api/SAP/CashAndGL'
                 let response        = await axios.get(ActivityGLPath);
-                console.log(response);
                 await setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
-
-                    console.log(this.datasExport);
                 }, 300);
             } catch (error) {
                 this.loading = await false
@@ -333,15 +341,12 @@ export default{
 
         async checkHNReceive(code){
 
-            console.log(code);
-
             try {
                 this.loading                = await true
                 let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
                 let response                = await axios.get(GetTmCashAndGLIDPath);
                 this.dataTermPayment         = response.data;
 
-                console.log(this.dataTermPayment);
                 // await setTimeout(() => {
                 //     this.loading = false;
                 //     this.datasExport = response.data;
@@ -392,9 +397,8 @@ export default{
                                 }
 
                                 let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                let response                    =    await axios.post(`${MappingCashGLPath}`, fd)
-                                console.log(response);
-                                console.log(fd);
+                                await axios.post(`${MappingCashGLPath}`, fd)
+
 
                                 // if(response){
                                     Swal.fire({
@@ -455,7 +459,6 @@ export default{
     
         getselectedTermPaymentSAP(data){
             this.selectedTermPaymentSAP = data;
-            console.log(this.selectedItemGLSAP);
         },
        
     }

@@ -4,89 +4,122 @@
     :items="filteredData"
     :loading="loading"
     density="compact"
-    item-key="CompanyCode"
+    item-key="name"
     :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
     class="style-table"
   >
+    <!-- Header Template for CompanyCode -->
+    <template v-slot:[`header.CompanyCode`]="{ header }">
+      <HeaderSelect
+        :header-text="header.text"
+        :selected-value="selectedCompanyCode"
+        :select-items="selectOptionsForColumn('CompanyCode')"
+        @update:selectedValue="updateSelectedCompanyCode"
+        @search="searchCompanies('CompanyCode', $event)"
+      />
+    </template>
+
+    <!-- Header Template for SystemCode -->
+    <template v-slot:[`header.SystemCode`]="{ header }">
+      <HeaderSelect
+        :header-text="header.text"
+        :selected-value="selectedSystemCode"
+        :select-items="selectOptionsForColumn('SystemCode')"
+        @update:selectedValue="updateSelectedSystemCode"
+        @search="searchCompanies('SystemCode', $event)"
+      />
+    </template>
+
     <!-- Header Template for HNActivity Code -->
     <template v-slot:[`header.HNActivityCode`]="{ header }">
-      <div class="d-flex align-center justify-space-between">
-        <span class="text-back mr-1">{{ header.text }}</span>
-        <v-select
-          v-model="selectedHNActivity"
-          :items="selectOptionsForColumn('HNActivityCode')"
-          multiple
-          hide-details
-          class="custom-v-select"
-        >
-          <template v-slot:prepend-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-text-field
-                  v-model="searchHNActivityCode"
-                  placeholder="Search"
-                  dense
-                  outlined
-                  single-line
-                  clearable
-                  @input="searchCompanies('HNActivityCode')"
-                  append-icon="mdi-magnify"
-                  class="input-search"
-                ></v-text-field>
-              </v-list-item-content>
-            </v-list-item>
-            <v-divider class="mt-2"></v-divider>
-          </template>
-        </v-select>
-      </div>
+      <HeaderSelect
+        :header-text="header.text"
+        :selected-value="selectedHNActivity"
+        :select-items="selectOptionsForColumn('HNActivityCode')"
+        @update:selectedValue="updateSelectedHNActivity"
+        @search="searchCompanies('HNActivityCode', $event)"
+      />
     </template>
 
     <!-- Header Template for HNActivity Name -->
     <template v-slot:[`header.LocalName`]="{ header }">
-      <div class="d-flex align-center justify-space-between">
-        <span class="text-back mr-1">{{ header.text }}</span>
-        <v-select
-          v-model="selectedHNActivityName"
-          :items="selectOptionsForColumn('LocalName')"
-          multiple
-          hide-details
-          class="custom-v-select"
-        >
-          <template v-slot:prepend-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-text-field
-                  v-model="searchHNActivityName"
-                  placeholder="Search"
-                  dense
-                  outlined
-                  single-line
-                  clearable
-                  @input="searchCompanies('LocalName')"
-                  append-icon="mdi-magnify"
-                  class="input-search"
-                ></v-text-field>
-              </v-list-item-content>
-            </v-list-item>
-            <v-divider class="mt-2"></v-divider>
-          </template>
-        </v-select>
-      </div>
+      <HeaderSelect
+        :header-text="header.text"
+        :selected-value="selectedHNActivityName"
+        :select-items="selectOptionsForColumn('LocalName')"
+        @update:selectedValue="updateSelectedHNActivityName"
+        @search="searchCompanies('LocalName', $event)"
+      />
     </template>
 
+    <!-- Header Template for GLSAPCodeOPD -->
+    <template v-slot:[`header.GLSAPCodeOPD`]="{ header }">
+      <HeaderSelect
+        :header-text="header.text"
+        :selected-value="selectedGLOPDCode"
+        :select-items="selectOptionsForColumn('GLSAPCodeOPD')"
+        @update:selectedValue="updateSelectedGLOPDCode"
+        @search="searchCompanies('GLSAPCodeOPD', $event)"
+      />
+    </template>
+
+     <!-- Header Template for GLSAPNameOPD -->
+     <template v-slot:[`header.GLSAPNameOPD`]="{ header }">
+      <HeaderSelect
+        :header-text="header.text"
+        :selected-value="selectedGLOPDName"
+        :select-items="selectOptionsForColumn('GLSAPNameOPD')"
+        @update:selectedValue="updateSelectedGLOPDName"
+        @search="searchCompanies('GLSAPNameOPD', $event)"
+      />
+    </template>
+
+    <!-- Header Template for GLSAPCodeIPD -->
+    <template v-slot:[`header.GLSAPCodeIPD`]="{ header }">
+      <HeaderSelect
+        :header-text="header.text"
+        :selected-value="selectedGLIPDCode"
+        :select-items="selectOptionsForColumn('GLSAPCodeIPD')"
+        @update:selectedValue="updateSelectedGLIPDCode"
+        @search="searchCompanies('GLSAPCodeIPD', $event)"
+      />
+    </template>
+
+    <!-- Header Template for GLSAPNameIPD -->
+    <template v-slot:[`header.GLSAPNameIPD`]="{ header }">
+      <HeaderSelect
+        :header-text="header.text"
+        :selected-value="selectedGLIPDName"
+        :select-items="selectOptionsForColumn('GLSAPNameIPD')"
+        @update:selectedValue="updateSelectedGLIPDName"
+        @search="searchCompanies('GLSAPNameIPD', $event)"
+      />
+    </template>
+
+   
   </v-data-table>
 </template>
 
 <script>
-import axios from "axios";
+import HeaderSelect from '@/components/HeaderSelect.vue';
+import axios from 'axios';
 
 export default {
+  components: {
+    HeaderSelect,
+  },
   data() {
     return {
-      datasExport: [], // Original data array fetched from API
-      filteredData: [], // Array to hold filtered data
-      selectedHNActivity: [], // Selected HNActivityCode options
-      selectedHNActivityName: [], // Selected LocalName options
+      datasExport: [],
+      filteredData: [],
+      selectedCompanyCode: [], 
+      selectedSystemCode: [], 
+      selectedHNActivity: [],
+      selectedHNActivityName: [],
+      selectedGLOPDCode: [],
+      selectedGLOPDName: [],
+      selectedGLIPDCode: [],
+      selectedGLIPDName: [],
       headersExport: [
         { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
         { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
@@ -95,61 +128,124 @@ export default {
         { text: 'GL OPD Code', align: 'left', sortable: false, value: 'GLSAPCodeOPD' },
         { text: 'GL OPD Name', align: 'left', sortable: false, value: 'GLSAPNameOPD' },
         { text: 'GL IPD Code', align: 'left', sortable: false, value: 'GLSAPCodeIPD' },
-        { text: 'GL IPD Name', align: 'left', sortable: false, value: 'GLSAPNameIPD' },
+        { text: 'GL IPD  Name', align: 'left', sortable: false, value: 'GLSAPNameIPD' },
       ],
-      loading: true,
-      searchHNActivityCode: '', // Search term for HNActivity Code
-      searchHNActivityName: '', // Search term for HNActivity Name
+      loading: false,
+      searchCompanyCode: '', 
+      searchSystemCode: '', 
+      searchHNActivityCode: '', 
+      searchHNActivityName: '', 
+      searchGLOPDCode: '',
+      searchGLOPDName: '',
+      searchGLIPDCode: '',
+      searchGLIPDName: '',
     };
   },
-  created() {
+  mounted() {
     this.getExportActivityGL();
   },
   watch: {
-    // Watcher for selectedHNActivity changes
+    selectedCompanyCode: {
+      handler() {
+          this.filterData();
+      },
+      deep: true,
+    },
+    selectedSystemCode: {
+      handler() {
+          this.filterData();
+      },
+      deep: true,
+    },
     selectedHNActivity: {
       handler() {
         this.filterData();
       },
       deep: true,
     },
-    // Watcher for selectedHNActivityName changes
     selectedHNActivityName: {
       handler() {
         this.filterData();
       },
       deep: true,
     },
+    selectedGLOPDCode: {
+      handler() {
+          this.filterData();
+      },
+      deep: true,
+    },
+    selectedGLOPDName: {
+      handler() {
+          this.filterData();
+      },
+      deep: true,
+    },
+    selectedGLIPDCode: {
+      handler() {
+          this.filterData();
+      },
+      deep: true,
+    },
+    selectedGLIPDName: {
+      handler() {
+          this.filterData();
+      },
+      deep: true,
+    },
   },
   methods: {
-    // Method to fetch data from API
     async getExportActivityGL() {
       try {
         this.loading = true;
         let ActivityGLPath = '/api/SAP/ActivityGL';
         let response = await axios.get(ActivityGLPath);
         this.datasExport = response.data;
-        this.filteredData = this.datasExport.slice(); // Initialize filteredData with fetched data
+        this.filteredData = this.datasExport.slice();
         this.loading = false;
       } catch (error) {
-        console.error('Error fetching data:', error);
         this.loading = false;
-        // Optionally, handle error and show UI feedback
+        console.error('Error fetching data:', error);
       }
     },
-
-    // Method to filter options based on search term and column name
     selectOptionsForColumn(columnName) {
       let filteredOptions = this.datasExport;
+      let searchTerm = '';
 
-      // Filter options based on search term
-      if (columnName === 'HNActivityCode' && this.searchHNActivityCode) {
-        const searchTermLowerCase = this.searchHNActivityCode.toLowerCase();
-        filteredOptions = filteredOptions.filter(item =>
-          item[columnName].toLowerCase().includes(searchTermLowerCase)
-        );
-      } else if (columnName === 'LocalName' && this.searchHNActivityName) {
-        const searchTermLowerCase = this.searchHNActivityName.toLowerCase();
+      // Determine which search term to use based on the column name
+      switch (columnName) {
+        case 'CompanyCode':
+          searchTerm = this.searchCompanyCode;
+          break;
+        case 'SystemCode':
+          searchTerm = this.searchSystemCode;
+          break;
+        case 'HNActivityCode':
+          searchTerm = this.searchHNActivityCode;
+          break;
+        case 'LocalName':
+          searchTerm = this.searchHNActivityName;
+          break;
+        case 'GLSAPCodeOPD':
+          searchTerm = this.searchGLOPDCode;
+          break;
+        case 'GLSAPNameOPD':
+          searchTerm = this.searchGLOPDName;
+          break;
+        case 'GLSAPCodeIPD':
+          searchTerm = this.searchGLIPDCode;
+          break;
+        case 'GLSAPNameIPD':
+          searchTerm = this.searchGLIPDName;
+          break;
+        // Add more cases for other columns if needed
+        default:
+          searchTerm = '';
+          break;
+      }
+
+      if (searchTerm) {
+        const searchTermLowerCase = searchTerm.toLowerCase();
         filteredOptions = filteredOptions.filter(item =>
           item[columnName].toLowerCase().includes(searchTermLowerCase)
         );
@@ -168,21 +264,67 @@ export default {
       return uniqueValues;
     },
 
-    // Method to filter data based on selected options
+
+
+
     filterData() {
       this.filteredData = this.datasExport.filter(item =>
+        (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
+        (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
         (this.selectedHNActivity.length === 0 || this.selectedHNActivity.includes(item.HNActivityCode)) &&
-        (this.selectedHNActivityName.length === 0 || this.selectedHNActivityName.includes(item.LocalName))
-        // Add other filters as needed
+        (this.selectedHNActivityName.length === 0 || this.selectedHNActivityName.includes(item.LocalName)) &&
+        (this.selectedGLOPDCode.length === 0 || this.selectedGLOPDCode.includes(item.GLSAPCodeOPD)) &&
+        (this.selectedGLOPDName.length === 0 || this.selectedGLOPDName.includes(item.GLSAPNameOPD)) &&
+        (this.selectedGLIPDCode.length === 0 || this.selectedGLIPDCode.includes(item.GLSAPCodeIPD)) &&
+        (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD))
       );
     },
-
-    // Method to handle search input changes and filter accordingly
-    searchCompanies(columnName) {
-      if (columnName === 'HNActivityCode') {
-        this.searchHNActivityCode = this.searchHNActivityCode.toLowerCase();
+    updateSelectedCompanyCode(value) {
+      this.selectedCompanyCode = value;
+    },
+    updateSelectedSystemCode(value) {
+      this.selectedSystemCode = value;
+    },
+    updateSelectedHNActivity(value) {
+      this.selectedHNActivity = value;
+    },
+    updateSelectedHNActivityName(value) {
+      this.selectedHNActivityName = value;
+    },
+    updateSelectedGLOPDCode(value) {
+      this.selectedGLOPDCode = value;
+    },
+    updateSelectedGLOPDName(value) {
+      this.selectedGLOPDName = value;
+    },
+    updateSelectedGLIPDCode(value) {
+      this.selectedGLIPDCode = value;
+    },
+    updateSelectedGLIPDName(value) {
+      this.selectedGLIPDName = value;
+    },
+   
+    searchCompanies(columnName, searchTerm) {
+      if(columnName === 'CompanyCode'){
+        this.searchCompanyCode = searchTerm;
+      }else if (columnName === 'SystemCode') {
+        this.searchSystemCode = searchTerm;
+      }else if (columnName === 'HNActivityCode') {
+        this.searchHNActivityCode = searchTerm;
       } else if (columnName === 'LocalName') {
-        this.searchHNActivityName = this.searchHNActivityName.toLowerCase();
+        this.searchHNActivityName = searchTerm;
+      } else if (columnName === 'GLSAPCodeOPD') {
+        this.searchGLOPDCode = searchTerm;
+        
+      } else if (columnName === 'GLSAPNameOPD') {
+        this.searchGLOPDName = searchTerm;
+        
+      } else if (columnName === 'GLSAPCodeIPD') {
+        this.searchGLIPDCode = searchTerm;
+        
+      } else if (columnName === 'GLSAPNameIPD') {
+        this.searchGLIPDName = searchTerm;
+        
       }
       this.filterData();
     },
@@ -191,26 +333,5 @@ export default {
 </script>
 
 <style scoped>
-.custom-v-select {
-  margin: 0;
-  padding: 0;
-  display: inline-flex; /* Adjusted display property */
-  flex: none;
-}
-::v-deep .custom-v-select .v-select__selections {
-  display: none !important;
-}
-::v-deep .custom-v-select .v-input__append-inner {
-  background-color: #ababab;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  border-radius: 4px;
-}
-::v-deep .v-text-field > .v-input__control > .v-input__slot:before {
-  border-style: none;
-}
-::v-deep .custom-v-select .v-menu__content{
-  min-width: 250px!important;
-}
+/* Your scoped styles */
 </style>

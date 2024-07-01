@@ -14,26 +14,28 @@
                         <v-container>
                             <v-row class="my-2">
 
-                                <v-col class="text-center">
-                                    <!-- <InputSearchHN 
+                                <v-col cols="12" md="6" class="text-center px-0 py-0">
+                                    <span>Account Group</span>
+                                </v-col>
+                                <v-col cols="12" md="6" class="px-0 py-0"></v-col>
+
+                                <v-col cols="12" md="6" class="text-center">
+                                    <InputSearchHN 
+                                        title="AR Compose Category"
                                         label="AR Compose Category" 
                                         code="AR Compose Category" 
-                                        name="Description" 
-                                        type="Receive"  
-                                        @childEvent="getselectedItemHNOne"
-                                    /> -->
-                                    <InputSearch 
-                                        label="AR Compose Category" 
-                                        code="AR Compose Category" 
-                                        name="Description" 
+                                        name="Description"
+                                        type="Term Of Payment" 
                                         @childEvent="getselectedItemHNOne"
                                     />
+                                  
                                 </v-col>
 
-                                <v-col class="d-flex justify-space-between align-center">
+                                <v-col cols="12" md="6"  class="d-flex justify-space-between align-center">
                                     
-                                    <span class="f-16">AR Compose Category Name : {{ selectedItemHNOne.LocalName }}</span>
-                                    <v-btn @click="checkHNReceive(selectedItemHNOne.Code)" class="bg-orange">Check</v-btn>
+                                    <span class="f-12 pr-3">AR Compose Category Name : {{ selectedItemHNOne.LocalName }}</span>
+                                    <!-- <v-btn @click="checkHNReceive(selectedItemHNOne.Code)" class="bg-orange">Check</v-btn> -->
+                                    <v-btn @click="greetUser" class="bg-orange">Check</v-btn>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -70,19 +72,19 @@
                      
                         <v-row class="mb-3">
 
-                            <v-col md="2" sm="12"></v-col>
+                            <v-col cols="12" md="2"></v-col>
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <SelectCompanyCode ref="selectCompanyCode"/>
                          
                             
                             </v-col>
 
-                            <v-col md="4" sm="12">
+                            <v-col cols="12" md="4">
                                 <SelectSystemCode ref="selectSystemCode"/>
                             </v-col>
 
-                            <v-col md="2" sm="12"></v-col>
+                            <v-col cols="12" md="2"></v-col>
                          
 
                         </v-row>
@@ -91,50 +93,56 @@
 
                         <v-row class="my-2">  
                             
-                            <v-col md="1" sm="12"></v-col>
+                            <v-col cols="12" md="1"></v-col>
                          
-                            <v-col md="5" sm="12">
+                            <v-col cols="12" md="5">
                                 <h2 class="f-16">AR Compose Category</h2>
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4" >
                                         <span class="f-12">AR Compose Category</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
 
-                                        <InputSearch 
+                                        <InputSearchHN 
+                                            title="AR Compose Category"
                                             label="AR Compose Category" 
                                             code="AR Compose Category" 
-                                            name="Description" 
+                                            name="Description"
+                                            type="Term Of Payment" 
                                             @childEvent="getselectedItemHNOne"
                                         />
+
+                                      
 
                                        
                                     </v-col>
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Description</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
                             </v-col>
 
-                            <v-col md="5" sm="12">
+                            <v-col cols="12" md="5">
                                 <h2 class="f-16">KTOKK</h2>
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">KTOKK</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
 
                                         <InputSearch 
-                                            label="Text" 
+                                            title="KTOKK"
+                                            label="KTOKK" 
                                             code="KTOKK" 
-                                            name="Description" 
+                                            name="Description"
+                                            type="KTOKK" 
                                             @childEvent="getselectedItemHNOne"
                                         />
 
@@ -143,16 +151,16 @@
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Description</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedTermPaymentSAP.GLDes}}</p>
                                     </v-col>
                                     
                                 </v-row>
                             </v-col>
-                            <v-col md="1" sm="12"></v-col>
+                            <v-col cols="12" md="1"></v-col>
                         
                         </v-row>
 
@@ -160,20 +168,22 @@
 
                         <v-row class="my-2">  
 
-                            <v-col md="1" sm="12"></v-col>
+                            <v-col cols="12" md="1"></v-col>
                          
-                            <v-col md="5" sm="12">
-                                <h2 class="f-16">AP_AKONT</h2>
+                            <v-col cols="12" md="5">
+                                <h2 class="f-16">AR_AKONT</h2>
                                 <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">AP_AKONT</span>
+                                    <v-col cols="12" md="4">
+                                        <span class="f-12">AR_AKONT</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
 
                                         <InputSearch 
-                                            label="Text" 
-                                            code="SAP AR Code" 
-                                            name="SAP AR Name" 
+                                            title="AR_AKONT"
+                                            label="AR_AKONT" 
+                                            code="AR_AKONT" 
+                                            name="Description"
+                                            type="AR_AKONT" 
                                             @childEvent="getselectedItemHNOne"
                                         />
                                     
@@ -182,44 +192,48 @@
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Description</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
                             </v-col>
 
-                            <v-col md="5" sm="12">
-                                <h2 class="f-16">KTOKK</h2>
+                            <v-col cols="12" md="5">
+                                <h2 class="f-16">AP_AKONT</h2>
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">AP_AKONT</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
 
                                         <InputSearch 
-                                            label="Text" 
-                                            code="SAP AP Code" 
-                                            name="SAP AP Name" 
+                                            title="AP_AKONT"
+                                            label="AP_AKONT" 
+                                            code="AP_AKONT" 
+                                            name="Description"
+                                            type="AP_AKONT" 
                                             @childEvent="getselectedItemHNOne"
                                         />
+                                    
+                                       
                                        
                                     </v-col>
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <span class="f-12">Description</span>
                                     </v-col>
-                                    <v-col cols="8">
+                                    <v-col cols="12" md="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
                                     </v-col>
                                 </v-row>
                             </v-col>
-                            <v-col md="1" sm="12"></v-col>
+                            <v-col cols="12" md="1"></v-col>
                         
                         </v-row>
                         
@@ -245,12 +259,12 @@
                         </v-col>
 
                         <v-col class="text-right">
-                            <v-btn class="bg-blue"  @click="exportToExcel">Export</v-btn>
+                            <v-btn class="bg-blue"  @click="exportToExcel(filteredData)">Export</v-btn>
                         </v-col>
                     </v-row>
                     <v-data-table
                         :headers="headersExport"
-                        :items="datasExport"
+                        :items="filteredData"
                         :loading="loading"
                         density="compact"
                         item-key="name"
@@ -313,14 +327,14 @@
 </template>
 <script>
 import axios from "axios";
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
 import SelectSystemCode from '@/components/SelectSystemCode.vue';
 import InputSearch from '@/components/InputSearch.vue';
-// import InputSearchHN from '@/components/InputSearchHN.vue';
+import InputSearchHN from '@/components/InputSearchHN.vue';
 export default{
-    components: {SelectCompanyCode, SelectSystemCode, InputSearch},
+    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN},
     data: () => ({
         tab: null, // Selected tab
         tabs: [
@@ -341,6 +355,7 @@ export default{
         selectedTermPayment: {},
         selectedTermPaymentSAP: {},
         datasExport : [],
+        filteredData: [],
         SelectHNActivity:[],
         posting_key: null,
         posting_key2: null,
@@ -368,63 +383,45 @@ export default{
     
     }),
 
-    computed: {
-        dropdownOptions() {
-        // Transform datasExport to dropdown options format
-        return this.datasExport.map(item => ({
-            HNActivityCode: item.HNActivityCode, // Adjust based on your data structure
-          id: item.id // Adjust with your unique identifier if necessary
-        }));
-      }
-
-
-  },
    
     methods: {
-        selectItem(item) {
-        this.selectedItem = item;
-        //   this.menu = false; // Close the dropdown menu after selecting an item
-        },
+      
         handleTabClick(tab) {
             switch (tab.name) {
                 case "Create/Change":
-                   console.log(tab);
                     break;
                 case "Export":
-                    this.getExportCashAndGL()
+                    this.getExportAccountGroup()
                     break;
                 default:
                     // Default action
                     break;
             }
-            console.log('Clicked on tab:', tab);
-            // Add custom logic here, such as updating data or calling methods
+
         },
-        async getExportCashAndGL(){
+        async getExportAccountGroup(){
             try {
                 this.loading        = await true
-                let ActivityGLPath = '/api/SAP/CashAndGL'
+                let ActivityGLPath = '/api/SAP/AccountGroup'
                 let response        = await axios.get(ActivityGLPath);
-                console.log(response);
-                await setTimeout(() => {
+                setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
-
-                    console.log(this.datasExport);
+                    this.filteredData = this.datasExport.slice();
                 }, 300);
             } catch (error) {
                 this.loading = await false
-                console.error('Error fetching data:', error);
+                // console.error('Error fetching data:', error);
             }
         },
-        exportToExcel() {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(this.datasExport);
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        // exportToExcel() {
+        //     const wb = XLSX.utils.book_new();
+        //     const ws = XLSX.utils.json_to_sheet(this.filteredData);
+        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
-            /* generate XLSX file and send to client */
-            XLSX.writeFile(wb, 'TMHNActivity.xlsx');
-        },
+        //     /* generate XLSX file and send to client */
+        //     XLSX.writeFile(wb, 'TMHNActivity.xlsx');
+        // },
 
         async removeHNActivity(value){
             console.log(value);
@@ -477,15 +474,12 @@ export default{
 
         async checkHNReceive(code){
 
-            console.log(code);
-
             try {
                 this.loading                = await true
                 let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
                 let response                = await axios.get(GetTmCashAndGLIDPath);
                 this.dataTermPayment         = response.data;
 
-                console.log(this.dataTermPayment);
                 // await setTimeout(() => {
                 //     this.loading = false;
                 //     this.datasExport = response.data;
@@ -536,9 +530,8 @@ export default{
                                 }
 
                                 let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                let response                    =    await axios.post(`${MappingCashGLPath}`, fd)
-                                console.log(response);
-                                console.log(fd);
+                                await axios.post(`${MappingCashGLPath}`, fd)
+                           
 
                                 // if(response){
                                     Swal.fire({
@@ -599,7 +592,6 @@ export default{
     
         getselectedTermPaymentSAP(data){
             this.selectedTermPaymentSAP = data;
-            console.log(this.selectedItemGLSAP);
         },
        
     }
