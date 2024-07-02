@@ -114,7 +114,7 @@
    </div>
 </template>
 <script>
-import axios from "axios";
+
 import HeaderSelect from '@/components/HeaderSelect.vue';
 import InputSearchHN from '@/components/InputSearchHN.vue';
 export default{
@@ -180,7 +180,7 @@ export default{
             try {
                 this.loading        = await true
                 let ActivityGLPath = '/api/SAP/CashAndGL'
-                let response        = await axios.get(ActivityGLPath);
+                let response        = await this.$axios.get(ActivityGLPath);
                 await setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;

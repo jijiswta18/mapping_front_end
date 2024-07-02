@@ -102,7 +102,7 @@
 
 <script>
 import HeaderSelect from '@/components/HeaderSelect.vue';
-import axios from 'axios';
+// import axios from 'axios';
 
 export default {
   components: {
@@ -199,7 +199,7 @@ export default {
       try {
         this.loading = true;
         let ActivityGLPath = '/api/SAP/ActivityGL';
-        let response = await axios.get(ActivityGLPath);
+        let response = await this.$axios.get(ActivityGLPath);
         this.datasExport = response.data;
         this.filteredData = this.datasExport.slice();
         this.loading = false;

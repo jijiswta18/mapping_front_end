@@ -363,9 +363,9 @@
 
 </template>
 <script>
-import axios from "axios";
+// import axios from "axios";
 // import * as XLSX from 'xlsx';
-import Swal from 'sweetalert2';
+// import Swal from 'sweetalert2';
 import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
 import SelectSystemCode from '@/components/SelectSystemCode.vue';
 import InputSearch from '@/components/InputSearch.vue';
@@ -425,14 +425,14 @@ export default{
             { text: 'GL IPD Code', align: 'left', sortable: false, value: 'GLSAPCodeIPD' },
             { text: 'GL IPD  Name', align: 'left', sortable: false, value: 'GLSAPNameIPD' },
         ],
-        searchCompanyCode: '', 
-        searchSystemCode: '', 
-        searchHNActivityCode: '', 
-        searchHNActivityName: '', 
-        searchGLOPDCode: '',
-        searchGLOPDName: '',
-        searchGLIPDCode: '',
-        searchGLIPDName: '',
+        // searchCompanyCode: '', 
+        // searchSystemCode: '', 
+        // searchHNActivityCode: '', 
+        // searchHNActivityName: '', 
+        // searchGLOPDCode: '',
+        // searchGLOPDName: '',
+        // searchGLIPDCode: '',
+        // searchGLIPDName: '',
         isError: false
 
         // classGLSAPCodeIPD: false,
@@ -502,7 +502,7 @@ export default{
             try {
                 this.loading        = await true
                 let ActivityGLPath = '/api/SAP/ActivityGL'
-                let response        = await axios.get(ActivityGLPath);
+                let response        = await this.$axios.get(ActivityGLPath);
                 setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
@@ -517,7 +517,7 @@ export default{
         },
         async removeHNActivity(value){
             console.log(value);
-            await Swal.fire({
+            await this.$swal.fire({
                 title: "Warning",
                 text: "Are you sure you want to delete this item? ",
                 icon: "warning",
@@ -566,7 +566,7 @@ export default{
         async checkHNActivity(){
           
             if(!this.selectedItemHNOne.Code){                 
-                Swal.fire({
+                this.$swal.fire({
                     icon: 'warning',
                     title: 'กรุณาเลือก HNACtivity',
                 // text: message
@@ -578,7 +578,7 @@ export default{
                 try {
                 this.loading                = await true
                 let GetTmActivityIDPath     = `/api/SAP/GetTmActivityID?HNActivityCode=${this.selectedItemHNOne.Code}`
-                let response                = await axios.get(GetTmActivityIDPath);
+                let response                = await this.$axios.get(GetTmActivityIDPath);
                 this.dataHNActivity         = response.data;
 
                     // await setTimeout(() => {
@@ -615,7 +615,7 @@ export default{
                     // เช็คค่า HNActivity ในตารางต้องตรงกับ selectedHNActivity ที่เลือก หรือ GLSAPCodeIPD และ GLSAPCodeOPD ข้อมูลต้องไม่เหมือนกัน
                     if(HNActivity !== selectedHNActivity || GLSAPCodeIPD === selectedItemGLIPD && GLSAPCodeOPD === selectedItemGLOPD){
 
-                        Swal.fire({
+                        this.$swal.fire({
                             icon: "error",
                             title: "Incomplete",
                             text: "Unable to update . Please check data agian.",
@@ -642,7 +642,7 @@ export default{
 
                     }else{
 
-                    await Swal.fire({
+                    await this.$swal.fire({
                         title: "Warning",
                         text: "Data has already map. Are you sure to map again? ",
                         icon: "warning",
@@ -673,9 +673,9 @@ export default{
 
 
                                     const MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
-                                    await axios.post(`${MappingActivityGLPath}`, fd)
+                                    await this.$axios.post(`${MappingActivityGLPath}`, fd)
 
-                                    Swal.fire({
+                                    this.$swal.fire({
                                         icon: 'success',
                                         title: 'Complete',
                                         text: 'Your data was saved.',
@@ -693,7 +693,7 @@ export default{
                                 
                                 } catch (error) {
 
-                                    Swal.fire({
+                                    this.$swal.fire({
                                         icon: "error",
                                         title: "Incomplete",
                                         text: "Unable to update . Please check data agian.",
@@ -709,7 +709,7 @@ export default{
 
                     }
                 }else{
-                    Swal.fire({
+                    this.$swal.fire({
                             icon: "error",
                             title: "Incomplete",
                             text: "Unable to update . Please check data agian.",
@@ -723,7 +723,7 @@ export default{
 
             }else{
             
-                Swal.fire({
+                this.$swal.fire({
                     icon: "error",
                     title: "Incomplete",
                     text: "Unable to update. Please check data again.",
@@ -735,61 +735,61 @@ export default{
             }
         },
 
-        selectOptionsForColumn(columnName) {
-            let filteredOptions = this.datasExport;
-            let searchTerm = '';
+        // selectOptionsForColumn(columnName) {
+        //     let filteredOptions = this.datasExport;
+        //     let searchTerm = '';
 
-            // Determine which search term to use based on the column name
-            switch (columnName) {
-                case 'CompanyCode':
-                searchTerm = this.searchCompanyCode;
-                break;
-                case 'SystemCode':
-                searchTerm = this.searchSystemCode;
-                break;
-                case 'HNActivityCode':
-                searchTerm = this.searchHNActivityCode;
-                break;
-                case 'LocalName':
-                searchTerm = this.searchHNActivityName;
-                break;
-                case 'GLSAPCodeOPD':
-                searchTerm = this.searchGLOPDCode;
-                break;
-                case 'GLSAPNameOPD':
-                searchTerm = this.searchGLOPDName;
-                break;
-                case 'GLSAPCodeIPD':
-                searchTerm = this.searchGLIPDCode;
-                break;
-                case 'GLSAPNameIPD':
-                searchTerm = this.searchGLIPDName;
-                break;
-                // Add more cases for other columns if needed
-                default:
-                searchTerm = '';
-                break;
-            }
+        //     // Determine which search term to use based on the column name
+        //     switch (columnName) {
+        //         case 'CompanyCode':
+        //         searchTerm = this.searchCompanyCode;
+        //         break;
+        //         case 'SystemCode':
+        //         searchTerm = this.searchSystemCode;
+        //         break;
+        //         case 'HNActivityCode':
+        //         searchTerm = this.searchHNActivityCode;
+        //         break;
+        //         case 'LocalName':
+        //         searchTerm = this.searchHNActivityName;
+        //         break;
+        //         case 'GLSAPCodeOPD':
+        //         searchTerm = this.searchGLOPDCode;
+        //         break;
+        //         case 'GLSAPNameOPD':
+        //         searchTerm = this.searchGLOPDName;
+        //         break;
+        //         case 'GLSAPCodeIPD':
+        //         searchTerm = this.searchGLIPDCode;
+        //         break;
+        //         case 'GLSAPNameIPD':
+        //         searchTerm = this.searchGLIPDName;
+        //         break;
+        //         // Add more cases for other columns if needed
+        //         default:
+        //         searchTerm = '';
+        //         break;
+        //     }
 
-            if (searchTerm) {
-                const searchTermLowerCase = searchTerm.toLowerCase();
-                filteredOptions = filteredOptions.filter(item =>
-                item[columnName].toLowerCase().includes(searchTermLowerCase)
-                );
-            }
+        //     if (searchTerm) {
+        //         const searchTermLowerCase = searchTerm.toLowerCase();
+        //         filteredOptions = filteredOptions.filter(item =>
+        //         item[columnName].toLowerCase().includes(searchTermLowerCase)
+        //         );
+        //     }
 
-            const allValues = filteredOptions.map(item => ({
-                text: item[columnName],
-                value: item[columnName],
-            }));
+        //     const allValues = filteredOptions.map(item => ({
+        //         text: item[columnName],
+        //         value: item[columnName],
+        //     }));
 
-            // Remove duplicates based on 'value'
-            const uniqueValues = allValues.filter((value, index, self) =>
-                index === self.findIndex(t => t.value === value.value)
-            );
+        //     // Remove duplicates based on 'value'
+        //     const uniqueValues = allValues.filter((value, index, self) =>
+        //         index === self.findIndex(t => t.value === value.value)
+        //     );
 
-            return uniqueValues;
-        },
+        //     return uniqueValues;
+        // },
 
         filterData() {
 
@@ -872,7 +872,7 @@ export default{
             }else if (columnName === 'HNActivityCode') {
                 this.searchHNActivityCode = searchTerm;
             } else if (columnName === 'LocalName') {
-                this.searchHNActivityName = searchTerm;
+                this.searchLocalName = searchTerm;
             } else if (columnName === 'GLSAPCodeOPD') {
                 this.searchGLOPDCode = searchTerm;
             } else if (columnName === 'GLSAPNameOPD') {

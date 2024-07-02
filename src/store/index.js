@@ -43,8 +43,8 @@ const store = new Vuex.Store({
 
   },
   mutations: {
-    setUser(state, user) {
-      state.user = user;
+    setUser(state, data) {
+      state.user = data;
       state.isLoggedIn = true;
       localStorage.setItem('isLoggedIn', true); // Set isLoggedIn in localStorage
    
@@ -115,7 +115,6 @@ const store = new Vuex.Store({
     checkLogin({ commit }) {
 
       const expiryDate = localStorage.getItem('loginExpiryDate');
-      console.log();
       if (expiryDate && parseInt(expiryDate) > new Date().getTime()) {
         commit('checkExpiryDate', expiryDate);
       } else {

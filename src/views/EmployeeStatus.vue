@@ -189,50 +189,71 @@
                         :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                         class="style-table"
                     >
-                    <template v-slot:[`header.HNActivityCode`]="{ header }">
-                        <div>
-                        {{ header.text }}
-
-                        <v-menu
-                            v-model="menu"
-                            :close-on-content-click="false"
-                            :nudge-right="40"
-                            :return-value.sync="selectedItem"
-                            transition="scale-transition"
-                            offset-y
-                            min-width="290px"
-                        >
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                                v-bind="attrs"
-                                v-on="on"
-                                id="menu-activator"
-                                class="btn-with-icon"
-                                text
-                            >
-                                <i class="fas fa-caret-down"></i>
-                            </v-btn>
+                        <!-- Header Template for CompanyCode -->
+                        <template v-slot:[`header.CompanyCode`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedCompanyCode"
+                                :select-items="selectOptionsForColumn('CompanyCode', datasExport)"
+                                @update:selectedValue="updateSelectedCompanyCode"
+                                @search="searchCompanies('CompanyCode', $event)"
+                            />
                         </template>
 
-                        <v-list>
-                        
-                                <v-list-item
-                                    v-for="(item, index) in dropdownOptions"
-                                    :key="index"
-                                    @click="selectItem(item)"
-                                >
-                                    <v-checkbox v-model="selectedItems" :label="item.HNActivityCode" :value="item"></v-checkbox>
-                                </v-list-item>
-                            
-                          
-                        </v-list>
-                        
-                        </v-menu>
+                        <!-- Header Template for SystemCode -->
+                        <template v-slot:[`header.SystemCode`]="{ header }">
+                        <HeaderSelect
+                            :header-text="header.text"
+                            :selected-value="selectedSystemCode"
+                            :select-items="selectOptionsForColumn('SystemCode')"
+                            @update:selectedValue="updateSelectedSystemCode"
+                            @search="searchCompanies('SystemCode', $event)"
+                        />
+                        </template>
 
-                           
+                        <!-- Header Template for ActiveStatusCode -->
+                        <template v-slot:[`header.ActiveStatusCode`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedActiveStatusCode"
+                                :select-items="selectOptionsForColumn('ActiveStatusCode', datasExport)"
+                                @update:selectedValue="updateSelectedActiveStatusCode"
+                                @search="searchCompanies('ActiveStatusCode', $event)"
+                            />
+                        </template>
 
-                        </div>
-                    </template>
+                        <!-- Header Template for LocalName -->
+                        <template v-slot:[`header.LocalName`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedLocalName"
+                                :select-items="selectOptionsForColumn('LocalName', datasExport)"
+                                @update:selectedValue="updateSelectedLocalName"
+                                @search="searchCompanies('LocalName', $event)"
+                            />
+                        </template>
+
+                        <!-- Header Template for STAT2 -->
+                        <template v-slot:[`header.STAT2`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedSTAT2"
+                                :select-items="selectOptionsForColumn('STAT2', datasExport)"
+                                @update:selectedValue="updateSelectedSTAT2"
+                                @search="searchCompanies('STAT2', $event)"
+                            />
+                        </template>
+
+                        <!-- Header Template for Description -->
+                        <template v-slot:[`header.Description`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedDescription"
+                                :select-items="selectOptionsForColumn('Description', datasExport)"
+                                @update:selectedValue="updateSelectedDescription"
+                                @search="searchCompanies('Description', $event)"
+                            />
+                        </template>
 
                     </v-data-table>
                 </v-card>
@@ -244,15 +265,16 @@
 
 </template>
 <script>
-import axios from "axios";
+// import axios from "axios";
 import * as XLSX from 'xlsx';
-import Swal from 'sweetalert2';
+// import Swal from 'sweetalert2';
 import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
 import SelectSystemCode from '@/components/SelectSystemCode.vue';
 import InputSearch from '@/components/InputSearch.vue';
 import InputSearchHN from '@/components/InputSearchHN.vue';
+import HeaderSelect from '@/components/HeaderSelect.vue';
 export default{
-    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN},
+    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
     data: () => ({
         tab: null, // Selected tab
         tabs: [
@@ -292,14 +314,36 @@ export default{
             { text: 'Local Name', align: 'left', sortable: false, value: 'LocalName' },
             { text: 'STAT2', align: 'left', sortable: false, value: 'STAT2' },
             { text: 'Description', align: 'left', sortable: false, value: 'Description' },
-        
-    
         ],
-    
+
+        selectedCompanyCode: [],
+        selectedSystemCode: [],
+        selectedActiveStatusCode: [],
+        selectedLocalName: [],
+        selectedSTAT2: [],
+        selectedDescription: [],
     }),
 
    
     methods: {
+        updateSelectedCompanyCode(value) {
+            this.selectedCompanyCode = value;
+        },
+        updateSelectedSystemCode(value) {
+            this.selectedSystemCode = value;
+        },
+        updateSelectedActiveStatusCode(value) {
+            this.selectedActiveStatusCode = value;
+        },
+        updateSelectedLocalName(value) {
+            this.selectedLocalName = value;
+        },
+        updateSelectedSTAT2(value) {
+            this.selectedSTAT2 = value;
+        },
+        updateSelectedDescription(value) {
+            this.selectedDescription = value;
+        },
         handleTabClick(tab) {
             switch (tab.name) {
                 case "Create/Change":
@@ -316,7 +360,7 @@ export default{
             try {
                 this.loading        = await true
                 let ActivityGLPath = '/api/SAP/CashAndGL'
-                let response        = await axios.get(ActivityGLPath);
+                let response        = await this.$axios.get(ActivityGLPath);
                 await setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
@@ -344,7 +388,7 @@ export default{
             try {
                 this.loading                = await true
                 let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
-                let response                = await axios.get(GetTmCashAndGLIDPath);
+                let response                = await this.$axios.get(GetTmCashAndGLIDPath);
                 this.dataTermPayment         = response.data;
 
                 // await setTimeout(() => {
@@ -368,7 +412,7 @@ export default{
 
                     if(this.dataTermPayment.length > 0){
 
-                        await Swal.fire({
+                        await this.$swal.fire({
                             title: "Warning",
                             text: "Data has already map. Are you sure to map again? ",
                             icon: "warning",
@@ -397,11 +441,11 @@ export default{
                                 }
 
                                 let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                await axios.post(`${MappingCashGLPath}`, fd)
+                                await this.$axios.post(`${MappingCashGLPath}`, fd)
 
 
                                 // if(response){
-                                    Swal.fire({
+                                    this.$swal.fire({
                                         icon: "success",
                                         title: "Complete",
                                         text: "You data was saved.",
@@ -416,7 +460,7 @@ export default{
                         });
 
                     }else{
-                         Swal.fire({
+                        this.$swal.fire({
                             icon: "error",
                             title: "Incomplete",
                             text: "Unable to update . Please check data agian.",
@@ -428,7 +472,7 @@ export default{
 
                 } catch (error) {
                     console.log('MappingCashGL',error);
-                    Swal.fire({
+                    this.$swal.fire({
                         icon: "error",
                         title: "Incomplete",
                         text: "Unable to update . Please check data agian.",
@@ -439,7 +483,7 @@ export default{
                 }
 
             }else{
-                Swal.fire({
+                this.$swal.fire({
                     icon: "error",
                     title: "Incomplete",
                     text: "Unable to update . Please check data agian.",

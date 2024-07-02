@@ -43,7 +43,7 @@
                         <h1 class="f-16 mb-1">Table Mapping</h1>
                         <v-data-table
                             :headers="headersDataHNActivity"
-                            :items="dataTermPayment"
+                            :items="checkData"
                             density="compact"
                             item-key="name"
                             :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
@@ -185,13 +185,13 @@
                         <!-- Header Template for CompanyCode -->
                         <template v-slot:[`header.CompanyCode`]="{ header }">
                                 <HeaderSelect
-                                :header-text="header.text"
-                                :selected-value="selectedCompanyCode"
-                                :select-items="selectOptionsForColumn('CompanyCode')"
-                                @update:selectedValue="updateSelectedCompanyCode"
-                                @search="searchCompanies('CompanyCode', $event)"
-                                @sort="handleSort('CompanyCode', $event)"
-                            />
+                                    :header-text="header.text"
+                                    :selected-value="selectedCompanyCode"
+                                    :select-items="selectOptionsForColumn('CompanyCode')"
+                                    @update:selectedValue="updateSelectedCompanyCode"
+                                    @search="searchCompanies('CompanyCode', $event)"
+                                    @sort="handleSort('CompanyCode', $event)"
+                                />
                         </template>
 
                          <!-- Header Template for SystemCode -->
@@ -309,9 +309,7 @@
 
 </template>
 <script>
-import axios from "axios";
-import * as XLSX from 'xlsx';
-import Swal from 'sweetalert2';
+// import * as XLSX from 'xlsx';
 import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
 import SelectSystemCode from '@/components/SelectSystemCode.vue';
 import InputSearch from '@/components/InputSearch.vue';
@@ -320,25 +318,19 @@ import HeaderSelect from '@/components/HeaderSelect.vue';
 export default{
     components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
     data: () => ({
-        tab: null, // Selected tab
-        tabs: [
-            { name: 'Create/Change' },
-            { name: 'Export' },
-        ],
-
-        menu: false,
-        selectedItem: null,
+        // menu: false,
+        // selectedItem: null,
         search: '',
-        selectedItems: [],
-        scrollTo: null,
+        // selectedItems: [],
+        // scrollTo: null,
 
-        valid:true,
+        // valid:true,
         loading: true,
-        dataTermPayment : [],
-        selectedItemHNOne: {},
+        // checkData : [],
+        // selectedItemHNOne: {},
         selectedItemTermPayment: {},
         selectedItemTermPaymentSAP: {},
-        datasExport : [],
+        // datasExport : [],
         filteredData: [],
         selectedCompanyCode: [], 
         selectedSystemCode: [], 
@@ -346,8 +338,8 @@ export default{
         selectedTermPaymentDes: [], 
         selectedTermPaymentSAP: [], 
         selectedDescription: [], 
-        posting_key: null,
-        posting_key2: null,
+        // posting_key: null,
+        // posting_key2: null,
         headersDataHNActivity: [
             { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
             { text: 'Term of payment', align: 'left', sortable: false, value: 'TermOfPayment' },
@@ -367,12 +359,12 @@ export default{
         
     
         ],
-        searchCompanyCode: '', 
-        searchSystemCode: '', 
-        searchTermPayment: '', 
-        searchTermPaymentDes: '', 
-        searchTermPaymentSAP: '',
-        searchDescription: '',
+        // searchCompanyCode: '', 
+        // searchSystemCode: '', 
+        // searchTermPayment: '', 
+        // searchTermPaymentDes: '', 
+        // searchTermPaymentSAP: '',
+        // searchDescription: '',
     
     }),
 
@@ -395,7 +387,7 @@ export default{
             try {
                 this.loading        = await true
                 let ActivityGLPath = '/api/SAP/PaymentTerm'
-                let response        = await axios.get(ActivityGLPath);
+                let response        = await this.$axios.get(ActivityGLPath);
                 await setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
@@ -406,14 +398,14 @@ export default{
                 // console.error('Error fetching data:', error);
             }
         },
-        exportToExcel() {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(this.filteredData);
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        // exportToExcel() {
+        //     const wb = XLSX.utils.book_new();
+        //     const ws = XLSX.utils.json_to_sheet(this.filteredData);
+        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
-            /* generate XLSX file and send to client */
-            XLSX.writeFile(wb, 'ArPaymentTerm.xlsx');
-        },
+        //     /* generate XLSX file and send to client */
+        //     XLSX.writeFile(wb, 'ArPaymentTerm.xlsx');
+        // },
 
         removeHNActivity(value){
             console.log(value);
@@ -424,8 +416,8 @@ export default{
             try {
                 this.loading                = await true
                 let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
-                let response                = await axios.get(GetTmCashAndGLIDPath);
-                this.dataTermPayment         = response.data;
+                let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                this.checkData         = response.data;
 
                 // await setTimeout(() => {
                 //     this.loading = false;
@@ -446,9 +438,9 @@ export default{
 
                 try {
 
-                    if(this.dataTermPayment.length > 0){
+                    if(this.checkData.length > 0){
 
-                        await Swal.fire({
+                        await this.$swal.fire({
                             title: "Warning",
                             text: "Data has already map. Are you sure to map again? ",
                             icon: "warning",
@@ -477,11 +469,11 @@ export default{
                                 }
 
                                 let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                await axios.post(`${MappingCashGLPath}`, fd)
+                                await this.$axios.post(`${MappingCashGLPath}`, fd)
 
 
                                 // if(response){
-                                    Swal.fire({
+                                    this.$swal.fire({
                                         icon: "success",
                                         title: "Complete",
                                         text: "You data was saved.",
@@ -496,7 +488,7 @@ export default{
                         });
 
                     }else{
-                         Swal.fire({
+                        this.$swal.fire({
                             icon: "error",
                             title: "Incomplete",
                             text: "Unable to update . Please check data agian.",
@@ -508,7 +500,7 @@ export default{
 
                 } catch (error) {
                     console.log('MappingCashGL',error);
-                    Swal.fire({
+                    this.$swal.fire({
                         icon: "error",
                         title: "Incomplete",
                         text: "Unable to update . Please check data agian.",
@@ -519,7 +511,7 @@ export default{
                 }
 
             }else{
-                Swal.fire({
+                this.$swal.fire({
                     icon: "error",
                     title: "Incomplete",
                     text: "Unable to update . Please check data agian.",
@@ -559,54 +551,54 @@ export default{
             this.selectedDescription = value;
         },
 
-        selectOptionsForColumn(columnName) {
-            let filteredOptions = this.datasExport;
-            let searchTerm = '';
+        // selectOptionsForColumn(columnName) {
+        //     let filteredOptions = this.datasExport;
+        //     let searchTerm = '';
 
-            // Determine which search term to use based on the column name
-            switch (columnName) {
-                case 'CompanyCode':
-                searchTerm = this.searchCompanyCode;
-                break;
-                case 'SystemCode':
-                searchTerm = this.searchSystemCode;
-                break;
-                case 'TermOfPayment':
-                searchTerm = this.searchTermPayment;
-                break;
-                case 'TermOfPaymentDes':
-                searchTerm = this.searchTermPaymentDes;
-                break;
-                case 'TermOfPaymentSAP':
-                searchTerm = this.searchTermPaymentSAP;
-                break;
-                case 'Description':
-                searchTerm = this.searchDescription;
-                break;
-                default:
-                searchTerm = '';
-                break;
-            }
+        //     // Determine which search term to use based on the column name
+        //     switch (columnName) {
+        //         case 'CompanyCode':
+        //         searchTerm = this.searchCompanyCode;
+        //         break;
+        //         case 'SystemCode':
+        //         searchTerm = this.searchSystemCode;
+        //         break;
+        //         case 'TermOfPayment':
+        //         searchTerm = this.searchTermPayment;
+        //         break;
+        //         case 'TermOfPaymentDes':
+        //         searchTerm = this.searchTermPaymentDes;
+        //         break;
+        //         case 'TermOfPaymentSAP':
+        //         searchTerm = this.searchTermPaymentSAP;
+        //         break;
+        //         case 'Description':
+        //         searchTerm = this.searchDescription;
+        //         break;
+        //         default:
+        //         searchTerm = '';
+        //         break;
+        //     }
 
-            if (searchTerm) {
-                const searchTermLowerCase = searchTerm.toLowerCase();
-                filteredOptions = filteredOptions.filter(item =>
-                item[columnName].toLowerCase().includes(searchTermLowerCase)
-                );
-            }
+        //     if (searchTerm) {
+        //         const searchTermLowerCase = searchTerm.toLowerCase();
+        //         filteredOptions = filteredOptions.filter(item =>
+        //         item[columnName].toLowerCase().includes(searchTermLowerCase)
+        //         );
+        //     }
 
-            const allValues = filteredOptions.map(item => ({
-                text: item[columnName],
-                value: item[columnName],
-            }));
+        //     const allValues = filteredOptions.map(item => ({
+        //         text: item[columnName],
+        //         value: item[columnName],
+        //     }));
 
-            // Remove duplicates based on 'value'
-            const uniqueValues = allValues.filter((value, index, self) =>
-                index === self.findIndex(t => t.value === value.value)
-            );
+        //     // Remove duplicates based on 'value'
+        //     const uniqueValues = allValues.filter((value, index, self) =>
+        //         index === self.findIndex(t => t.value === value.value)
+        //     );
 
-            return uniqueValues;
-        },
+        //     return uniqueValues;
+        // },
         
         searchCompanies(columnName, searchTerm) {
             if(columnName === 'CompanyCode'){

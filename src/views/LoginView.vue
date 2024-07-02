@@ -68,7 +68,7 @@
 <script>
 
 // import axios from "axios";
-import Swal from 'sweetalert2';
+// import Swal from 'sweetalert2';
 import store  from '../store/index.js';
 
 
@@ -111,7 +111,7 @@ export default {
 
                     if(this.user.checkUser === "204")
                         {
-                            await Swal.fire({
+                            await this.$swal.fire({
                             title: 'Error!',
                             text: 'รหัสผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
                             icon: 'error',
@@ -121,7 +121,7 @@ export default {
                     else{
                         await this.$router.push({ path: '/ArPaymentTerm' });
                         // location.reload();
-                        await Swal.fire({
+                        await this.$swal.fire({
                             position: 'center',
                             title: 'เข้าสู่ระบบสำเร็จ',
                             icon: 'success',
@@ -139,7 +139,7 @@ export default {
 
                 } catch (error) {
                     console.error('Error fetching data:', error);
-                    await Swal.fire({
+                    await this.$swal.fire({
                         title: 'Error!',
                         text: 'รหัสผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
                         icon: 'error',

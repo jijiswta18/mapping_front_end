@@ -44,7 +44,7 @@
                         <h1 class="f-16 mb-1">Table Mapping</h1>
                         <v-data-table
                             :headers="headersData"
-                            :items="dataTermPayment"
+                            :items="checkData"
                             density="compact"
                             item-key="name"
                             :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
@@ -271,51 +271,83 @@
                         :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                         class="style-table"
                     >
-                    <template v-slot:[`header.HNActivityCode`]="{ header }">
-                        <div>
-                        {{ header.text }}
-
-                        <v-menu
-                            v-model="menu"
-                            :close-on-content-click="false"
-                            :nudge-right="40"
-                            :return-value.sync="selectedItem"
-                            transition="scale-transition"
-                            offset-y
-                            min-width="290px"
-                        >
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                                v-bind="attrs"
-                                v-on="on"
-                                id="menu-activator"
-                                class="btn-with-icon"
-                                text
-                            >
-                                <i class="fas fa-caret-down"></i>
-                            </v-btn>
+                        <!-- Header Template for CompanyCode -->
+                         <template v-slot:[`header.CompanyCode`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedCompanyCode"
+                                :select-items="selectOptionsForColumn('CompanyCode')"
+                                @update:selectedValue="updateSelectedCompanyCode"
+                                @search="searchCompanies('CompanyCode', $event)"
+                                @sort="handleSort('CompanyCode', $event)"
+                            />
                         </template>
-
-                        <v-list>
-                        
-                                <v-list-item
-                                    v-for="(item, index) in dropdownOptions"
-                                    :key="index"
-                                    @click="selectItem(item)"
-                                >
-                                    <v-checkbox v-model="selectedItems" :label="item.HNActivityCode" :value="item"></v-checkbox>
-                                </v-list-item>
-                            
-                          
-                        </v-list>
-                        
-                        </v-menu>
-
-                           
-
-                        </div>
-                    </template>
-
+                        <!-- Header Template for SystemCode -->
+                        <template v-slot:[`header.SystemCode`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedSystemCode"
+                                :select-items="selectOptionsForColumn('SystemCode')"
+                                @update:selectedValue="updateSelectedSystemCode"
+                                @search="searchCompanies('SystemCode', $event)"
+                                @sort="handleSort('SystemCode', $event)"
+                            />
+                        </template>
+                        <!-- Header Template for ARComposeCategory -->
+                        <template v-slot:[`header.ARComposeCategory`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedARComposeCategory"
+                                :select-items="selectOptionsForColumn('ARComposeCategory')"
+                                @update:selectedValue="updateSelectedARComposeCategory"
+                                @search="searchCompanies('ARComposeCategory', $event)"
+                                @sort="handleSort('ARComposeCategory', $event)"
+                            />
+                        </template>
+                         <!-- Header Template for Description -->
+                        <template v-slot:[`header.Description`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedDescription"
+                                :select-items="selectOptionsForColumn('Description')"
+                                @update:selectedValue="updateSelectedDescription"
+                                @search="searchCompanies('Description', $event)"
+                                @sort="handleSort('Description', $event)"
+                            />
+                        </template>
+                            <!-- Header Template for Description -->
+                        <template v-slot:[`header.DescriptionTwo`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedDescriptionTwo"
+                                :select-items="selectOptionsForColumn('DescriptionTwo')"
+                                @update:selectedValue="updateSelectedDescriptionTwo"
+                                @search="searchCompanies('DescriptionTwo', $event)"
+                                @sort="handleSort('DescriptionTwo', $event)"
+                            />
+                        </template>
+                        <!-- Header Template for KTOKK -->
+                        <template v-slot:[`header.KTOKK`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedKTOKK"
+                                :select-items="selectOptionsForColumn('KTOKK')"
+                                @update:selectedValue="updateSelectedKTOKK"
+                                @search="searchCompanies('KTOKK', $event)"
+                                @sort="handleSort('KTOKK', $event)"
+                            />
+                        </template>
+                        <!-- Header Template for ARAKONT -->
+                        <template v-slot:[`header.ARAKONT`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedARAKONT"
+                                :select-items="selectOptionsForColumn('ARAKONT')"
+                                @update:selectedValue="updateSelectedARAKONT"
+                                @search="searchCompanies('ARAKONT', $event)"
+                                @sort="handleSort('ARAKONT', $event)"
+                            />
+                        </template>
                     </v-data-table>
                 </v-card>
             </v-tab-item>
@@ -326,230 +358,311 @@
 
 </template>
 <script>
-import axios from "axios";
-// import * as XLSX from 'xlsx';
-import Swal from 'sweetalert2';
-import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
-import SelectSystemCode from '@/components/SelectSystemCode.vue';
-import InputSearch from '@/components/InputSearch.vue';
-import InputSearchHN from '@/components/InputSearchHN.vue';
-export default{
-    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN},
-    data: () => ({
-        tab: null, // Selected tab
-        tabs: [
-            { name: 'Create/Change' },
-            { name: 'Export' },
-        ],
-
-        menu: false,
-        selectedItem: null,
-        search: '',
-        selectedItems: [],
-        scrollTo: null,
-
-        valid:true,
-        loading: true,
-        dataTermPayment : [],
-        selectedItemHNOne: {},
-        selectedTermPayment: {},
-        selectedTermPaymentSAP: {},
-        datasExport : [],
-        filteredData: [],
-        SelectHNActivity:[],
-        posting_key: null,
-        posting_key2: null,
-        headersData: [
-            { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-            { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-            { text: 'AR Compose Category', align: 'left', sortable: false, value: 'ARComposeCategory' },
-            { text: 'Description', align: 'left', sortable: false, value: 'Description' },
-            { text: 'KTOKK', align: 'left', sortable: false, value: 'KTOKK' },
-            { text: 'Description', align: 'left', sortable: false, value: 'Description' },
-            { text: 'AR_AKONT', align: 'left', sortable: false, value: 'ARAKONT' },
-            // { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
-        ],
-        headersExport: [
-            { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-            { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-            { text: 'AR Compose Category', align: 'left', sortable: false, value: 'ARComposeCategory' },
-            { text: 'Description', align: 'left', sortable: false, value: 'Description' },
-            { text: 'KTOKK', align: 'left', sortable: false, value: 'KTOKK' },
-            { text: 'Description', align: 'left', sortable: false, value: 'Description' },
-            { text: 'AR_AKONT', align: 'left', sortable: false, value: 'ARAKONT' },
-        
-    
-        ],
-    
-    }),
-
-   
-    methods: {
-      
-        handleTabClick(tab) {
-            switch (tab.name) {
-                case "Create/Change":
-                    break;
-                case "Export":
-                    this.getExportAccountGroup()
-                    break;
-                default:
-                    // Default action
-                    break;
-            }
-
-        },
-        async getExportAccountGroup(){
-            try {
-                this.loading        = await true
-                let ActivityGLPath = '/api/SAP/AccountGroup'
-                let response        = await axios.get(ActivityGLPath);
-                setTimeout(() => {
-                    this.loading = false;
-                    this.datasExport = response.data;
-                    this.filteredData = this.datasExport.slice();
-                }, 300);
-            } catch (error) {
-                this.loading = await false
-                // console.error('Error fetching data:', error);
-            }
-        },
-        // exportToExcel() {
-        //     const wb = XLSX.utils.book_new();
-        //     const ws = XLSX.utils.json_to_sheet(this.filteredData);
-        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-        //     /* generate XLSX file and send to client */
-        //     XLSX.writeFile(wb, 'TMHNActivity.xlsx');
-        // },
-
-        async removeHNActivity(value){
-            console.log(value);
-            await Swal.fire({
-                title: "Warning",
-                text: "Are you sure you want to delete this item? ",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#52A1DB",
-                cancelButtonColor: "#52A1DB",
-                confirmButtonText: "OK",
-                customClass: {
-                title: 'text-warning' // Add your custom class here
-            }
-                }).then(async(result) => {
-                if (result.isConfirmed) {
-                    console.log(result.isConfirmed);
-                    // let fd  = {
-                    //     "companyCode"       : selectCompanyCode,
-                    //     "systemCode"        : selectSystemCode,
-                    //     "hnActivityCode"    : this.selectedItemHNTwo.Code,
-                    //     "localName"         : this.selectedItemHNTwo.LocalName,
-                    //     "englishName"       : this.selectedItemHNTwo.EnglishName,
-                    //     "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
-                    //     "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
-                    //     "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
-                    //     "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
-                    //     "postingKey"        : this.posting_key
-                    // }
-                    // let MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
-                    // let response                    =    await axios.post(`${MappingActivityGLPath}`, fd)
-                    // console.log(response);
-                    // console.log(fd);
-
-                    // // if(response){
-                    //     Swal.fire({
-                    //         icon: "success",
-                    //         title: "Complete",
-                    //         text: "You data was saved.",
-                    //         customClass: {
-                    //             title: 'text-success' // Add your custom class here
-                    //         }
-                    //     });
-                    // // }
-
+    import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
+    import SelectSystemCode from '@/components/SelectSystemCode.vue';
+    import InputSearch from '@/components/InputSearch.vue';
+    import InputSearchHN from '@/components/InputSearchHN.vue';
+    import HeaderSelect from '@/components/HeaderSelect.vue';
+    export default{
+        components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
+        data: () => ({
+            // menu: false,
+            // selectedItem: null,
+            search: '',
+            // selectedItems: [],
+            // scrollTo: null,
+            // valid:true,
+            loading: true,
+            // checkData : [],
+            // selectedItemHNOne: {},
+            selectedTermPayment: {},
+            selectedTermPaymentSAP: {},
+            // datasExport : [],
+            filteredData: [],
+            selectedCompanyCode: [], 
+            selectedARComposeCategory: [], 
+            selectedDescription: [], 
+            selectedSystemCode: [], 
+            selectedKTOKK: [], 
+            selectedDescriptionTwo: [], 
+            selectedARAKONT: [], 
+            // posting_key: null,
+            // posting_key2: null,
+            headersData: [
+                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
+                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
+                { text: 'AR Compose Category', align: 'left', sortable: false, value: 'ARComposeCategory' },
+                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
+                { text: 'KTOKK', align: 'left', sortable: false, value: 'KTOKK' },
+                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
+                { text: 'AR_AKONT', align: 'left', sortable: false, value: 'ARAKONT' },
+                // { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
+            ],
+            headersExport: [
+                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
+                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
+                { text: 'AR Compose Category', align: 'left', sortable: false, value: 'ARComposeCategory' },
+                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
+                { text: 'KTOKK', align: 'left', sortable: false, value: 'KTOKK' },
+                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
+                { text: 'AR_AKONT', align: 'left', sortable: false, value: 'ARAKONT' },
             
-                }
-            });
-        },
-
-        async checkHNReceive(code){
-
-            try {
-                this.loading                = await true
-                let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
-                let response                = await axios.get(GetTmCashAndGLIDPath);
-                this.dataTermPayment         = response.data;
-
-                // await setTimeout(() => {
-                //     this.loading = false;
-                //     this.datasExport = response.data;
-                // }, 300);
-            } catch (error) {
-                this.loading = await false
-                console.error('Error fetching data:', error);
-            }
-        },
         
-        async MappingCashGL(){
+            ],
 
-            const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
-            const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
+            // searchCompanyCode: '', 
+            // searchARComposeCategory: '', 
+            // searchDescription: '', 
+            // searchSystemCode: '', 
+            // searchKTOKK: '',
+            // searchDescriptionTwo: '',
+            // searchARAKONT: '',
+        
+        }),
 
-            if(this.$refs.formMapping.validate()){
+        watch: {
+            selectedCompanyCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedSystemCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedARComposeCategory: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedDescription: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedKTOKK: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedDescriptionTwo: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedARAKONT: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+
+        },
+        methods: {
+            updateSelectedSystemCode(value) {
+                this.selectedSystemCode = value;
+            },
+            updateSelectedCompanyCode(value) {
+                this.selectedCompanyCode = value;
+            },
+            updateSelectedARComposeCategory(value){
+                this.selectedARComposeCategory = value;
+            },
+            updateSelectedDescription(value){
+                this.selectedADescription = value;
+            },
+            updateSelectedKTOKK(value){
+                this.selectedKTOKK = value;
+            },
+            updateSelectedDescriptionTwo(value){
+                this.selectedDescriptionTwo = value;
+            },
+            updateSelectedARAKONT(value){
+                this.selectedARAKONT = value;
+            },
+            handleTabClick(tab) {
+                switch (tab.name) {
+                    case "Create/Change":
+                        break;
+                    case "Export":
+                        this.getExportAccountGroup()
+                        break;
+                    default:
+                        // Default action
+                        break;
+                }
+
+            },
+            async getExportAccountGroup(){
+                try {
+                    this.loading        = await true
+                    let ActivityGLPath = '/api/SAP/AccountGroup'
+                    let response        = await this.$axios.get(ActivityGLPath);
+                    setTimeout(() => {
+                        this.loading = false;
+                        this.datasExport = response.data;
+                        this.filteredData = this.datasExport.slice();
+                    }, 300);
+                } catch (error) {
+                    this.loading = await false
+                    // console.error('Error fetching data:', error);
+                }
+            },
+            // exportToExcel() {
+            //     const wb = XLSX.utils.book_new();
+            //     const ws = XLSX.utils.json_to_sheet(this.filteredData);
+            //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+            //     /* generate XLSX file and send to client */
+            //     XLSX.writeFile(wb, 'TMHNActivity.xlsx');
+            // },
+
+            async removeHNActivity(value){
+                console.log(value);
+                await this.$swal.fire({
+                    title: "Warning",
+                    text: "Are you sure you want to delete this item? ",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#52A1DB",
+                    cancelButtonColor: "#52A1DB",
+                    confirmButtonText: "OK",
+                    customClass: {
+                    title: 'text-warning' // Add your custom class here
+                }
+                    }).then(async(result) => {
+                    if (result.isConfirmed) {
+                        console.log(result.isConfirmed);
+                        // let fd  = {
+                        //     "companyCode"       : selectCompanyCode,
+                        //     "systemCode"        : selectSystemCode,
+                        //     "hnActivityCode"    : this.selectedItemHNTwo.Code,
+                        //     "localName"         : this.selectedItemHNTwo.LocalName,
+                        //     "englishName"       : this.selectedItemHNTwo.EnglishName,
+                        //     "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
+                        //     "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
+                        //     "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
+                        //     "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
+                        //     "postingKey"        : this.posting_key
+                        // }
+                        // let MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
+                        // let response                    =    await axios.post(`${MappingActivityGLPath}`, fd)
+                        // console.log(response);
+                        // console.log(fd);
+
+                        // // if(response){
+                        //     Swal.fire({
+                        //         icon: "success",
+                        //         title: "Complete",
+                        //         text: "You data was saved.",
+                        //         customClass: {
+                        //             title: 'text-success' // Add your custom class here
+                        //         }
+                        //     });
+                        // // }
+
+                
+                    }
+                });
+            },
+
+            async checkHNReceive(code){
 
                 try {
+                    this.loading                = await true
+                    let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
+                    let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                    this.checkData              = response.data;
 
-                    if(this.dataTermPayment.length > 0){
+                    // await setTimeout(() => {
+                    //     this.loading = false;
+                    //     this.datasExport = response.data;
+                    // }, 300);
+                } catch (error) {
+                    this.loading = await false
+                    console.error('Error fetching data:', error);
+                }
+            },
+            
+            async MappingCashGL(){
 
-                        await Swal.fire({
-                            title: "Warning",
-                            text: "Data has already map. Are you sure to map again? ",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#52A1DB",
-                            cancelButtonColor: "#52A1DB",
-                            confirmButtonText: "OK",
-                            customClass: {
-                                title: 'text-warning' // Add your custom class here
-                            }
-                            }).then(async(result) => {
-                            if (result.isConfirmed) {
-                                let fd  = {
-                                    "companyCode": selectCompanyCode,
-                                    "systemCode": selectSystemCode,
-                                    "hnReceiveCode": this.selectedItemHNTwo.Code,
-                                    "localName": this.selectedItemHNTwo.LocalName,
-                                    "englishName": this.selectedItemHNTwo.EnglishName,
-                                    "glsarCode": this.selectedItemGLSAR.GLNo,
-                                    "glsarName": this.selectedItemGLSAR.GLDes,
-                                    "postingKey": this.posting_key,
-                                    "postingKey2": this.posting_key2,
-                                    "glsapCode": this.selectedItemGLSAP.GLNo,
-                                    "key2Description": "string",
-                                    "specialGL":this.selectedItemspecialGL.GLNo,
+                const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
+                const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
+
+                if(this.$refs.formMapping.validate()){
+
+                    try {
+
+                        if(this.checkData.length > 0){
+
+                            await this.$swal.fire({
+                                title: "Warning",
+                                text: "Data has already map. Are you sure to map again? ",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#52A1DB",
+                                cancelButtonColor: "#52A1DB",
+                                confirmButtonText: "OK",
+                                customClass: {
+                                    title: 'text-warning' // Add your custom class here
                                 }
+                                }).then(async(result) => {
+                                if (result.isConfirmed) {
+                                    let fd  = {
+                                        "companyCode": selectCompanyCode,
+                                        "systemCode": selectSystemCode,
+                                        "hnReceiveCode": this.selectedItemHNTwo.Code,
+                                        "localName": this.selectedItemHNTwo.LocalName,
+                                        "englishName": this.selectedItemHNTwo.EnglishName,
+                                        "glsarCode": this.selectedItemGLSAR.GLNo,
+                                        "glsarName": this.selectedItemGLSAR.GLDes,
+                                        "postingKey": this.posting_key,
+                                        "postingKey2": this.posting_key2,
+                                        "glsapCode": this.selectedItemGLSAP.GLNo,
+                                        "key2Description": "string",
+                                        "specialGL":this.selectedItemspecialGL.GLNo,
+                                    }
 
-                                let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                await axios.post(`${MappingCashGLPath}`, fd)
-                           
+                                    let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
+                                    await this.$axios.post(`${MappingCashGLPath}`, fd)
+                            
 
-                                // if(response){
-                                    Swal.fire({
-                                        icon: "success",
-                                        title: "Complete",
-                                        text: "You data was saved.",
-                                        customClass: {
-                                            title: 'text-success' // Add your custom class here
-                                        }
-                                    });
-                                // }
+                                    // if(response){
+                                        this.$swal.fire({
+                                            icon: "success",
+                                            title: "Complete",
+                                            text: "You data was saved.",
+                                            customClass: {
+                                                title: 'text-success' // Add your custom class here
+                                            }
+                                        });
+                                    // }
 
-                        
-                            }
-                        });
+                            
+                                }
+                            });
 
-                    }else{
-                         Swal.fire({
+                        }else{
+                            this.$swal.fire({
+                                icon: "error",
+                                title: "Incomplete",
+                                text: "Unable to update . Please check data agian.",
+                                customClass: {
+                                    title: 'text-error' // Add your custom class here
+                                }
+                            });
+                        }
+
+                    } catch (error) {
+                        console.log('MappingCashGL',error);
+                        this.$swal.fire({
                             icon: "error",
                             title: "Incomplete",
                             text: "Unable to update . Please check data agian.",
@@ -559,9 +672,8 @@ export default{
                         });
                     }
 
-                } catch (error) {
-                    console.log('MappingCashGL',error);
-                    Swal.fire({
+                }else{
+                    this.$swal.fire({
                         icon: "error",
                         title: "Incomplete",
                         text: "Unable to update . Please check data agian.",
@@ -570,32 +682,54 @@ export default{
                         }
                     });
                 }
-
-            }else{
-                Swal.fire({
-                    icon: "error",
-                    title: "Incomplete",
-                    text: "Unable to update . Please check data agian.",
-                    customClass: {
-                        title: 'text-error' // Add your custom class here
-                    }
-                });
-            }
-        },
-        getselectedItemHNOne(data) {
-              this.selectedItemHNOne = data;
-        },
-        getselectedTermPayment(data) {
-              this.selectedTermPayment = data;
+            },
+            getselectedItemHNOne(data) {
+                this.selectedItemHNOne = data;
+            },
+            getselectedTermPayment(data) {
+                this.selectedTermPayment = data;
+            
+            },
         
-        },
-    
-        getselectedTermPaymentSAP(data){
-            this.selectedTermPaymentSAP = data;
-        },
-       
+            getselectedTermPaymentSAP(data){
+                this.selectedTermPaymentSAP = data;
+            },
+
+            searchCompanies(columnName, searchTerm) {
+                if(columnName === 'CompanyCode'){
+                    this.searchCompanyCode = searchTerm;
+                }else if (columnName === 'SystemCode') {
+                    this.searchSystemCode = searchTerm;
+                }else if (columnName === 'ARComposeCategory') {
+                    this.searchARComposeCategory = searchTerm;
+                } else if (columnName === 'Description') {
+                    this.searchDescription = searchTerm;
+                } else if (columnName === 'KTOKK') {
+                    this.searchKTOKK = searchTerm;
+                } else if (columnName === 'DescriptionTwo') {
+                    this.searchDescriptionTwo = searchTerm;
+                } else if (columnName === 'ARAKONT') {
+                    this.searchARAKONT = searchTerm;
+                }
+                this.filterData();
+            },
+            filterData() {
+
+                this.filteredData = this.datasExport.filter(item =>
+
+                    (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
+                    (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
+                    (this.selectedARComposeCategory.length === 0 || this.selectedARComposeCategory.includes(item.ARComposeCategory)) &&
+                    (this.selectedDescription.length === 0 || this.selectedDescription.includes(item.Description)) &&
+                    (this.selectedKTOKK.length === 0 || this.selectedKTOKK.includes(item.KTOKK)) &&
+                    (this.selectedDescriptionTwo.length === 0 || this.selectedDescriptionTwo.includes(item.DescriptionTwo)) &&
+                    (this.selectedARAKONT.length === 0 || this.selectedARAKONT.includes(item.ARAKONT))
+                );
+            },
+
+        
+        }
     }
-}
 </script>
 
 <style scoped>

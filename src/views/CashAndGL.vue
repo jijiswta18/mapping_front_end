@@ -421,9 +421,9 @@
 
 </template>
 <script>
-import axios from "axios";
+// import axios from "axios";
 // import * as XLSX from 'xlsx';
-import Swal from 'sweetalert2';
+// import Swal from 'sweetalert2';
 import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
 import SelectSystemCode from '@/components/SelectSystemCode.vue';
 import InputSearch from '@/components/InputSearch.vue';
@@ -489,16 +489,14 @@ export default{
             { text: 'SpecialGL', align: 'left', sortable: false, value: 'SpecialGL' },
     
         ],
-        searchCompanyCode: '', 
-        searchSystemCode: '', 
-        searchHNReceiveCode: '', 
-        searchHNReceiveName: '', 
-        // searchEnglishName: '', 
-        searchGLSARCode: '',
-        searchGLSARName: '',
-        searchGLSAPCode: '',
-        // searchGLSAPName: '',
-        searchGLSpecialGL: '',
+        // searchCompanyCode: '', 
+        // searchSystemCode: '', 
+        // searchHNReceiveCode: '', 
+        // searchHNReceiveName: '', 
+        // searchGLSARCode: '',
+        // searchGLSARName: '',
+        // searchGLSAPCode: '',
+        // searchGLSpecialGL: '',
         isError: false
     
     }),
@@ -584,7 +582,7 @@ export default{
             try {
                 this.loading        = await true
                 let ActivityGLPath = '/api/SAP/CashAndGL'
-                let response        = await axios.get(ActivityGLPath);
+                let response        = await this.$axios.get(ActivityGLPath);
                 setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
@@ -598,7 +596,7 @@ export default{
         },
         async removeCashGL(){
 
-            await Swal.fire({
+            await this.$swal.fire({
                 title: "Warning",
                 text: "Are you sure you want to delete this item? ",
                 icon: "warning",
@@ -649,7 +647,7 @@ export default{
             try {
                 this.loading                = await true
                 let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${this.selectedItemHNOne.Code}`
-                let response                = await axios.get(GetTmCashAndGLIDPath);
+                let response                = await this.$axios.get(GetTmCashAndGLIDPath);
                 this.dataHNReceive         = response.data;
                 // await setTimeout(() => {
                 //     this.loading = false;
@@ -687,7 +685,7 @@ export default{
 
                     // เช็คค่า HNReceive ในตารางต้องตรงกับ selectedHNReceive ที่เลือก หรือ GLSAR และ GLSAP ข้อมูลต้องไม่เหมือนกัน
                     if(HNReceive !== selectedHNReceive || GLSAR === selectedItemGLSAR && GLSAP === selectedItemGLSAP){
-                        Swal.fire({
+                        this.$swal.fire({
                             icon: "error",
                             title: "Incomplete",
                             text: "Unable to update . Please check data agian.",
@@ -701,7 +699,7 @@ export default{
                             });
 
                     }else{
-                        await Swal.fire({
+                        await this.$swal.fire({
                             title: "Warning",
                             text: "Data has already map. Are you sure to map again? ",
                             icon: "warning",
@@ -733,11 +731,11 @@ export default{
                                 try {
                                     
                                     const MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                    await axios.post(`${MappingCashGLPath}`, fd)
+                                    await this.$axios.post(`${MappingCashGLPath}`, fd)
 
                                     
                                 
-                                    Swal.fire({
+                                    this.$swal.fire({
                                         icon: 'success',
                                         title: 'Complete',
                                         text: 'Your data was saved.',
@@ -753,7 +751,7 @@ export default{
 
                                 } catch (error) {
                                     console.log(error);
-                                    Swal.fire({
+                                    this.$swal.fire({
                                         icon: "error",
                                         title: "Incomplete",
                                         text: "Unable to update . Please check data agian.",
@@ -768,7 +766,7 @@ export default{
                         });
                     }
                 }else{
-                    Swal.fire({
+                    this.$swal.fire({
                         icon: "error",
                         title: "Incomplete",
                         text: "Unable to update. Please check data again.",
@@ -779,7 +777,7 @@ export default{
                 }
                
             }else{
-                Swal.fire({
+                this.$swal.fire({
                     icon: "error",
                     title: "Incomplete",
                     text: "Unable to update. Please check data again.",
@@ -859,68 +857,68 @@ export default{
         updateSelectedSpecialGL(value) {
             this.selectedSpecialGL = value;
         },
-        selectOptionsForColumn(columnName) {
-            let filteredOptions = this.datasExport;
-            let searchTerm = '';
+        // selectOptionsForColumn(columnName) {
+        //     let filteredOptions = this.datasExport;
+        //     let searchTerm = '';
 
 
-            // Determine which search term to use based on the column name
-            switch (columnName) {
-                case 'CompanyCode':
-                searchTerm = this.searchCompanyCode;
-                break;
-                case 'SystemCode':
-                searchTerm = this.searchSystemCode;
-                break;
-                case 'HNReceiveCode':
-                searchTerm = this.searchHNReceiveCode;
-                break;
-                case 'LocalName':
-                searchTerm = this.searchHNReceiveName;
-                break;
-                // case 'EnglishName':
-                // searchTerm = this.searchEnglishName;
-                // break;
-                case 'GLSARCode':
-                searchTerm = this.searchGLSARCode;
-                break;
-                case 'GLSARName':
-                searchTerm = this.searchGLSARName;
-                break;
-                case 'GLSAPCode':
-                searchTerm = this.searchGLSAPCode;
-                break;
-                // case 'GLSAPName':
-                // searchTerm = this.searchGLSAPName;
-                // break;
-                case 'SpecialGL':
-                searchTerm = this.searchSpecialGL;
-                break;
-                // Add more cases for other columns if needed
-                default:
-                searchTerm = '';
-                break;
-            }
+        //     // Determine which search term to use based on the column name
+        //     switch (columnName) {
+        //         case 'CompanyCode':
+        //         searchTerm = this.searchCompanyCode;
+        //         break;
+        //         case 'SystemCode':
+        //         searchTerm = this.searchSystemCode;
+        //         break;
+        //         case 'HNReceiveCode':
+        //         searchTerm = this.searchHNReceiveCode;
+        //         break;
+        //         case 'LocalName':
+        //         searchTerm = this.searchHNName;
+        //         break;
+        //         // case 'EnglishName':
+        //         // searchTerm = this.searchEnglishName;
+        //         // break;
+        //         case 'GLSARCode':
+        //         searchTerm = this.searchGLSARCode;
+        //         break;
+        //         case 'GLSARName':
+        //         searchTerm = this.searchGLSARName;
+        //         break;
+        //         case 'GLSAPCode':
+        //         searchTerm = this.searchGLSAPCode;
+        //         break;
+        //         // case 'GLSAPName':
+        //         // searchTerm = this.searchGLSAPName;
+        //         // break;
+        //         case 'SpecialGL':
+        //         searchTerm = this.searchSpecialGL;
+        //         break;
+        //         // Add more cases for other columns if needed
+        //         default:
+        //         searchTerm = '';
+        //         break;
+        //     }
 
-            if (searchTerm) {
-                const searchTermLowerCase = searchTerm.toLowerCase();
-                filteredOptions = filteredOptions.filter(item =>
-                item[columnName].toLowerCase().includes(searchTermLowerCase)
-                );
-            }
+        //     if (searchTerm) {
+        //         const searchTermLowerCase = searchTerm.toLowerCase();
+        //         filteredOptions = filteredOptions.filter(item =>
+        //         item[columnName].toLowerCase().includes(searchTermLowerCase)
+        //         );
+        //     }
 
-            const allValues = filteredOptions.map(item => ({
-                text: item[columnName],
-                value: item[columnName],
-            }));
+        //     const allValues = filteredOptions.map(item => ({
+        //         text: item[columnName],
+        //         value: item[columnName],
+        //     }));
 
-            // Remove duplicates based on 'value'
-            const uniqueValues = allValues.filter((value, index, self) =>
-                index === self.findIndex(t => t.value === value.value)
-            );
+        //     // Remove duplicates based on 'value'
+        //     const uniqueValues = allValues.filter((value, index, self) =>
+        //         index === self.findIndex(t => t.value === value.value)
+        //     );
 
-            return uniqueValues;
-        },
+        //     return uniqueValues;
+        // },
         searchCompanies(columnName, searchTerm) {
             if(columnName === 'CompanyCode'){
                 this.searchCompanyCode = searchTerm;
@@ -929,7 +927,7 @@ export default{
             }else if (columnName === 'HNReceiveCode') {
                 this.searchHNReceiveCode = searchTerm;
             } else if (columnName === 'LocalName') {
-                this.searchHNReceiveName = searchTerm;
+                this.searchLocalName = searchTerm;
             // } else if (columnName === 'EnglishName') {
             //     this.searchEnglishName = searchTerm;
             } else if (columnName === 'GLSARCode') {
