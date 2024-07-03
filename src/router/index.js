@@ -37,6 +37,10 @@ const router = new VueRouter({
           component: () => import('../views/StoreMedecine.vue'), 
         },
         {
+          path: 'TMArCode',
+          component: () => import('../views/TMArCode.vue'),
+        },
+        {
           path: 'TMHNActivity',
           component: () => import('../views/TMHNActivity.vue'),
         },

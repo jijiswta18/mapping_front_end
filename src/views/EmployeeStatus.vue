@@ -349,25 +349,25 @@ export default{
                 case "Create/Change":
                     break;
                 case "Export":
-                    // this.getExportCashAndGL()
+                    this.getExportEmployeeStatus()
                     break;
                 default:
                     // Default action
                     break;
             }
         },
-        async getExportCashAndGL(){
+        async getExportEmployeeStatus(){
             try {
                 this.loading        = await true
-                let ActivityGLPath = '/api/SAP/CashAndGL'
-                let response        = await this.$axios.get(ActivityGLPath);
+                let EmployeeStatusPath = '/api/SAP/EmployeeStatus'
+                let response        = await this.$axios.get(EmployeeStatusPath);
                 await setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
                 }, 300);
             } catch (error) {
                 this.loading = await false
-                console.error('Error fetching data:', error);
+                // console.error('Error fetching data:', error);
             }
         },
         exportToExcel() {

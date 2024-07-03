@@ -447,7 +447,7 @@ export default{
         selectedItemGLSAR:{},
         selectedItemGLSAP: {},
         selectedItemSpecialGL: {},
-        datasExport : [],
+        // datasExport : [],
         filteredData: [],
         selectedCompanyCode: [],
         selectedSystemCode: [],
@@ -489,14 +489,7 @@ export default{
             { text: 'SpecialGL', align: 'left', sortable: false, value: 'SpecialGL' },
     
         ],
-        // searchCompanyCode: '', 
-        // searchSystemCode: '', 
-        // searchHNReceiveCode: '', 
-        // searchHNReceiveName: '', 
-        // searchGLSARCode: '',
-        // searchGLSARName: '',
-        // searchGLSAPCode: '',
-        // searchGLSpecialGL: '',
+     
         isError: false
     
     }),
@@ -802,15 +795,7 @@ export default{
             // Add custom logic here, such as updating data or calling methods
         },
 
-        // exportToExcel() {
-        //     const wb = XLSX.utils.book_new();
-        //     const ws = XLSX.utils.json_to_sheet(this.filteredData);
-        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-        //     /* generate XLSX file and send to client */
-        //     XLSX.writeFile(wb, 'CashAndGL.xlsx');
-        // },
-
+       
         getselectedItemHNOne(data) {
               this.selectedItemHNOne = data;
         },
@@ -857,94 +842,35 @@ export default{
         updateSelectedSpecialGL(value) {
             this.selectedSpecialGL = value;
         },
-        // selectOptionsForColumn(columnName) {
-        //     let filteredOptions = this.datasExport;
-        //     let searchTerm = '';
-
-
-        //     // Determine which search term to use based on the column name
-        //     switch (columnName) {
-        //         case 'CompanyCode':
-        //         searchTerm = this.searchCompanyCode;
-        //         break;
-        //         case 'SystemCode':
-        //         searchTerm = this.searchSystemCode;
-        //         break;
-        //         case 'HNReceiveCode':
-        //         searchTerm = this.searchHNReceiveCode;
-        //         break;
-        //         case 'LocalName':
-        //         searchTerm = this.searchHNName;
-        //         break;
-        //         // case 'EnglishName':
-        //         // searchTerm = this.searchEnglishName;
-        //         // break;
-        //         case 'GLSARCode':
-        //         searchTerm = this.searchGLSARCode;
-        //         break;
-        //         case 'GLSARName':
-        //         searchTerm = this.searchGLSARName;
-        //         break;
-        //         case 'GLSAPCode':
-        //         searchTerm = this.searchGLSAPCode;
-        //         break;
-        //         // case 'GLSAPName':
-        //         // searchTerm = this.searchGLSAPName;
-        //         // break;
-        //         case 'SpecialGL':
-        //         searchTerm = this.searchSpecialGL;
-        //         break;
-        //         // Add more cases for other columns if needed
-        //         default:
-        //         searchTerm = '';
-        //         break;
+       
+        // searchCompanies(columnName, searchTerm) {
+        //     if(columnName === 'CompanyCode'){
+        //         this.searchCompanyCode = searchTerm;
+        //     }else if (columnName === 'SystemCode') {
+        //         this.searchSystemCode = searchTerm;
+        //     }else if (columnName === 'HNReceiveCode') {
+        //         this.searchHNReceiveCode = searchTerm;
+        //     } else if (columnName === 'LocalName') {
+        //         this.searchLocalName = searchTerm;
+        //     // } else if (columnName === 'EnglishName') {
+        //     //     this.searchEnglishName = searchTerm;
+        //     } else if (columnName === 'GLSARCode') {
+        //         this.searchGLSARCode = searchTerm;
+        //     } else if (columnName === 'GLSARName') {
+        //         this.searchGLSARName = searchTerm;
+        //     } else if (columnName === 'GLSAPCode') {
+        //         this.searchGLSAPCode = searchTerm; 
+        //     // } else if (columnName === 'GLSAPName') {
+        //     //     this.searchGLSAPName = searchTerm;  
+        //     } else if (columnName === 'SpecialGL') {
+        //         this.searchSpecialGL = searchTerm;  
         //     }
 
-        //     if (searchTerm) {
-        //         const searchTermLowerCase = searchTerm.toLowerCase();
-        //         filteredOptions = filteredOptions.filter(item =>
-        //         item[columnName].toLowerCase().includes(searchTermLowerCase)
-        //         );
-        //     }
-
-        //     const allValues = filteredOptions.map(item => ({
-        //         text: item[columnName],
-        //         value: item[columnName],
-        //     }));
-
-        //     // Remove duplicates based on 'value'
-        //     const uniqueValues = allValues.filter((value, index, self) =>
-        //         index === self.findIndex(t => t.value === value.value)
-        //     );
-
-        //     return uniqueValues;
-        // },
-        searchCompanies(columnName, searchTerm) {
-            if(columnName === 'CompanyCode'){
-                this.searchCompanyCode = searchTerm;
-            }else if (columnName === 'SystemCode') {
-                this.searchSystemCode = searchTerm;
-            }else if (columnName === 'HNReceiveCode') {
-                this.searchHNReceiveCode = searchTerm;
-            } else if (columnName === 'LocalName') {
-                this.searchLocalName = searchTerm;
-            // } else if (columnName === 'EnglishName') {
-            //     this.searchEnglishName = searchTerm;
-            } else if (columnName === 'GLSARCode') {
-                this.searchGLSARCode = searchTerm;
-            } else if (columnName === 'GLSARName') {
-                this.searchGLSARName = searchTerm;
-            } else if (columnName === 'GLSAPCode') {
-                this.searchGLSAPCode = searchTerm; 
-            // } else if (columnName === 'GLSAPName') {
-            //     this.searchGLSAPName = searchTerm;  
-            } else if (columnName === 'SpecialGL') {
-                this.searchSpecialGL = searchTerm;  
-            }
-
-            this.filterData();
-        }, 
+        //     this.filterData();
+        // }, 
+        
         filterData() {
+
 
             this.filteredData = this.datasExport.filter(item =>
 

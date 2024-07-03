@@ -410,14 +410,6 @@
         
             ],
 
-            // searchCompanyCode: '', 
-            // searchARComposeCategory: '', 
-            // searchDescription: '', 
-            // searchSystemCode: '', 
-            // searchKTOKK: '',
-            // searchDescriptionTwo: '',
-            // searchARAKONT: '',
-        
         }),
 
         watch: {
@@ -515,15 +507,7 @@
                     // console.error('Error fetching data:', error);
                 }
             },
-            // exportToExcel() {
-            //     const wb = XLSX.utils.book_new();
-            //     const ws = XLSX.utils.json_to_sheet(this.filteredData);
-            //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-            //     /* generate XLSX file and send to client */
-            //     XLSX.writeFile(wb, 'TMHNActivity.xlsx');
-            // },
-
+           
             async removeHNActivity(value){
                 console.log(value);
                 await this.$swal.fire({
@@ -695,24 +679,24 @@
                 this.selectedTermPaymentSAP = data;
             },
 
-            searchCompanies(columnName, searchTerm) {
-                if(columnName === 'CompanyCode'){
-                    this.searchCompanyCode = searchTerm;
-                }else if (columnName === 'SystemCode') {
-                    this.searchSystemCode = searchTerm;
-                }else if (columnName === 'ARComposeCategory') {
-                    this.searchARComposeCategory = searchTerm;
-                } else if (columnName === 'Description') {
-                    this.searchDescription = searchTerm;
-                } else if (columnName === 'KTOKK') {
-                    this.searchKTOKK = searchTerm;
-                } else if (columnName === 'DescriptionTwo') {
-                    this.searchDescriptionTwo = searchTerm;
-                } else if (columnName === 'ARAKONT') {
-                    this.searchARAKONT = searchTerm;
-                }
-                this.filterData();
-            },
+            // searchCompanies(columnName, searchTerm) {
+            //     if(columnName === 'CompanyCode'){
+            //         this.searchCompanyCode = searchTerm;
+            //     }else if (columnName === 'SystemCode') {
+            //         this.searchSystemCode = searchTerm;
+            //     }else if (columnName === 'ARComposeCategory') {
+            //         this.searchARComposeCategory = searchTerm;
+            //     } else if (columnName === 'Description') {
+            //         this.searchDescription = searchTerm;
+            //     } else if (columnName === 'KTOKK') {
+            //         this.searchKTOKK = searchTerm;
+            //     } else if (columnName === 'DescriptionTwo') {
+            //         this.searchDescriptionTwo = searchTerm;
+            //     } else if (columnName === 'ARAKONT') {
+            //         this.searchARAKONT = searchTerm;
+            //     }
+            //     this.filterData();
+            // },
             filterData() {
 
                 this.filteredData = this.datasExport.filter(item =>

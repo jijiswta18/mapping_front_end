@@ -83,6 +83,7 @@ export default {
       { title: 'ArPaymentTerm', route: '/ArPaymentTerm' },
       { title: 'ARAccountGroup', route: '/ARAccountGroup' },
       { title: 'StoreMedecine', route: '/StoreMedecine' },
+      { title: 'TMArCode', route: '/TMArCode' },
       { title: 'TMHNActivityAndGL', route: '/TMHNActivity' },
       { title: 'CashAndGL', route: '/CashAndGL' },
       { title: 'EmployeeStatus', route: '/EmployeeStatus' }

@@ -359,12 +359,7 @@ export default{
         
     
         ],
-        // searchCompanyCode: '', 
-        // searchSystemCode: '', 
-        // searchTermPayment: '', 
-        // searchTermPaymentDes: '', 
-        // searchTermPaymentSAP: '',
-        // searchDescription: '',
+     
     
     }),
 
@@ -398,14 +393,6 @@ export default{
                 // console.error('Error fetching data:', error);
             }
         },
-        // exportToExcel() {
-        //     const wb = XLSX.utils.book_new();
-        //     const ws = XLSX.utils.json_to_sheet(this.filteredData);
-        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-        //     /* generate XLSX file and send to client */
-        //     XLSX.writeFile(wb, 'ArPaymentTerm.xlsx');
-        // },
 
         removeHNActivity(value){
             console.log(value);
@@ -551,72 +538,24 @@ export default{
             this.selectedDescription = value;
         },
 
-        // selectOptionsForColumn(columnName) {
-        //     let filteredOptions = this.datasExport;
-        //     let searchTerm = '';
-
-        //     // Determine which search term to use based on the column name
-        //     switch (columnName) {
-        //         case 'CompanyCode':
-        //         searchTerm = this.searchCompanyCode;
-        //         break;
-        //         case 'SystemCode':
-        //         searchTerm = this.searchSystemCode;
-        //         break;
-        //         case 'TermOfPayment':
-        //         searchTerm = this.searchTermPayment;
-        //         break;
-        //         case 'TermOfPaymentDes':
-        //         searchTerm = this.searchTermPaymentDes;
-        //         break;
-        //         case 'TermOfPaymentSAP':
-        //         searchTerm = this.searchTermPaymentSAP;
-        //         break;
-        //         case 'Description':
-        //         searchTerm = this.searchDescription;
-        //         break;
-        //         default:
-        //         searchTerm = '';
-        //         break;
+    
+        // searchCompanies(columnName, searchTerm) {
+        //     if(columnName === 'CompanyCode'){
+        //         this.searchCompanyCode = searchTerm;
+        //     }else if (columnName === 'SystemCode') {
+        //         this.searchSystemCode = searchTerm;
+        //     }else if (columnName === 'TermOfPayment') {
+        //         this.searchTermPayment = searchTerm;
+        //     } else if (columnName === 'TermOfPaymentDes') {
+        //         this.searchTermPaymentDes = searchTerm;
+        //     } else if (columnName === 'TermOfPaymentSAP') {
+        //         this.searchTermPaymentSAP = searchTerm;
+        //     } else if (columnName === 'Description') {
+        //         this.searchDescription = searchTerm;
         //     }
 
-        //     if (searchTerm) {
-        //         const searchTermLowerCase = searchTerm.toLowerCase();
-        //         filteredOptions = filteredOptions.filter(item =>
-        //         item[columnName].toLowerCase().includes(searchTermLowerCase)
-        //         );
-        //     }
-
-        //     const allValues = filteredOptions.map(item => ({
-        //         text: item[columnName],
-        //         value: item[columnName],
-        //     }));
-
-        //     // Remove duplicates based on 'value'
-        //     const uniqueValues = allValues.filter((value, index, self) =>
-        //         index === self.findIndex(t => t.value === value.value)
-        //     );
-
-        //     return uniqueValues;
+        //     this.filterData();
         // },
-        
-        searchCompanies(columnName, searchTerm) {
-            if(columnName === 'CompanyCode'){
-                this.searchCompanyCode = searchTerm;
-            }else if (columnName === 'SystemCode') {
-                this.searchSystemCode = searchTerm;
-            }else if (columnName === 'TermOfPayment') {
-                this.searchTermPayment = searchTerm;
-            } else if (columnName === 'TermOfPaymentDes') {
-                this.searchTermPaymentDes = searchTerm;
-            } else if (columnName === 'TermOfPaymentSAP') {
-                this.searchTermPaymentSAP = searchTerm;
-            } else if (columnName === 'Description') {
-                this.searchDescription = searchTerm;
-            }
-
-            this.filterData();
-        },
 
         filterData() {
 

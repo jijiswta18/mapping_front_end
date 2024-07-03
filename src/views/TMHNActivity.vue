@@ -363,9 +363,7 @@
 
 </template>
 <script>
-// import axios from "axios";
-// import * as XLSX from 'xlsx';
-// import Swal from 'sweetalert2';
+
 import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
 import SelectSystemCode from '@/components/SelectSystemCode.vue';
 import InputSearch from '@/components/InputSearch.vue';
@@ -392,7 +390,7 @@ export default{
         selectedItemHNTwo: {},
         selectedItemGLIPD:{},
         selectedItemGLOPD: {},
-        datasExport : [],
+        // datasExport : [],
         filteredData: [],
         selectedCompanyCode: [], 
         selectedSystemCode: [], 
@@ -425,14 +423,7 @@ export default{
             { text: 'GL IPD Code', align: 'left', sortable: false, value: 'GLSAPCodeIPD' },
             { text: 'GL IPD  Name', align: 'left', sortable: false, value: 'GLSAPNameIPD' },
         ],
-        // searchCompanyCode: '', 
-        // searchSystemCode: '', 
-        // searchHNActivityCode: '', 
-        // searchHNActivityName: '', 
-        // searchGLOPDCode: '',
-        // searchGLOPDName: '',
-        // searchGLIPDCode: '',
-        // searchGLIPDName: '',
+      
         isError: false
 
         // classGLSAPCodeIPD: false,
@@ -580,6 +571,8 @@ export default{
                 let GetTmActivityIDPath     = `/api/SAP/GetTmActivityID?HNActivityCode=${this.selectedItemHNOne.Code}`
                 let response                = await this.$axios.get(GetTmActivityIDPath);
                 this.dataHNActivity         = response.data;
+
+
 
                     // await setTimeout(() => {
                     //     this.loading = false;
@@ -735,61 +728,6 @@ export default{
             }
         },
 
-        // selectOptionsForColumn(columnName) {
-        //     let filteredOptions = this.datasExport;
-        //     let searchTerm = '';
-
-        //     // Determine which search term to use based on the column name
-        //     switch (columnName) {
-        //         case 'CompanyCode':
-        //         searchTerm = this.searchCompanyCode;
-        //         break;
-        //         case 'SystemCode':
-        //         searchTerm = this.searchSystemCode;
-        //         break;
-        //         case 'HNActivityCode':
-        //         searchTerm = this.searchHNActivityCode;
-        //         break;
-        //         case 'LocalName':
-        //         searchTerm = this.searchHNActivityName;
-        //         break;
-        //         case 'GLSAPCodeOPD':
-        //         searchTerm = this.searchGLOPDCode;
-        //         break;
-        //         case 'GLSAPNameOPD':
-        //         searchTerm = this.searchGLOPDName;
-        //         break;
-        //         case 'GLSAPCodeIPD':
-        //         searchTerm = this.searchGLIPDCode;
-        //         break;
-        //         case 'GLSAPNameIPD':
-        //         searchTerm = this.searchGLIPDName;
-        //         break;
-        //         // Add more cases for other columns if needed
-        //         default:
-        //         searchTerm = '';
-        //         break;
-        //     }
-
-        //     if (searchTerm) {
-        //         const searchTermLowerCase = searchTerm.toLowerCase();
-        //         filteredOptions = filteredOptions.filter(item =>
-        //         item[columnName].toLowerCase().includes(searchTermLowerCase)
-        //         );
-        //     }
-
-        //     const allValues = filteredOptions.map(item => ({
-        //         text: item[columnName],
-        //         value: item[columnName],
-        //     }));
-
-        //     // Remove duplicates based on 'value'
-        //     const uniqueValues = allValues.filter((value, index, self) =>
-        //         index === self.findIndex(t => t.value === value.value)
-        //     );
-
-        //     return uniqueValues;
-        // },
 
         filterData() {
 
@@ -864,27 +802,27 @@ export default{
         updateSelectedGLIPDName(value) {
             this.selectedGLIPDName = value;
         },
-        searchCompanies(columnName, searchTerm) {
-            if(columnName === 'CompanyCode'){
-                this.searchCompanyCode = searchTerm;
-            }else if (columnName === 'SystemCode') {
-                this.searchSystemCode = searchTerm;
-            }else if (columnName === 'HNActivityCode') {
-                this.searchHNActivityCode = searchTerm;
-            } else if (columnName === 'LocalName') {
-                this.searchLocalName = searchTerm;
-            } else if (columnName === 'GLSAPCodeOPD') {
-                this.searchGLOPDCode = searchTerm;
-            } else if (columnName === 'GLSAPNameOPD') {
-                this.searchGLOPDName = searchTerm;
-            } else if (columnName === 'GLSAPCodeIPD') {
-                this.searchGLIPDCode = searchTerm; 
-            } else if (columnName === 'GLSAPNameIPD') {
-                this.searchGLIPDName = searchTerm;  
-            }
+        // searchCompanies(columnName, searchTerm) {
+        //     if(columnName === 'CompanyCode'){
+        //         this.searchCompanyCode = searchTerm;
+        //     }else if (columnName === 'SystemCode') {
+        //         this.searchSystemCode = searchTerm;
+        //     }else if (columnName === 'HNActivityCode') {
+        //         this.searchHNActivityCode = searchTerm;
+        //     } else if (columnName === 'LocalName') {
+        //         this.searchLocalName = searchTerm;
+        //     } else if (columnName === 'GLSAPCodeOPD') {
+        //         this.searchGLOPDCode = searchTerm;
+        //     } else if (columnName === 'GLSAPNameOPD') {
+        //         this.searchGLOPDName = searchTerm;
+        //     } else if (columnName === 'GLSAPCodeIPD') {
+        //         this.searchGLIPDCode = searchTerm; 
+        //     } else if (columnName === 'GLSAPNameIPD') {
+        //         this.searchGLIPDName = searchTerm;  
+        //     }
 
-            this.filterData();
-        },
+        //     this.filterData();
+        // },
         clearData(){
             this.$refs.formMapping.resetValidation()
             this.$refs.selectHNActivity.selectedItem = {}
