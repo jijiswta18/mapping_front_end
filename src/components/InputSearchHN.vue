@@ -12,11 +12,13 @@
             hide-details="auto"
             clearable 
             @click:append="onClick"
+            @click:clear="clearTextField"
             :class="{ 'text-danger': isError }"
         ></v-text-field>
           
         <v-dialog
             v-model="dialogSearch"
+            persistent
             width="550"
             class="dialog-search"
             >
@@ -24,7 +26,7 @@
                 <v-toolbar class="head-toolbar">
                     <v-toolbar-title>{{ title }}</v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-btn icon @click="dialogSearch = false">
+                    <v-btn icon @click="dialogClearSearch">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-toolbar>
@@ -41,7 +43,6 @@
                                 single-line
                                 hide-details="auto"
                                 clearable 
-                       
                             ></v-text-field>
 
                         </v-col>
@@ -57,8 +58,7 @@
                                 outlined
                                 single-line
                                 hide-details="auto"
-                                clearable 
-                               
+                                clearable   
                             ></v-text-field>
 
                         </v-col>
@@ -95,7 +95,7 @@
 <script>
 import axios from "axios";
 export default{
-    props: ['title', 'label', 'code', 'name',  'type', 'isError'],
+    props: ['title', 'label', 'code', 'name',  'type', 'dataUpdate', 'isError'],
     data: () => ({
         dialogSearch: false,
         selectData: [],
@@ -148,7 +148,7 @@ export default{
 
                 switch (this.type) {
                     case 'Term Of Payment':
-                        LoadDataPath = ''
+                        LoadDataPath = '/api/SAP/TermPayment'
                     break;
                     case 'AR Compose Category':
                         LoadDataPath = ''
@@ -188,6 +188,22 @@ export default{
                 // console.error('Error fetching data:', error);
                  this.loading = false;
             }
+        },
+
+        dialogClearSearch(){
+            this.dialogSearch = false
+            this.searchCode = ''
+            this.searchName = ''
+        },
+        
+        clearTextField() {
+        // Handle clearing logic here
+            this.selectedItem.Code = ''; // Example: Reset the v-model
+            this.emitToPage(); // Example: Emitting to parent component/page
+        },
+        emitToPage() {
+            // Your code to emit data to the parent or elsewhere
+            this.$emit('data-updated', this.selectedItem.Code, this.dataUpdate); // Example emit
         },
    
      

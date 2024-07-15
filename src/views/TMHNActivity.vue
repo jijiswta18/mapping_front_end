@@ -27,7 +27,10 @@
                                         code="HNActivity Code" 
                                         name="HNActivity name"
                                         type="Activity" 
+                                        dataUpdate="ActivityOne"
                                         @childEvent="getselectedItemHNOne"
+                                        @data-updated="handleDataUpdated"
+
                                     />
 
                                 </v-col>
@@ -113,20 +116,19 @@
                                     </v-col>
                                     <v-col cols="8">
 
-                                        <!-- <InputSearchHN label="HNActivity Code / HNActivity Name" type="Activity"  @childEvent="getselectedItemHNOne"/> -->
-
                                         <InputSearchHN 
                                             title="HN Activity"
                                             label="Text" 
                                             code="HNActivity Code" 
                                             name="HNActivity name"
                                             type="Activity"
+                                            dataUpdate="ActivityTwo"
                                             ref="selectHNActivity"
                                             :isError="isError" 
                                             @childEvent="getselectedItemHNTwo"
+                                            @data-updated="handleDataUpdated"
                                         />
 
-                                        <!-- <InputSearchHN label="Text" @childEvent="getselectedItemHNTwo" type="Activity" ref="HNActivity"/> -->
                                     </v-col>
                                 </v-row>
 
@@ -156,11 +158,12 @@
                                             name="GL OPD Name" 
                                             ref="slectGLOPD" 
                                             type="SapGL"
+                                            dataUpdate="G/L OPD"
                                             :isError="isError"
                                             @childEvent="getselectedItemGLOPD"
+                                            @data-updated="handleDataUpdated"
                                         />
 
-                                        <!-- <InputSearch @childEvent="getselectedItemGLOPD" type="OPD"  ref="GL_OPD"/> -->
                                     </v-col>
                                 </v-row>
 
@@ -194,12 +197,13 @@
                                             code="GL IPD Code" 
                                             name="GL IPD Name" 
                                             type="SapGL"
+                                            dataUpdate="G/L IPD"
                                             ref="slectGLIPD" 
                                             :isError="isError"
                                             @childEvent="getselectedItemGLIPD"
+                                            @data-updated="handleDataUpdated"
                                         />
 
-                                        <!-- <InputSearch @childEvent="getselectedItemGLIPD" type="IPD" ref="GL_IPD"/> -->
                                     </v-col>
                                 </v-row>
 
@@ -289,6 +293,7 @@
                                 :select-items="selectOptionsForColumn('HNActivityCode')"
                                 @update:selectedValue="updateSelectedHNActivity"
                                 @search="searchCompanies('HNActivityCode', $event)"
+                                @sort="handleSort('HNActivityCode', $event)"
                             />
                         </template>
 
@@ -300,10 +305,9 @@
                                 :select-items="selectOptionsForColumn('LocalName')"
                                 @update:selectedValue="updateSelectedHNActivityName"
                                 @search="searchCompanies('LocalName', $event)"
+                                @sort="handleSort('LocalName', $event)"
                             />
                         </template>
-
-           
 
                         <!-- Header Template for GLSAPCodeOPD -->
                         <template v-slot:[`header.GLSAPCodeOPD`]="{ header }">
@@ -312,7 +316,6 @@
                                 :header-text="header.text"
                                 :selected-value="selectedGLOPDCode"
                                 :select-items="selectOptionsForColumn('GLSAPCodeOPD')"
-                           
                                 @update:selectedValue="updateSelectedGLOPDCode"
                                 @search="searchCompanies('GLSAPCodeOPD', $event)"
                                 @sort="handleSort('GLSAPCodeOPD', $event)"
@@ -327,6 +330,7 @@
                                 :select-items="selectOptionsForColumn('GLSAPNameOPD')"
                                 @update:selectedValue="updateSelectedGLOPDName"
                                 @search="searchCompanies('GLSAPNameOPD', $event)"
+                                @sort="handleSort('GLSAPNameOPD', $event)"
                             />
                         </template>
 
@@ -338,6 +342,7 @@
                                 :select-items="selectOptionsForColumn('GLSAPCodeIPD')"
                                 @update:selectedValue="updateSelectedGLIPDCode"
                                 @search="searchCompanies('GLSAPCodeIPD', $event)"
+                                @sort="handleSort('GLSAPCodeIPD', $event)"
                             />
                         </template>
 
@@ -349,6 +354,7 @@
                                 :select-items="selectOptionsForColumn('GLSAPNameIPD')"
                                 @update:selectedValue="updateSelectedGLIPDName"
                                 @search="searchCompanies('GLSAPNameIPD', $event)"
+                                @sort="handleSort('GLSAPNameIPD', $event)"
                             />
                         </template>
 
@@ -372,17 +378,13 @@ import HeaderSelect from '@/components/HeaderSelect.vue';
 export default{
     components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
     data: () => ({
-        tab: null, // Selected tab
-        tabs: [
-            { name: 'Create/Change' },
-            { name: 'Export' },
-        ],
-
-        menu: false,
+        tab: null,
+        tabs: [{ name: 'Create/Change' },{ name: 'Export' }],
+        // menu: false,
         selectedItem: null,
         search: '',
         selectedItems: [],
-        scrollTo: null,
+        // scrollTo: null,
         valid:true,
         loading: true,
         dataHNActivity : [],
@@ -392,8 +394,8 @@ export default{
         selectedItemGLOPD: {},
         // datasExport : [],
         filteredData: [],
-        selectedCompanyCode: [], 
-        selectedSystemCode: [], 
+        // selectedCompanyCode: [], 
+        // selectedSystemCode: [], 
         selectedHNActivity: [], 
         selectedHNActivityName: [], 
         selectedGLOPDCode: [],
@@ -556,15 +558,10 @@ export default{
         },
         async checkHNActivity(){
           
-            if(!this.selectedItemHNOne.Code){                 
-                this.$swal.fire({
-                    icon: 'warning',
-                    title: 'กรุณาเลือก HNACtivity',
-                // text: message
-                }).then(() => {
-                    const input = this.$refs.HNActivityField.$el.querySelector('input');
-                    input.focus();
-                });
+            if(this.selectedItemHNOne && !this.selectedItemHNOne.Code){    
+                
+                this.checkInputData('HNACtivity', this.$refs.HNActivityField)
+               
             }else{
                 try {
                 this.loading                = await true
@@ -572,12 +569,6 @@ export default{
                 let response                = await this.$axios.get(GetTmActivityIDPath);
                 this.dataHNActivity         = response.data;
 
-
-
-                    // await setTimeout(() => {
-                    //     this.loading = false;
-                    //     this.datasExport = response.data;
-                    // }, 300);
                 } catch (error) {
                     this.loading = await false
                     console.error('Error fetching data:', error);
@@ -587,9 +578,8 @@ export default{
         },
         async MappingActivityGL(){
 
-            // เช็ค value
+            // เช็ค value ใน ฟอร์ม Relationship Mapping
             if(this.$refs.formMapping.validate()){
-
                 // เช็คค่า dataHNActivity ใน Table ที่จะ Mapping
                 if(this.dataHNActivity.length > 0){
 
@@ -601,7 +591,7 @@ export default{
 
                     const GLSAPCodeOPD = this.dataHNActivity[0].GLSAPCodeOPD
                     const selectedItemGLOPD = this.selectedItemGLOPD.GLNo
-                 
+                
                     const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
                     const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
                     
@@ -629,7 +619,7 @@ export default{
                         // if(GLSAPCodeIPD === selectedItemGLIPD){
                         //     this.classGLSAPCodeIPD = true 
                         // }
-                       
+                    
                                         }
                                     });
 
@@ -681,8 +671,8 @@ export default{
                                             this.checkHNActivity()
                                         }
                                     });
-                                 
-                                   
+                                
+                                
                                 
                                 } catch (error) {
 
@@ -712,8 +702,6 @@ export default{
                         });
 
                 }
-             
-
             }else{
             
                 this.$swal.fire({
@@ -756,15 +744,7 @@ export default{
                     break;
             }
         },
-        // exportToExcel() {
-        //     const wb = XLSX.utils.book_new();
-        //     const ws = XLSX.utils.json_to_sheet(this.filteredData);
-        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-        //     /* generate XLSX file and send to client */
-        //     XLSX.writeFile(wb, 'TMHNActivity.xlsx');
-        // },
-
+        
         getselectedItemHNOne(data) {
               this.selectedItemHNOne = data;
         },
@@ -778,12 +758,12 @@ export default{
             this.selectedItemGLIPD = data;
         },
        
-        updateSelectedCompanyCode(value) {
-            this.selectedCompanyCode = value;
-        },
-        updateSelectedSystemCode(value) {
-            this.selectedSystemCode = value;
-        },
+        // updateSelectedCompanyCode(value) {
+        //     this.selectedCompanyCode = value;
+        // },
+        // updateSelectedSystemCode(value) {
+        //     this.selectedSystemCode = value;
+        // },
         updateSelectedHNActivity(value) {
             this.selectedHNActivity = value;
         },
@@ -802,27 +782,7 @@ export default{
         updateSelectedGLIPDName(value) {
             this.selectedGLIPDName = value;
         },
-        // searchCompanies(columnName, searchTerm) {
-        //     if(columnName === 'CompanyCode'){
-        //         this.searchCompanyCode = searchTerm;
-        //     }else if (columnName === 'SystemCode') {
-        //         this.searchSystemCode = searchTerm;
-        //     }else if (columnName === 'HNActivityCode') {
-        //         this.searchHNActivityCode = searchTerm;
-        //     } else if (columnName === 'LocalName') {
-        //         this.searchLocalName = searchTerm;
-        //     } else if (columnName === 'GLSAPCodeOPD') {
-        //         this.searchGLOPDCode = searchTerm;
-        //     } else if (columnName === 'GLSAPNameOPD') {
-        //         this.searchGLOPDName = searchTerm;
-        //     } else if (columnName === 'GLSAPCodeIPD') {
-        //         this.searchGLIPDCode = searchTerm; 
-        //     } else if (columnName === 'GLSAPNameIPD') {
-        //         this.searchGLIPDName = searchTerm;  
-        //     }
-
-        //     this.filterData();
-        // },
+      
         clearData(){
             this.$refs.formMapping.resetValidation()
             this.$refs.selectHNActivity.selectedItem = {}
@@ -835,10 +795,9 @@ export default{
             this.selectedItemGLOPD = {},
             this.posting_key = null,
             this.isError = false
-        }
+        },
 
-
-      
+ 
     }
 }
 </script>

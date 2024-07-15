@@ -4,19 +4,21 @@
             v-model="selectedItem.GLNo"
             :rules="[v => !!v || '']"
             append-icon="mdi-magnify"
-            label="Text"
+            :label="label"
             dense
             outlined
             single-line
             hide-details="auto"
             clearable 
             @click:append="onClick"
+            @click:clear="clearTextField"
             class="input-search"
             :class="{ 'text-danger': isError === true }"
         ></v-text-field>
 
         <v-dialog
             v-model="dialogSearch"
+            persistent
             width="550"
             class="dialog-search"
             >
@@ -24,7 +26,7 @@
                 <v-toolbar class="head-toolbar">
                     <v-toolbar-title >{{ title }}</v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-btn icon @click="dialogSearch = false">
+                    <v-btn icon @click="dialogClearSearch">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-toolbar>
@@ -68,16 +70,16 @@
                
                 <div class="table-container">
                     <v-data-table
-                    :headers="header"
-                    :items="filteredData"
-                    :search="search"
-                    :loading="loading"
-                    compact
-                    item-key="name"
-                    :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
-                    class="dialog-table"
-                    @click:row="selectRow"
-                >
+                        :headers="header"
+                        :items="filteredData"
+                        :search="search"
+                        :loading="loading"
+                        compact
+                        item-key="name"
+                        :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
+                        class="dialog-table"
+                        @click:row="selectRow"
+                    >
           
            </v-data-table>
                        
@@ -94,7 +96,7 @@
 <script>
 import axios from "axios";
 export default{
-    props: ['title', 'label', 'code', 'name', 'type', 'isError'],
+    props: ['title', 'label', 'code', 'name', 'type', 'dataUpdate', 'isError'],
     data: () => ({
         search: '',
         dialogSearch: false,
@@ -139,67 +141,148 @@ export default{
         },
         
         
-        onClick () {
+        // onClick () {
             
-            this.dialogSearch = true
-            // this.getSAPGL()
-            switch(this.type){
-                case "GLSAP": 
-                setTimeout(() => {
-                    this.loading = false;
-                    this.selectData = [{ GLNo: 'SAPArCode', GLDes: 'SAPArCode',}]
-                }, 300);
+        //     this.dialogSearch = true
+        //     // this.getSAPGL()
+        //     switch(this.type){
+        //         case "GLSAP": 
+        //         setTimeout(() => {
+        //             this.loading = false;
+        //             this.selectData = [{ GLNo: 'SAPArCode', GLDes: 'SAPArCode',}]
+        //         }, 300);
               
-                break;
-                case "SapGL" :
-                    this.getSAPGL()
-                break;
+        //         break;
+        //         case "SapGL" :
+        //             this.getSAPGL()
+        //         break;
+        //         case "TermPamynetAfterInvoice" :
+        //         this.loading = false; 
+        //         break;
 
-                default:
-                // Default action
-                break;
-            }
-            // switch (title) {
-            //     case "OPD":
-            //         this.getSAPGL()
-            //         this.header = [
-            //             { text: 'GL OPD Code', align: 'left', sortable: true, value: 'GLNo' },
-            //             { text: 'GL OPD Name', align: 'left', sortable: true, value: 'GLDes' },
+        //         default:
+        //         // Default action
+        //         break;
+        //     }
+        //     switch (title) {
+        //         case "OPD":
+        //             this.getSAPGL()
+        //             this.header = [
+        //                 { text: 'GL OPD Code', align: 'left', sortable: true, value: 'GLNo' },
+        //                 { text: 'GL OPD Name', align: 'left', sortable: true, value: 'GLDes' },
                     
-            //         ]
+        //             ]
 
                     
-            //         break;
-            //     case "IPD":
-            //         this.$emit('childEvent', 'Data to send to parent');
-            //         this.getSAPGL()
-            //         this.header = [
-            //             { text: 'GL IPD Code', align: 'left', sortable: true, value: 'GLNo' },
-            //             { text: 'GL IPD Name', align: 'left', sortable: true, value: 'GLDes' },
+        //             break;
+        //         case "IPD":
+        //             this.$emit('childEvent', 'Data to send to parent');
+        //             this.getSAPGL()
+        //             this.header = [
+        //                 { text: 'GL IPD Code', align: 'left', sortable: true, value: 'GLNo' },
+        //                 { text: 'GL IPD Name', align: 'left', sortable: true, value: 'GLDes' },
                     
-            //         ]
-            //         break;
-            //     default:
-            //         // Default action
-            //         break;
-            // }
+        //             ]
+        //             break;
+        //         default:
+        //             // Default action
+        //             break;
+        //     }
         // setTimeout(() => {
 
         // }, 2000)
+        // },
+
+        onClick () {
+            this.dialogSearch = true
+            this.LoadData()
+
         },
 
-        async getSAPGL(){ 
+        
+
+        async LoadData(){
             try {
-                let LoadSapGLPath = '/api/SAP/SapGL'
-                let response        = await axios.get(LoadSapGLPath);
+                this.loading        = await true
+                let LoadDataPath    = null 
+
+                switch (this.type) {
+                    case "GLSAP": 
+                        setTimeout(() => {
+                            this.loading = false;
+                            this.selectData = [{ GLNo: 'SAPArCode', GLDes: 'SAPArCode',}]
+                        }, 300);
+                    break;
+
+                    case "SapGL" :
+                        LoadDataPath = '/api/SAP/SapGL'
+                        // this.getSAPGL()
+                    break;
+
+                    case "TermPaymentSAP" :
+                        LoadDataPath = '/api/TermPaymentSAP'
+                    break;
+
+                    case "KTOKK" :
+                        LoadDataPath = '/api/KTOKK'
+                    break;
+                    
+                    case "AR_AKONT" :
+                        LoadDataPath = '/api/AR_AKONT'
+                    break;
+
+                    case "AP_AKONT" :
+                        LoadDataPath = '/api/AR_AKONT'
+                    break;
+
+                    default:
+                        break;
+                }
+
+
+                let response        = await axios.get(LoadDataPath);
+                
                 await setTimeout(() => {
                     this.loading = false;
                     this.selectData = response.data;
                 }, 300);
+
             } catch (error) {
-                console.error('Error fetching data:', error);
+                // console.error('Error fetching data:', error);
+                 this.loading = false;
             }
-        }
+        },
+
+        // async getSAPGL(){ 
+        //     try {
+        //         let LoadSapGLPath = '/api/SAP/SapGL'
+        //         let response        = await axios.get(LoadSapGLPath);
+        //         await setTimeout(() => {
+        //             this.loading = false;
+        //             this.selectData = response.data;
+        //         }, 300);
+        //     } catch (error) {
+        //         console.error('Error fetching data:', error);
+        //     }
+        // },
+
+        dialogClearSearch(){
+            this.dialogSearch = false
+            this.searchCode = ''
+            this.searchName = ''
+        },
+
+        clearTextField() {
+            // Handle clearing logic here
+            this.selectedItem.Code = ''; // Example: Reset the v-model
+            this.emitToPage(); // Example: Emitting to parent component/page
+        },
+        emitToPage() {
+            // Your code to emit data to the parent or elsewhere
+            this.$emit('data-updated', this.selectedItem.Code, this.dataUpdate); // Example emit
+        },
+   
+     
        
     }
 }

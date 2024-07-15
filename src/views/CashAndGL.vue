@@ -22,12 +22,15 @@
                                 <v-col cols="12" md="6"  class="text-center">
 
                                     <InputSearchHN 
+                                        ref="HNReceiveField"
                                         title="HN Receive"
                                         label="HNReceive Code / HNReceive Name" 
                                         code="HNReceive Code" 
                                         name="HNReceive name"
                                         type="Receive" 
+                                        dataUpdate="ReceiveOne"
                                         @childEvent="getselectedItemHNOne"
+                                        @data-updated="handleDataUpdated"
                                     />
                                     <!-- <InputSearchHN label="HNReceive Code / HNReceive Name" type="Receive"  @childEvent="getselectedItemHNOne"/> -->
                                 </v-col>
@@ -136,16 +139,19 @@
                                         <span class="f-12">HNReceive Code</span>
                                     </v-col>
                                     <v-col cols="8">
-
+                                
                                         <InputSearchHN 
                                             title="HN Receive"
                                             label="Text" 
                                             code="HNReceive Code" 
                                             name="HNReceive name"
                                             type="Receive" 
+                                            dataUpdate="ReceiveTwo"
                                             ref="selectHNReceive"
                                             :isError="isError"
                                             @childEvent="getselectedItemHNTwo"
+                                            @data-updated="handleDataUpdated"
+                                        
                                         />
 
                                         <!-- <InputSearchHN label="Text" type="Receive"  @childEvent="getselectedItemHNTwo" /> -->
@@ -178,9 +184,11 @@
                                             code="GLSAR Code" 
                                             name="GLSAR Name" 
                                             type="SapGL"
+                                            dataUpdate="GLSAR"
                                             ref="selectGLSAR"
                                             :isError="isError"
                                             @childEvent="getselectedItemGLSAR"
+                                            @data-updated="handleDataUpdated"
                                         />
 
                                     </v-col>
@@ -215,9 +223,11 @@
                                             code="GLSAP Code" 
                                             name="GLSAP Name" 
                                             type="SapGL"
+                                            dataUpdate="GLSAP"
                                             ref="selectGLSAP"
                                             :isError="isError"
                                             @childEvent="getselectedItemGLSAP"
+                                            @data-updated="handleDataUpdated"
                                         />
 
                                     </v-col>
@@ -247,9 +257,11 @@
                                             code="SpecialGL Code" 
                                             name="SpecialGL Name"
                                             type="SapGL"
-                                            ref="selectSpecialGL"
+                                            dataUpdate="SpecialGL"
+                                            ref="SpecialGL"
                                             :isError="isError"
                                             @childEvent="getselectedItemSpecialGL"
+                                            @data-updated="handleDataUpdated"
                                         />
 
                                     </v-col>
@@ -309,6 +321,8 @@
                                 :select-items="selectOptionsForColumn('CompanyCode', datasExport)"
                                 @update:selectedValue="updateSelectedCompanyCode"
                                 @search="searchCompanies('CompanyCode', $event)"
+                                @sort="handleSort('CompanyCode', $event)"
+
                             />
                         </template>
 
@@ -320,6 +334,7 @@
                             :select-items="selectOptionsForColumn('SystemCode')"
                             @update:selectedValue="updateSelectedSystemCode"
                             @search="searchCompanies('SystemCode', $event)"
+                            @sort="handleSort('SystemCode', $event)"
                         />
                         </template>
 
@@ -331,6 +346,7 @@
                             :select-items="selectOptionsForColumn('HNReceiveCode')"
                             @update:selectedValue="updateSelectedHNReceiveCode"
                             @search="searchCompanies('HNReceiveCode', $event)"
+                            @sort="handleSort('HNReceiveCode', $event)"
                         />
                         </template>
 
@@ -342,6 +358,7 @@
                             :select-items="selectOptionsForColumn('LocalName')"
                             @update:selectedValue="updateSelectedHNReceiveName"
                             @search="searchCompanies('LocalName', $event)"
+                            @sort="handleSort('LocalName', $event)"
                         />
                         </template>
 
@@ -353,6 +370,7 @@
                             :select-items="selectOptionsForColumn('EnglishName')"
                             @update:selectedValue="updateSelectedEnglishName"
                             @search="searchCompanies('EnglishName', $event)"
+                            @sort="handleSort('EnglishName', $event)"
                         />
                         </template>
 
@@ -364,6 +382,7 @@
                                 :select-items="selectOptionsForColumn('GLSARCode')"
                                 @update:selectedValue="updateSelectedGLSARCode"
                                 @search="searchCompanies('GLSARCode', $event)"
+                                @sort="handleSort('GLSARCode', $event)"
                             />
                         </template>
 
@@ -375,6 +394,7 @@
                                 :select-items="selectOptionsForColumn('GLSARName')"
                                 @update:selectedValue="updateSelectedGLSARName"
                                 @search="searchCompanies('GLSARName', $event)"
+                                @sort="handleSort('GLSARName', $event)"
                             />
                         </template>
 
@@ -386,6 +406,7 @@
                                 :select-items="selectOptionsForColumn('GLSAPCode')"
                                 @update:selectedValue="updateSelectedGLSAPCode"
                                 @search="searchCompanies('GLSAPCode', $event)"
+                                @sort="handleSort('GLSAPCode', $event)"
                             />
                         </template>
 
@@ -408,6 +429,7 @@
                             :select-items="selectOptionsForColumn('SpecialGL')"
                             @update:selectedValue="updateSelectedSpecialGL"
                             @search="searchCompanies('SpecialGL', $event)"
+                            @sort="handleSort('SpecialGL', $event)"
                         />
                         </template>
 
@@ -637,19 +659,25 @@ export default{
         },
 
         async checkHNReceive(){
-            try {
-                this.loading                = await true
-                let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${this.selectedItemHNOne.Code}`
-                let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                this.dataHNReceive         = response.data;
-                // await setTimeout(() => {
-                //     this.loading = false;
-                //     this.datasExport = response.data;
-                // }, 300);
-            } catch (error) {
-                this.loading = await false
-                console.error('Error fetching data:', error);
+
+            if(this.selectedItemHNOne && !this.selectedItemHNOne.Code){
+
+                this.checkInputData('HNReceive Code', this.$refs.HNReceiveField)
+               
+            }else{
+                try {
+                    this.loading                = await true
+                    let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${this.selectedItemHNOne.Code}`
+                    let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                    this.dataHNReceive          = response.data;
+                 
+                } catch (error) {
+                    this.loading = await false
+                    console.error('Error fetching data:', error);
+                }
             }
+
+           
         },
         
         async MappingCashGL(){
@@ -812,12 +840,12 @@ export default{
         getselectedItemSpecialGL(data){
             this.selectedItemSpecialGL = data;
         },
-        updateSelectedCompanyCode(value) {
-            this.selectedCompanyCode = value;
-        },
-        updateSelectedSystemCode(value) {
-            this.selectedSystemCode = value;
-        },
+        // updateSelectedCompanyCode(value) {
+        //     this.selectedCompanyCode = value;
+        // },
+        // updateSelectedSystemCode(value) {
+        //     this.selectedSystemCode = value;
+        // },
         updateSelectedHNReceiveCode(value) {
             this.selectedHNReceiveCode = value;
         },
@@ -902,8 +930,7 @@ export default{
             this.posting_key = null,
             this.posting_key2 = null,
             this.isError = false
-        }
-
+        },
 
     }
 }

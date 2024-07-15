@@ -21,19 +21,22 @@
 
                                 <v-col cols="12" md="6" class="text-center">
                                     <InputSearchHN 
+                                        ref="TermPaymentField"
                                         title="Term Of Payment"
                                         label="Term Of Payment / Term Of Payment Description" 
                                         code="Term Of Payment" 
                                         name="Term Of Payment Des."
                                         type="Term Of Payment" 
-                                        @childEvent="getselectedItemHNOne"
+                                        dataUpdate="TermPayment"
+                                        @childEvent="getselectedTermPayment"
+                                        @data-updated="handleDataUpdated"
                                     />
                                 </v-col>
 
                                 <v-col cols="12" md="6"  align-self="center" class="d-flex justify-space-between align-center">
                                     
                                     <span class="f-12 pr-3">Term of Payment Des. : {{ selectedItemHNOne.LocalName }}</span>
-                                    <v-btn @click="checkHNReceive(selectedItemHNOne.Code)" class="bg-orange">Check</v-btn>
+                                    <v-btn @click="checkTermPayment" class="bg-orange">Check</v-btn>
                                 
                                 </v-col>
                             </v-row>
@@ -105,7 +108,9 @@
                                             code="Term Of Payment" 
                                             name="Term Of Payment Des."
                                             type="Term Of Payment" 
-                                            @childEvent="getselectedTermPayment"
+                                            dataUpdate="TermPayment2"
+                                            @data-updated="handleDataUpdated"
+                                            @childEvent="getselectedTermPayment2"
                                         />
 
                                         <!-- <InputSearch @childEvent="getselectedTermPayment" type="Term of Payment"/> -->
@@ -131,7 +136,17 @@
                                         <span class="f-12">Term of Payment in SAP</span>
                                     </v-col>
                                     <v-col cols="12" md="8">
-                                        <InputSearch @childEvent="getselectedTermPaymentSAP" title="Term of Payment in SAP"  ref="GL_OPD"/>
+                                        <InputSearch 
+                                            title="Term of Payment in SAP"  
+                                            label="Text" 
+                                            code="Term Of Payment" 
+                                            name="Term Of Payment Des."
+                                            type="TermPaymentSAP"
+                                            dataUpdate="TermPaymentSAP"
+                                            ref="GL_OPD"
+                                            @childEvent="getselectedTermPaymentSAP" 
+                                            @data-updated="handleDataUpdated"
+                                        />
                                     </v-col>
                                 </v-row>
 
@@ -329,6 +344,7 @@ export default{
         // checkData : [],
         // selectedItemHNOne: {},
         selectedItemTermPayment: {},
+        selectedItemTermPayment2: {},
         selectedItemTermPaymentSAP: {},
         // datasExport : [],
         filteredData: [],
@@ -397,23 +413,25 @@ export default{
         removeHNActivity(value){
             console.log(value);
         },
+        
+        async checkTermPayment(){
+            if(this.selectedItemTermPayment){
 
-        async checkHNReceive(code){
+                this.checkInputData('Term of Payment', this.$refs.TermPaymentField)
 
-            try {
-                this.loading                = await true
-                let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
-                let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                this.checkData         = response.data;
+            }else{
+                try {
+                    this.loading                = await true
+                    let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetTermPaymentID?TermPayment=${this.selectedItemTermPayment}`
+                    let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                    this.checkData              = response.data
 
-                // await setTimeout(() => {
-                //     this.loading = false;
-                //     this.datasExport = response.data;
-                // }, 300);
-            } catch (error) {
-                this.loading = await false
-                console.error('Error fetching data:', error);
+                } catch (error) {
+                    this.loading = await false
+                    console.error('Error fetching data:', error);
+                }
             }
+
         },
         
         async MappingCashGL(){
@@ -514,17 +532,20 @@ export default{
         getselectedTermPayment(data) {
               this.selectedItemTermPayment = data;
         },
+        getselectedTermPayment2(data) {
+              this.selectedItemTermPayment2 = data;
+        },
     
         getselectedTermPaymentSAP(data){
             this.selectedItemTermPaymentSAP = data;
         },
 
-        updateSelectedSystemCode(value) {
-            this.selectedSystemCode = value;
-        },
-        updateSelectedCompanyCode(value) {
-            this.selectedCompanyCode = value;
-        },
+        // updateSelectedSystemCode(value) {
+        //     this.selectedSystemCode = value;
+        // },
+        // updateSelectedCompanyCode(value) {
+        //     this.selectedCompanyCode = value;
+        // },
         updateSelectedTermPayment(value) {
             this.SelectedTermPayment = value;
         },

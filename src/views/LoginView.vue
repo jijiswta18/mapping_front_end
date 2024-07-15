@@ -119,7 +119,7 @@ export default {
                         })
                     }
                     else{
-                        await this.$router.push({ path: '/ArPaymentTerm' });
+                        await this.$router.push({ path: '/' });
                         // location.reload();
                         await this.$swal.fire({
                             position: 'center',

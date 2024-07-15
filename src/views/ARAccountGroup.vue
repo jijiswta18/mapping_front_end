@@ -21,12 +21,15 @@
 
                                 <v-col cols="12" md="6" class="text-center">
                                     <InputSearchHN 
+                                        ref="AccountGroupField"
                                         title="AR Compose Category"
                                         label="AR Compose Category" 
                                         code="AR Compose Category" 
                                         name="Description"
                                         type="Term Of Payment" 
-                                        @childEvent="getselectedItemHNOne"
+                                        dataUpdate="AccountGroup"
+                                        @childEvent="getselectedItemAccGroup"
+                                        @data-updated="handleDataUpdated"
                                     />
                                   
                                 </v-col>
@@ -35,7 +38,7 @@
                                     
                                     <span class="f-12 pr-3">AR Compose Category Name : {{ selectedItemHNOne.LocalName }}</span>
                                     <!-- <v-btn @click="checkHNReceive(selectedItemHNOne.Code)" class="bg-orange">Check</v-btn> -->
-                                    <v-btn @click="greetUser" class="bg-orange">Check</v-btn>
+                                    <v-btn @click="checkAccountGroup" class="bg-orange">Check</v-btn>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -109,7 +112,8 @@
                                             code="AR Compose Category" 
                                             name="Description"
                                             type="Term Of Payment" 
-                                            @childEvent="getselectedItemHNOne"
+                                            dataUpdate="AccountGroup2"
+                                            @childEvent="getselectedItemAccGroup2"
                                         />
 
                                       
@@ -123,7 +127,7 @@
                                         <span class="f-12">Description</span>
                                     </v-col>
                                     <v-col cols="12" md="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemAccGroup2.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
@@ -139,11 +143,13 @@
 
                                         <InputSearch 
                                             title="KTOKK"
-                                            label="KTOKK" 
+                                            label="Text" 
                                             code="KTOKK" 
                                             name="Description"
                                             type="KTOKK" 
-                                            @childEvent="getselectedItemHNOne"
+                                            dataUpdate="KTOKK"
+                                            @data-updated="handleDataUpdated"
+                                            @childEvent="getselectedItemKTOKK"
                                         />
 
                                        
@@ -155,7 +161,7 @@
                                         <span class="f-12">Description</span>
                                     </v-col>
                                     <v-col cols="12" md="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedTermPaymentSAP.GLDes}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemKTOKK.GLDes}}</p>
                                     </v-col>
                                     
                                 </v-row>
@@ -180,11 +186,13 @@
 
                                         <InputSearch 
                                             title="AR_AKONT"
-                                            label="AR_AKONT" 
+                                            label="Text" 
                                             code="AR_AKONT" 
                                             name="Description"
                                             type="AR_AKONT" 
-                                            @childEvent="getselectedItemHNOne"
+                                            dataUpdate="AR_AKONT"
+                                            @childEvent="getselectedItemAR_AKONT"
+                                            @data-updated="handleDataUpdated"
                                         />
                                     
                                        
@@ -196,7 +204,7 @@
                                         <span class="f-12">Description</span>
                                     </v-col>
                                     <v-col cols="12" md="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemAR_AKONT.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
@@ -212,11 +220,13 @@
 
                                         <InputSearch 
                                             title="AP_AKONT"
-                                            label="AP_AKONT" 
+                                            label="Text" 
                                             code="AP_AKONT" 
                                             name="Description"
                                             type="AP_AKONT" 
-                                            @childEvent="getselectedItemHNOne"
+                                            dataUpdate="AP_AKONT"
+                                            @childEvent="getselectedItemAP_AKONT"
+                                            @data-updated="handleDataUpdated"
                                         />
                                     
                                        
@@ -229,7 +239,7 @@
                                         <span class="f-12">Description</span>
                                     </v-col>
                                     <v-col cols="12" md="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemAP_AKONT.LocalName}}</p>
                                     </v-col>
                                 </v-row>
                             </v-col>
@@ -374,9 +384,13 @@
             // valid:true,
             loading: true,
             // checkData : [],
-            // selectedItemHNOne: {},
-            selectedTermPayment: {},
-            selectedTermPaymentSAP: {},
+            selectedItemAccGroup: {},
+            selectedItemAccGroup2: {},
+            selectedItemKTOKK: {},
+            selectedItemAR_AKONT: {},
+            selectedItemAP_AKONT: {},
+            // selectedTermPayment: {},
+            // selectedTermPaymentSAP: {},
             // datasExport : [],
             filteredData: [],
             selectedCompanyCode: [], 
@@ -458,12 +472,12 @@
 
         },
         methods: {
-            updateSelectedSystemCode(value) {
-                this.selectedSystemCode = value;
-            },
-            updateSelectedCompanyCode(value) {
-                this.selectedCompanyCode = value;
-            },
+            // updateSelectedSystemCode(value) {
+            //     this.selectedSystemCode = value;
+            // },
+            // updateSelectedCompanyCode(value) {
+            //     this.selectedCompanyCode = value;
+            // },
             updateSelectedARComposeCategory(value){
                 this.selectedARComposeCategory = value;
             },
@@ -557,22 +571,25 @@
                 });
             },
 
-            async checkHNReceive(code){
+            async checkAccountGroup(){
 
-                try {
-                    this.loading                = await true
-                    let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
-                    let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                    this.checkData              = response.data;
+                if(this.selectedItemAccGroup){
 
-                    // await setTimeout(() => {
-                    //     this.loading = false;
-                    //     this.datasExport = response.data;
-                    // }, 300);
-                } catch (error) {
-                    this.loading = await false
-                    console.error('Error fetching data:', error);
+                    this.checkInputData('Account Group', this.$refs.AccountGroupField)
+                 
+                }else{
+                    try {
+                        this.loading                = await true
+                        let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetAccGroupID?AccGroup=${this.selectedItemAccGroup}`
+                        let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                        this.checkData              = response.data;
+                    } catch (error) {
+                        this.loading = await false
+                        console.error('Error fetching data:', error);
+                    }
                 }
+                
+                
             },
             
             async MappingCashGL(){
@@ -667,36 +684,29 @@
                     });
                 }
             },
-            getselectedItemHNOne(data) {
-                this.selectedItemHNOne = data;
+
+           
+            getselectedItemAccGroup(data) {
+                this.selectedItemAccGroup = data;
             },
-            getselectedTermPayment(data) {
-                this.selectedTermPayment = data;
+            getselectedItemAccGroup2(data) {
+                this.selectedItemAccGroup2 = data;
+            },
+
+            getselectedItemKTOKK(data) {
+                this.selectedItemKTOKK = data;
             
             },
         
-            getselectedTermPaymentSAP(data){
-                this.selectedTermPaymentSAP = data;
+            getselectedItemAR_AKONT(data){
+                this.selectedItemAR_AKONT = data;
             },
 
-            // searchCompanies(columnName, searchTerm) {
-            //     if(columnName === 'CompanyCode'){
-            //         this.searchCompanyCode = searchTerm;
-            //     }else if (columnName === 'SystemCode') {
-            //         this.searchSystemCode = searchTerm;
-            //     }else if (columnName === 'ARComposeCategory') {
-            //         this.searchARComposeCategory = searchTerm;
-            //     } else if (columnName === 'Description') {
-            //         this.searchDescription = searchTerm;
-            //     } else if (columnName === 'KTOKK') {
-            //         this.searchKTOKK = searchTerm;
-            //     } else if (columnName === 'DescriptionTwo') {
-            //         this.searchDescriptionTwo = searchTerm;
-            //     } else if (columnName === 'ARAKONT') {
-            //         this.searchARAKONT = searchTerm;
-            //     }
-            //     this.filterData();
-            // },
+            getselectedItemAP_AKONT(data){
+                this.selectedItemAP_AKONT = data;
+            },
+
+           
             filterData() {
 
                 this.filteredData = this.datasExport.filter(item =>

@@ -80,10 +80,10 @@ export default {
   data: () => ({
     drawer: true,
     items: [
-      { title: 'ArPaymentTerm', route: '/ArPaymentTerm' },
+      { title: 'ArPaymentTerm', route: '/' },
       { title: 'ARAccountGroup', route: '/ARAccountGroup' },
       { title: 'StoreMedecine', route: '/StoreMedecine' },
-      { title: 'TMArCode', route: '/TMArCode' },
+      // { title: 'TMArCode', route: '/TMArCode' },
       { title: 'TMHNActivityAndGL', route: '/TMHNActivity' },
       { title: 'CashAndGL', route: '/CashAndGL' },
       { title: 'EmployeeStatus', route: '/EmployeeStatus' }
@@ -147,6 +147,9 @@ export default {
       }
       .responsive-block{
         display: block!important;
+      }
+      .banner h1{
+        font-size: 20px;
       }
     }
     .display-none{
@@ -224,9 +227,12 @@ export default {
       margin-bottom: 0.5rem;
     } */
     .banner{
-      height: 225px;
+      /* height: 225px; */
       overflow: hidden;
       position: relative;
+    }
+    .banner img{
+      width: 100%;
     }
     .text-image{
       position: absolute;

@@ -66,22 +66,47 @@ export default {
         items = items.filter(item => 
           item.value?.toLowerCase()?.includes(this.searchTerms.toLowerCase())
         );
+
       }
 
-      // Ensure sorting is based on 'value' property and is case-insensitive
       items.sort((a, b) => {
-        let valueA = a.value?.toLowerCase();
-        let valueB = b.value?.toLowerCase();
-        
-        if (valueA < valueB) return -1;
-        if (valueA > valueB) return 1;
-        return 0;
+          // Extract values from objects
+          let valueA = a.value?.toLowerCase();
+          let valueB = b.value?.toLowerCase();
+
+          // Handle undefined or null values
+          if (valueA === undefined || valueA === null) return -1;
+          if (valueB === undefined || valueB === null) return 1;
+
+          // Compare values based on sort order
+          if (this.sortDirection === 'asc') {
+          // Ascending order
+          if (valueA > valueB) return 1;
+          if (valueA < valueB) return -1;
+          } else if (this.sortDirection === 'desc') {
+          // Descending order
+          if (valueA > valueB) return -1;
+          if (valueA < valueB) return 1;
+          }
+
+          return 0; // Values are equal
       });
 
+
+      // Ensure sorting is based on 'value' property and is case-insensitive
+      // items.sort((a, b) => {
+      //   let valueA = a.value?.toLowerCase();
+      //   let valueB = b.value?.toLowerCase();
+        
+      //   if (valueA < valueB) return -1;
+      //   if (valueA > valueB) return 1;
+      //   return 0;
+      // });
+
       // Apply descending order if sortDirection is 'desc'
-      if (this.sortDirection === 'desc') {
-        items.reverse();
-      }
+      // if (this.sortDirection === 'desc') {
+      //   items.reverse();
+      // }
 
       return items;
     }

@@ -25,7 +25,7 @@ const router = new VueRouter({
       meta: { requiresAuth: true }, 
       children: [
         {
-          path: 'ArPaymentTerm',
+          path: '',
           component: () => import('../views/ArPaymentTerm.vue'), 
         },
         {
@@ -56,6 +56,7 @@ const router = new VueRouter({
     },
     {
       path: '/login',
+      name: 'Login',
       component: () => import('../views/LoginView.vue'), // Login page component
      
     }
@@ -83,17 +84,37 @@ const router = new VueRouter({
 // });
 
 
+// router.beforeEach((to, from, next) => {
+//   if (to.matched.some(record => record.meta.requiresAuth)) {
+
+//     store.dispatch('checkLogin');
+    
+//     // Check if the user is authenticated
+//     if (!store.getters.isLoggedIn) {
+//       next('/login'); // Redirect to login page if not authenticated
+//     } else {
+//       next(); // Proceed to the route
+//     }
+//   } else {
+//     next(); // Continue to other routes
+//   }
+// });
+
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-
+    // Check if the route requires authentication
     store.dispatch('checkLogin');
-    
+
     // Check if the user is authenticated
     if (!store.getters.isLoggedIn) {
       next('/login'); // Redirect to login page if not authenticated
     } else {
       next(); // Proceed to the route
     }
+  } else if (to.name === 'Login') {
+    // If navigating to the login page, clear store and proceed
+    store.dispatch('clearUserData'); // Replace with your Vuex action to clear user data
+    next();
   } else {
     next(); // Continue to other routes
   }

@@ -281,12 +281,12 @@ export default {
         (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD))
       );
     },
-    updateSelectedCompanyCode(value) {
-      this.selectedCompanyCode = value;
-    },
-    updateSelectedSystemCode(value) {
-      this.selectedSystemCode = value;
-    },
+    // updateSelectedCompanyCode(value) {
+    //   this.selectedCompanyCode = value;
+    // },
+    // updateSelectedSystemCode(value) {
+    //   this.selectedSystemCode = value;
+    // },
     updateSelectedHNActivity(value) {
       this.selectedHNActivity = value;
     },

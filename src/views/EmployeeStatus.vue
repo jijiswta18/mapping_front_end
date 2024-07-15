@@ -21,20 +21,22 @@
 
                                 <v-col cols="12" md="6"  class="text-center">
                                     <InputSearchHN 
+                                        ref="EmpStatusField"
                                         title="Active Status"
                                         label="Employee Status Code / Employee Status Name" 
                                         code="Active Status Code" 
                                         name="Active Status name"
                                         type="EmployeeStatus" 
-                                        @childEvent="getselectedItemHNOne"
+                                        dataUpdate="EmployeeStatus"
+                                        @childEvent="getselectedItemEmpStatus"
                                     />
                                   
                                 </v-col>
 
                                 <v-col cols="12" md="6" align-self="center" class="d-flex justify-space-between align-center">
                                     
-                                    <span class="f-12 pr-3">Employee Status Name : {{ selectedItemHNOne.LocalName }}</span>
-                                    <v-btn @click="checkHNReceive(selectedItemHNOne.Code)" class="bg-orange">Check</v-btn>
+                                    <span class="f-12 pr-3">Employee Status Name : {{ selectedItemEmpStatus.LocalName }}</span>
+                                    <v-btn @click="checkEmpStatus" class="bg-orange">Check</v-btn>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -105,7 +107,8 @@
                                             code="Active Status Code" 
                                             name="Active Status name"
                                             type="EmployeeStatus" 
-                                            @childEvent="getselectedTermPayment"
+                                            dataUpdate="ActiveStatusSSB"
+                                            @childEvent="getselectedItemActiveStatusSSB"
                                         />
 
                                        
@@ -117,7 +120,7 @@
                                         <span class="f-12">Active Status Name</span>
                                     </v-col>
                                     <v-col cols="12" md="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemActiveStatusSSB.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
@@ -137,7 +140,7 @@
                                             code="Active Status Code" 
                                             name="Active Status name"
                                             type="EmployeeStatus" 
-                                            @childEvent="getselectedTermPayment"
+                                            @childEvent="getselectedItemActiveStatusSAP"
                                         />
                                     </v-col>
                                 </v-row>
@@ -147,7 +150,7 @@
                                         <span class="f-12">Active Status Name</span>
                                     </v-col>
                                     <v-col cols="12" md="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedTermPaymentSAP.GLDes}}</p>
+                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemActiveStatusSAP.GLDes}}</p>
                                     </v-col>
                                     
                                 </v-row>
@@ -291,9 +294,9 @@ export default{
         valid:true,
         loading: true,
         dataTermPayment : [],
-        selectedItemHNOne: {},
-        selectedTermPayment: {},
-        selectedTermPaymentSAP: {},
+        selectedItemEmpStatus: {},
+        selectedItemActiveStatusSSB: {},
+        selectedItemActiveStatusSAP: {},
         datasExport : [],
         SelectHNActivity:[],
         posting_key: null,
@@ -326,12 +329,12 @@ export default{
 
    
     methods: {
-        updateSelectedCompanyCode(value) {
-            this.selectedCompanyCode = value;
-        },
-        updateSelectedSystemCode(value) {
-            this.selectedSystemCode = value;
-        },
+        // updateSelectedCompanyCode(value) {
+        //     this.selectedCompanyCode = value;
+        // },
+        // updateSelectedSystemCode(value) {
+        //     this.selectedSystemCode = value;
+        // },
         updateSelectedActiveStatusCode(value) {
             this.selectedActiveStatusCode = value;
         },
@@ -383,22 +386,24 @@ export default{
             console.log(value);
         },
 
-        async checkHNReceive(code){
+        async checkEmpStatus(){
 
-            try {
-                this.loading                = await true
-                let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${code}`
-                let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                this.dataTermPayment         = response.data;
-
-                // await setTimeout(() => {
-                //     this.loading = false;
-                //     this.datasExport = response.data;
-                // }, 300);
-            } catch (error) {
-                this.loading = await false
-                console.error('Error fetching data:', error);
+            if(this.selectedItemEmpStatus){
+                this.checkInputData('Employee Status', this.$refs.EmpStatusField)
+            }else{
+                try {
+                    this.loading                = await true
+                    let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetEmpStatusID?HNReceiveCode=${this.selectedItemEmpStatus}`
+                    let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                    this.dataTermPayment         = response.data;
+                    
+                } catch (error) {
+                    this.loading = await false
+                    console.error('Error fetching data:', error);
+                }
             }
+
+           
         },
         
         async MappingCashGL(){
@@ -493,16 +498,16 @@ export default{
                 });
             }
         },
-        getselectedItemHNOne(data) {
-              this.selectedItemHNOne = data;
+        getselectedItemEmpStatus(data) {
+              this.selectedItemEmpStatus = data;
         },
-        getselectedTermPayment(data) {
-              this.selectedTermPayment = data;
+        getselectedItemActiveStatusSSB(data) {
+              this.selectedItemActiveStatusSSB = data;
         
         },
     
-        getselectedTermPaymentSAP(data){
-            this.selectedTermPaymentSAP = data;
+        getselectedItemActiveStatusSAP(data){
+            this.selectedItemActiveStatusSAP = data;
         },
        
     }

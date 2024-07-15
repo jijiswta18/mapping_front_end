@@ -22,20 +22,21 @@
                                 <v-col cols="12" md="6"  class="text-center">
 
                                     <InputSearchHN 
+                                        ref="StoreMedicineField"
                                         title="HN Receive"
                                         label="HNReceive Code / HNReceive Name" 
                                         code="HNReceive Code" 
                                         name="HNReceive name"
                                         type="Receive" 
-                                        @childEvent="getselectedItemHNOne"
+                                        @childEvent="getselectedItemStorMedicine"
                                     />
                                     <!-- <InputSearchHN label="HNReceive Code / HNReceive Name" type="Receive"  @childEvent="getselectedItemHNOne"/> -->
                                 </v-col>
 
                                 <v-col cols="12" md="6"  align-self="center" class="d-flex justify-space-between align-center">
                                     
-                                    <span class="f-12 pr-3">HNReceive Name : {{ selectedItemHNOne.LocalName }}</span>
-                                    <v-btn @click="checkHNReceive" class="bg-orange">Check</v-btn>
+                                    <span class="f-12 pr-3">HNReceive Name : {{ selectedItemStorMedicine.LocalName }}</span>
+                                    <v-btn @click="checkStoreMedicine" class="bg-orange">Check</v-btn>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -178,9 +179,11 @@
                                             code="GLSAR Code" 
                                             name="GLSAR Name" 
                                             type="SapGL"
+                                            dataUpdate="GLSAR"
                                             ref="selectGLSAR"
                                             :isError="isError"
                                             @childEvent="getselectedItemGLSAR"
+                                            @data-updated="handleDataUpdated"
                                         />
 
                                     </v-col>
@@ -215,9 +218,11 @@
                                             code="GLSAP Code" 
                                             name="GLSAP Name" 
                                             type="SapGL"
+                                            dataUpdate="GLSAP"
                                             ref="selectGLSAP"
                                             :isError="isError"
                                             @childEvent="getselectedItemGLSAP"
+                                            @data-updated="handleDataUpdated"
                                         />
 
                                     </v-col>
@@ -247,9 +252,11 @@
                                             code="SpecialGL Code" 
                                             name="SpecialGL Name"
                                             type="SapGL"
+                                            dataUpdate="SpecialGL"
                                             ref="selectSpecialGL"
                                             :isError="isError"
                                             @childEvent="getselectedItemSpecialGL"
+                                            @data-updated="handleDataUpdated"
                                         />
 
                                     </v-col>
@@ -449,7 +456,7 @@ export default{
         valid:true,
         loading: true,
         dataHNReceive : [],
-        selectedItemHNOne: {},
+        selectedItemStorMedicine: {},
         selectedItemHNTwo: {},
         selectedItemGLSAR:{},
         selectedItemGLSAP: {},
@@ -579,11 +586,11 @@ export default{
     },
 
     methods: {
-        async getExportCashAndGL(){
+        async getExportStoreMedecine(){
             try {
                 this.loading        = await true
-                let ActivityGLPath = '/api/SAP/CashAndGL'
-                let response        = await this.$axios.get(ActivityGLPath);
+                let StoreMedecinePath = '/api/SAP/StoreMedecine'
+                let response        = await this.$axios.get(StoreMedecinePath);
                 setTimeout(() => {
                     this.loading = false;
                     this.datasExport = response.data;
@@ -644,20 +651,23 @@ export default{
             });
         },
 
-        async checkHNReceive(){
-            try {
-                this.loading                = await true
-                let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetTmCashAndGLID?HNReceiveCode=${this.selectedItemHNOne.Code}`
-                let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                this.dataHNReceive         = response.data;
-                // await setTimeout(() => {
-                //     this.loading = false;
-                //     this.datasExport = response.data;
-                // }, 300);
-            } catch (error) {
-                this.loading = await false
-                console.error('Error fetching data:', error);
+        async checkStoreMedicine(){
+
+            if(this.selectedItemStorMedicine){
+                this.checkInputData('StoreMedicine', this.$refs.StoreMedicineField)
+            }else{
+                try {
+                    this.loading                = await true
+                    let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetStoreMedicineFieldID?StoreMedicineFieldCode=${this.selectedItemStorMedicine.Code}`
+                    let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                    this.dataHNReceive         = response.data;
+                  
+                } catch (error) {
+                    this.loading = await false
+                    console.error('Error fetching data:', error);
+                }
             }
+           
         },
         
         async MappingCashGL(){
@@ -794,7 +804,7 @@ export default{
                 case "Create/Change":
                     break;
                 case "Export":
-                    this.getExportCashAndGL()
+                    this.getExportStoreMedecine()
                     break;
                 default:
                     // Default action
@@ -804,8 +814,8 @@ export default{
         },
 
        
-        getselectedItemHNOne(data) {
-              this.selectedItemHNOne = data;
+        getselectedItemStorMedicine(data) {
+              this.selectedItemStorMedicine = data;
         },
         getselectedItemHNTwo(data) {
               this.selectedItemHNTwo = data;
@@ -820,12 +830,12 @@ export default{
         getselectedItemSpecialGL(data){
             this.selectedItemSpecialGL = data;
         },
-        updateSelectedCompanyCode(value) {
-            this.selectedCompanyCode = value;
-        },
-        updateSelectedSystemCode(value) {
-            this.selectedSystemCode = value;
-        },
+        // updateSelectedCompanyCode(value) {
+        //     this.selectedCompanyCode = value;
+        // },
+        // updateSelectedSystemCode(value) {
+        //     this.selectedSystemCode = value;
+        // },
         updateSelectedHNReceiveCode(value) {
             this.selectedHNReceiveCode = value;
         },
@@ -911,48 +921,7 @@ export default{
             this.posting_key2 = null,
             this.isError = false
         },
-        handleSort(column, desc) {
-
         
-            this.sortColumn = column;
-            this.sortDesc = desc;
-            this.sortData(column, desc);
-        },
-
-        sortData(column, sortOrder) {
-            // Clone the array to avoid mutating the original data
-            let sortedData = [...this.filteredData];
-
-            sortedData.sort((a, b) => {
-                // Extract values from objects
-                let valueA = a[column];
-                let valueB = b[column];
-
-                // Handle undefined or null values
-                if (valueA === undefined || valueA === null) return -1;
-                if (valueB === undefined || valueB === null) return 1;
-
-                // Compare values based on sort order
-                if (sortOrder === 'asc') {
-                // Ascending order
-                if (valueA > valueB) return 1;
-                if (valueA < valueB) return -1;
-                } else if (sortOrder === 'desc') {
-                // Descending order
-                if (valueA > valueB) return -1;
-                if (valueA < valueB) return 1;
-                }
-
-                return 0; // Values are equal
-            });
-
-            // Update filteredData with the sorted array
-            
-            this.filteredData = sortedData;
-        },
-
-
-
 
     }
 }

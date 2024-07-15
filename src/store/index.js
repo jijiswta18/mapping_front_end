@@ -64,7 +64,8 @@ const store = new Vuex.Store({
       state.checkUser = null;
       state.isLoggedIn = false;
       localStorage.removeItem('isLoggedIn'); // Clear isLoggedIn from localStorage
-      state.expiryDate = null
+      state.expiryDate = null;
+      localStorage.removeItem('loginExpiryDate');
     },
 
     // setLoginExpiryDate(state, expiryDate) {
@@ -120,8 +121,12 @@ const store = new Vuex.Store({
       } else {
 
         commit('clearUser');
-        localStorage.removeItem('loginExpiryDate');
       }
+    },
+
+    clearUserData({ commit }) {
+      // Replace with appropriate mutations to clear user-related state
+      commit('clearUser');
     },
 
     // startSessionTimeout({ commit, state }) {
