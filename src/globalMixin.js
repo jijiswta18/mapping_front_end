@@ -54,14 +54,19 @@ Vue.mixin({
       searchSTAT2: '',
 
 
+      selectedCompanyCode: [], 
+      selectedSystemCode: [], 
+
 
       // filteredData: [],
       // search: '',
     }),
   methods: {
+
     greetUser() {
       alert('Hello! Welcome to the application.');
     },
+
     exportToExcel(value, file_name) {
         const fileName = file_name + '.xlsx'
         const wb = XLSX.utils.book_new();
@@ -317,7 +322,169 @@ Vue.mixin({
       }
       
       this.filterData();
+    },
+
+    handleSort(column, desc) {
+
+        
+      this.sortColumn = column;
+      this.sortDesc = desc;
+      this.sortData(column, desc);
   },
+
+    sortData(column, sortOrder) {
+        // Clone the array to avoid mutating the original data
+        let sortedData = [...this.filteredData];
+
+        sortedData.sort((a, b) => {
+            // Extract values from objects
+            let valueA = a[column];
+            let valueB = b[column];
+
+            // Handle undefined or null values
+            if (valueA === undefined || valueA === null) return -1;
+            if (valueB === undefined || valueB === null) return 1;
+
+            // Compare values based on sort order
+            if (sortOrder === 'asc') {
+            // Ascending order
+            if (valueA > valueB) return 1;
+            if (valueA < valueB) return -1;
+            } else if (sortOrder === 'desc') {
+            // Descending order
+            if (valueA > valueB) return -1;
+            if (valueA < valueB) return 1;
+            }
+
+            return 0; // Values are equal
+        });
+
+        // Update filteredData with the sorted array
+        
+        this.filteredData = sortedData;
+    },
+
+  handleDataUpdated(updatedValue, dataUpdate) {
+
+    switch(dataUpdate){
+      case "G/L OPD": 
+      this.selectedItemGLOPD = {}
+  
+      break;
+      case "G/L IPD" :
+      this.selectedItemGLIPD = {}
+      break;
+
+      case "ActivityOne" :
+      this.selectedItemHNOne = {}
+  
+      break;
+
+      case "ActivityTwo" :
+        this.selectedItemHNTwo = {}
+      break;
+
+      case "TermPayment" :
+        this.selectedItemTermPayment = {}
+      break;
+
+      case "TermPayment2" :
+        this.selectedItemTermPayment3 = {}
+      break;
+
+      case "TermPaymentSAP" :
+        this.selectedItemTermPaymentSAP = {}
+      break;
+
+      case "AccountGroup" :
+        this.selectedItemAccGroup = {}
+      break;
+
+      case "AccountGroup2" :
+        this.selectedItemAccGroup = {}
+      break;
+
+      case "KTOKK" :
+        this.selectedItemKTOKK = {}
+      break;
+
+      case "AR_AKONT" :
+        this.selectedItemAR_AKONT = {}
+      break;
+
+      case "AP_AKONT" :
+        this.selectedItemAP_AKONT = {}
+      break;
+
+      case "EmployeeStatus" :
+        this.selectedItemEmpStatus = {}
+      break;
+      case "ActiveStatusSSB" :
+        this.selectedItemActiveStatusSSB = {}
+      break;
+
+      case "ActiveStatusSAP" :
+        this.selectedItemActiveStatusSAP = {}
+      break;
+
+      case "ReceiveOne": 
+
+      this.selectedItemHNOne = {}
+  
+      break;
+      case "ReceiveTwo" :
+      this.selectedItemHNTwo = {}
+      break;
+
+      case "GLSAR" :
+      this.selectedItemGLSAR = {}
+  
+      break;
+
+      case "GLSAP" :
+      this.selectedItemGLSAP = {}
+  
+      break;
+
+      case "SpecialGL" :
+      this.selectedItemSpecialGL = {}
+      break;
+
+      // case "HN Activity" :
+      // this.selectedItemHNTwo = {}
+      // break;
+
+      default:
+      // Default action
+      break;
+    }
+  },
+  
+  checkInputData(title, inputField){
+    this.$swal.fire({
+        icon: 'warning',
+        title: `กรุณาเลือก ${title}` ,
+    // text: message
+    }).then(() => {
+        const input = inputField.$el.querySelector('input');
+        input.focus();
+    });
+  },
+
+
+  updateSelectedSystemCode(value) {
+    console.log(value);
+    this.selectedSystemCode = value;
+  },
+
+  updateSelectedCompanyCode(value) {
+    console.log(value);
+    this.selectedCompanyCode = value;
+  },
+
+
+
+
 
    
     
