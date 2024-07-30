@@ -152,16 +152,6 @@ Vue.mixin({
       this.selectedCompanyCode = value;
     },
 
-    // exportToExcel(value, file_name) {
-    //     const fileName = file_name + '.xlsx'
-    //     const wb = XLSX.utils.book_new();
-    //     const ws = XLSX.utils.json_to_sheet(value);
-    //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-    //     /* generate XLSX file and send to client */
-    //     XLSX.writeFile(wb, fileName);
-    // },
-
     selectOptionsForColumn(columnName) {
       let filteredOptions = this.datasExport;
 
