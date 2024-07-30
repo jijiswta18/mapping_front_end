@@ -1,4 +1,5 @@
 <template>
+
     <v-row class="mt-3">
        <v-col>
            <span class="f-12">System Code</span>
@@ -19,12 +20,16 @@
        ></v-autocomplete>
        </v-col>
    </v-row>
+
 </template>
+
 <script>
-export default{
-   data: () => ({
-        selecItem: null,
-       options: [{ code: 'HIS', name: 'HIS' }]
-   }),
-}
+
+    export default{
+    data: () => ({
+            selecItem: null,
+        options: [{ code: 'HIS', name: 'HIS' }]
+    }),
+    }
+
 </script>

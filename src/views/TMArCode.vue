@@ -265,10 +265,6 @@ export default {
 
       return uniqueValues;
     },
-
-
-
-
     filterData() {
       this.filteredData = this.datasExport.filter(item =>
         (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&

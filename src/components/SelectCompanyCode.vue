@@ -1,4 +1,5 @@
 <template>
+
      <v-row class="mt-3">
         <v-col>
             <span class="f-12">Company Code</span>
@@ -19,17 +20,15 @@
         ></v-autocomplete>
         </v-col>
     </v-row>
+    
 </template>
+
 <script>
-export default{
-    data: () => ({
-        selecItem: null,
-        options: [{ code: '1000', name: '1000' }]
-    }),
-    methods: {
-    // clearData() {
-    //     this.selecItem = null; // Method to clear data
-    // },
-    },
-}
+    export default{
+        data: () => ({
+            selecItem: null,
+            options: [{ code: '1000', name: '1000' }]
+        }),
+        methods: {},
+    }
 </script>

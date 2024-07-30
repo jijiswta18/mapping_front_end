@@ -1,7 +1,8 @@
 <template>
     <div>
+
         <v-tabs v-model="tab" class="mb-2">
-          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab)">{{ tab.name }}</v-tab>
+          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/PaymentTerm`)">{{ tab.name }}</v-tab>
         </v-tabs>
 
         <v-tabs-items v-model="tab">
@@ -49,7 +50,6 @@
                             :items="checkData"
                             density="compact"
                             item-key="name"
-                            :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                             class="style-table"
                         >
                             <template v-slot:[`item.Action`]="{ item }">
@@ -74,7 +74,7 @@
                      
                         <v-row class="mb-3">
 
-                            <v-col cols="12" md="2"></v-col>
+                            <v-col cols="12" md="2" class="d-xs-none"></v-col>
 
                             <v-col cols="12" md="4">
                                 <SelectSystemCode ref="selectSystemCode"/>
@@ -85,7 +85,7 @@
                                 <SelectCompanyCode ref="selectCompanyCode"/>
                             </v-col>
 
-                            <v-col cols="12" md="2"></v-col>
+                            <v-col cols="12" md="2" class="d-xs-none"></v-col>
                          
 
                         </v-row>
@@ -97,10 +97,10 @@
                             <v-col cols="12" md="6">
                                 <h2 class="f-16">Term of Payment</h2>
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">Term of Payment</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
 
                                         <InputSearchHN 
                                             title="Term Of Payment"
@@ -112,17 +112,15 @@
                                             @data-updated="handleDataUpdated"
                                             @childEvent="getselectedTermPayment2"
                                         />
-
-                                        <!-- <InputSearch @childEvent="getselectedTermPayment" type="Term of Payment"/> -->
                                        
                                     </v-col>
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">Term of Payment Description</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
                                     </v-col>
                                 </v-row>
@@ -132,10 +130,10 @@
                             <v-col cols="12" md="6">
                                 <h2 class="f-16">Term of Payment in SAP</h2>
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">Term of Payment in SAP</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
                                         <InputSearch 
                                             title="Term of Payment in SAP"  
                                             label="Text" 
@@ -151,10 +149,10 @@
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">Description</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedTermPaymentSAP.GLDes}}</p>
                                     </v-col>
                                     
@@ -163,8 +161,9 @@
                         
                         </v-row>
                         
-                   
-                        <v-btn @click="MappingCashGL" class="bg-orange" block>Update Data</v-btn>
+                        <div class="text-center">
+                            <v-btn @click="MappingCashGL" class="bg-orange">Update Data</v-btn>
+                        </div>
                         </v-form>
 
                     
@@ -185,7 +184,7 @@
                         </v-col>
 
                         <v-col class="text-right">
-                            <v-btn class="bg-blue"  @click="exportToExcel">Export</v-btn>
+                            <v-btn class="bg-blue"  @click="exportToExcel(filteredData, 'ARPaymentTerm')">Export</v-btn>
                         </v-col>
                     </v-row>
                     <v-data-table
@@ -269,51 +268,6 @@
                             />
                         </template>
 
-                    <!-- <template v-slot:[`header.HNActivityCode`]="{ header }">
-                        <div>
-                        {{ header.text }}
-
-                        <v-menu
-                            v-model="menu"
-                            :close-on-content-click="false"
-                            :nudge-right="40"
-                            :return-value.sync="selectedItem"
-                            transition="scale-transition"
-                            offset-y
-                            min-width="290px"
-                        >
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                                v-bind="attrs"
-                                v-on="on"
-                                id="menu-activator"
-                                class="btn-with-icon"
-                                text
-                            >
-                                <i class="fas fa-caret-down"></i>
-                            </v-btn>
-                        </template>
-
-                        <v-list>
-                        
-                                <v-list-item
-                                    v-for="(item, index) in dropdownOptions"
-                                    :key="index"
-                                    @click="selectItem(item)"
-                                >
-                                    <v-checkbox v-model="selectedItems" :label="item.HNActivityCode" :value="item"></v-checkbox>
-                                </v-list-item>
-                            
-                          
-                        </v-list>
-                        
-                        </v-menu>
-
-                           
-
-                        </div>
-                    </template> -->
-
                     </v-data-table>
                 </v-card>
             </v-tab-item>
@@ -323,176 +277,147 @@
 
 
 </template>
+
 <script>
-// import * as XLSX from 'xlsx';
-import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
-import SelectSystemCode from '@/components/SelectSystemCode.vue';
-import InputSearch from '@/components/InputSearch.vue';
-import InputSearchHN from '@/components/InputSearchHN.vue';
-import HeaderSelect from '@/components/HeaderSelect.vue';
-export default{
-    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
-    data: () => ({
-        // menu: false,
-        // selectedItem: null,
-        search: '',
-        // selectedItems: [],
-        // scrollTo: null,
-
-        // valid:true,
-        loading: true,
-        // checkData : [],
-        // selectedItemHNOne: {},
-        selectedItemTermPayment: {},
-        selectedItemTermPayment2: {},
-        selectedItemTermPaymentSAP: {},
-        // datasExport : [],
-        filteredData: [],
-        selectedCompanyCode: [], 
-        selectedSystemCode: [], 
-        selectedTermPayment: [], 
-        selectedTermPaymentDes: [], 
-        selectedTermPaymentSAP: [], 
-        selectedDescription: [], 
-        // posting_key: null,
-        // posting_key2: null,
-        headersDataHNActivity: [
-            { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-            { text: 'Term of payment', align: 'left', sortable: false, value: 'TermOfPayment' },
-            { text: 'Term of payment Des.', align: 'left', sortable: false, value: 'TermOfPaymentDes' },
-            { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-            { text: 'Term of payment in SAP', align: 'left', sortable: false, value: 'TermOfPaymentSAP' },
-            { text: 'Description', align: 'left', sortable: false, value: 'Description' },
-            { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
-        ],
-        headersExport: [
-            { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-            { text: 'Term of payment', align: 'left', sortable: false, value: 'TermOfPayment' },
-            { text: 'Term of payment Des.', align: 'left', sortable: false, value: 'TermOfPaymentDes' },
-            { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-            { text: 'Term of payment in SAP', align: 'left', sortable: false, value: 'TermOfPaymentSAP' },
-            { text: 'Description', align: 'left', sortable: false, value: 'Description' },
+    import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
+    import SelectSystemCode from '@/components/SelectSystemCode.vue';
+    import InputSearch from '@/components/InputSearch.vue';
+    import InputSearchHN from '@/components/InputSearchHN.vue';
+    import HeaderSelect from '@/components/HeaderSelect.vue';
+    export default{
+        components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
+        data: () => ({
+            search: '',
+            loading: true,
+            selectedItemTermPayment: {},
+            selectedItemTermPayment2: {},
+            selectedItemTermPaymentSAP: {},
+            filteredData: [],
+            selectedCompanyCode: [], 
+            selectedSystemCode: [], 
+            selectedTermPayment: [], 
+            selectedTermPaymentDes: [], 
+            selectedTermPaymentSAP: [], 
+            selectedDescription: [], 
+            headersDataHNActivity: [
+                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
+                { text: 'Term of payment', align: 'left', sortable: false, value: 'TermOfPayment' },
+                { text: 'Term of payment Des.', align: 'left', sortable: false, value: 'TermOfPaymentDes' },
+                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
+                { text: 'Term of payment in SAP', align: 'left', sortable: false, value: 'TermOfPaymentSAP' },
+                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
+                { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
+            ],
+            headersExport: [
+                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
+                { text: 'Term of payment', align: 'left', sortable: false, value: 'TermOfPayment' },
+                { text: 'Term of payment Des.', align: 'left', sortable: false, value: 'TermOfPaymentDes' },
+                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
+                { text: 'Term of payment in SAP', align: 'left', sortable: false, value: 'TermOfPaymentSAP' },
+                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
         
-    
-        ],
-     
-    
-    }),
-
-
-    methods: {
-        handleTabClick(tab) {
-            switch (tab.name) {
-                case "Create/Change":
-                    break;
-                case "Export":
-                    this.getExportArPaymentTerm()
-                    break;
-                default:
-                    // Default action
-                    break;
-            }
-            // Add custom logic here, such as updating data or calling methods
-        },
-        async getExportArPaymentTerm(){
-            try {
-                this.loading        = await true
-                let ActivityGLPath = '/api/SAP/PaymentTerm'
-                let response        = await this.$axios.get(ActivityGLPath);
-                await setTimeout(() => {
-                    this.loading = false;
-                    this.datasExport = response.data;
-                    this.filteredData = this.datasExport.slice();
-                }, 300);
-            } catch (error) {
-                this.loading = await false
-                // console.error('Error fetching data:', error);
-            }
-        },
-
-        removeHNActivity(value){
-            console.log(value);
-        },
+            ],
         
-        async checkTermPayment(){
-            if(this.selectedItemTermPayment){
+        }),
 
-                this.checkInputData('Term of Payment', this.$refs.TermPaymentField)
 
-            }else{
-                try {
-                    this.loading                = await true
-                    let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetTermPaymentID?TermPayment=${this.selectedItemTermPayment}`
-                    let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                    this.checkData              = response.data
+        methods: {
 
-                } catch (error) {
-                    this.loading = await false
-                    console.error('Error fetching data:', error);
+            removeHNActivity(value){
+                console.log(value);
+            },
+            
+            async checkTermPayment(){
+                if(this.selectedItemTermPayment){
+
+                    this.checkInputData('Term of Payment', this.$refs.TermPaymentField)
+
+                }else{
+                    try {
+                        this.loading                = await true
+                        let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetTermPaymentID?TermPayment=${this.selectedItemTermPayment}`
+                        let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                        this.checkData              = response.data
+
+                    } catch (error) {
+                        this.loading = await false
+                        console.error('Error fetching data:', error);
+                    }
                 }
-            }
 
-        },
-        
-        async MappingCashGL(){
+            },
+            
+            async MappingCashGL(){
 
-            const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
-            const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
+                const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
+                const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
 
-            if(this.$refs.formMapping.validate()){
+                if(this.$refs.formMapping.validate()){
 
-                try {
+                    try {
 
-                    if(this.checkData.length > 0){
+                        if(this.checkData.length > 0){
 
-                        await this.$swal.fire({
-                            title: "Warning",
-                            text: "Data has already map. Are you sure to map again? ",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#52A1DB",
-                            cancelButtonColor: "#52A1DB",
-                            confirmButtonText: "OK",
-                            customClass: {
-                                title: 'text-warning' // Add your custom class here
-                            }
-                            }).then(async(result) => {
-                            if (result.isConfirmed) {
-                                let fd  = {
-                                    "companyCode": selectCompanyCode,
-                                    "systemCode": selectSystemCode,
-                                    "hnReceiveCode": this.selectedItemHNTwo.Code,
-                                    "localName": this.selectedItemHNTwo.LocalName,
-                                    "englishName": this.selectedItemHNTwo.EnglishName,
-                                    "glsarCode": this.selectedItemGLSAR.GLNo,
-                                    "glsarName": this.selectedItemGLSAR.GLDes,
-                                    "postingKey": this.posting_key,
-                                    "postingKey2": this.posting_key2,
-                                    "glsapCode": this.selectedItemGLSAP.GLNo,
-                                    "key2Description": "string",
-                                    "specialGL":this.selectedItemspecialGL.GLNo,
+                            await this.$swal.fire({
+                                title: "Warning",
+                                text: "Data has already map. Are you sure to map again? ",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#52A1DB",
+                                cancelButtonColor: "#52A1DB",
+                                confirmButtonText: "OK",
+                                customClass: {
+                                    title: 'text-warning' // Add your custom class here
                                 }
+                                }).then(async(result) => {
+                                if (result.isConfirmed) {
+                                    let fd  = {
+                                        "companyCode": selectCompanyCode,
+                                        "systemCode": selectSystemCode,
+                                        "hnReceiveCode": this.selectedItemHNTwo.Code,
+                                        "localName": this.selectedItemHNTwo.LocalName,
+                                        "englishName": this.selectedItemHNTwo.EnglishName,
+                                        "glsarCode": this.selectedItemGLSAR.GLNo,
+                                        "glsarName": this.selectedItemGLSAR.GLDes,
+                                        "postingKey": this.posting_key,
+                                        "postingKey2": this.posting_key2,
+                                        "glsapCode": this.selectedItemGLSAP.GLNo,
+                                        "key2Description": "string",
+                                        "specialGL":this.selectedItemspecialGL.GLNo,
+                                    }
 
-                                let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                await this.$axios.post(`${MappingCashGLPath}`, fd)
+                                    let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
+                                    await this.$axios.post(`${MappingCashGLPath}`, fd)
 
 
-                                // if(response){
-                                    this.$swal.fire({
-                                        icon: "success",
-                                        title: "Complete",
-                                        text: "You data was saved.",
-                                        customClass: {
-                                            title: 'text-success' // Add your custom class here
-                                        }
-                                    });
-                                // }
+                                    // if(response){
+                                        this.$swal.fire({
+                                            icon: "success",
+                                            title: "Complete",
+                                            text: "You data was saved.",
+                                            customClass: {
+                                                title: 'text-success' // Add your custom class here
+                                            }
+                                        });
+                                    // }
 
-                        
-                            }
-                        });
+                            
+                                }
+                            });
 
-                    }else{
+                        }else{
+                            this.$swal.fire({
+                                icon: "error",
+                                title: "Incomplete",
+                                text: "Unable to update . Please check data agian.",
+                                customClass: {
+                                    title: 'text-error' // Add your custom class here
+                                }
+                            });
+                        }
+
+                    } catch (error) {
+                        console.log('MappingCashGL',error);
                         this.$swal.fire({
                             icon: "error",
                             title: "Incomplete",
@@ -503,8 +428,7 @@ export default{
                         });
                     }
 
-                } catch (error) {
-                    console.log('MappingCashGL',error);
+                }else{
                     this.$swal.fire({
                         icon: "error",
                         title: "Incomplete",
@@ -514,87 +438,51 @@ export default{
                         }
                     });
                 }
+            },
+            // getselectedItemHNOne(data) {
+            //       this.selectedItemHNOne = data;
+            // },
+            // getselectedTermPayment(data) {
+            //       this.selectedItemTermPayment = data;
+            // },
+            // getselectedTermPayment2(data) {
+            //       this.selectedItemTermPayment2 = data;
+            // },
+        
+            // getselectedTermPaymentSAP(data){
+            //     this.selectedItemTermPaymentSAP = data;
+            // },
 
-            }else{
-                this.$swal.fire({
-                    icon: "error",
-                    title: "Incomplete",
-                    text: "Unable to update . Please check data agian.",
-                    customClass: {
-                        title: 'text-error' // Add your custom class here
-                    }
-                });
-            }
-        },
-        getselectedItemHNOne(data) {
-              this.selectedItemHNOne = data;
-        },
-        getselectedTermPayment(data) {
-              this.selectedItemTermPayment = data;
-        },
-        getselectedTermPayment2(data) {
-              this.selectedItemTermPayment2 = data;
-        },
-    
-        getselectedTermPaymentSAP(data){
-            this.selectedItemTermPaymentSAP = data;
-        },
+            updateSelectedTermPayment(value) {
+                this.SelectedTermPayment = value;
+            },
+            updateSelectedTermPaymentDes(value) {
+                this.selectedTermPaymentDes = value;
+            },
+            updateSelectedTermPaymentSAP(value) {
+                this.selectedTermPaymentSAP = value;
+            },
+            updateSelectedDescription(value) {
+                this.selectedDescription = value;
+            },
 
-        // updateSelectedSystemCode(value) {
-        //     this.selectedSystemCode = value;
-        // },
-        // updateSelectedCompanyCode(value) {
-        //     this.selectedCompanyCode = value;
-        // },
-        updateSelectedTermPayment(value) {
-            this.SelectedTermPayment = value;
-        },
-        updateSelectedTermPaymentDes(value) {
-            this.selectedTermPaymentDes = value;
-        },
-        updateSelectedTermPaymentSAP(value) {
-            this.selectedTermPaymentSAP = value;
-        },
-        updateSelectedDescription(value) {
-            this.selectedDescription = value;
-        },
+            filterData() {
 
-    
-        // searchCompanies(columnName, searchTerm) {
-        //     if(columnName === 'CompanyCode'){
-        //         this.searchCompanyCode = searchTerm;
-        //     }else if (columnName === 'SystemCode') {
-        //         this.searchSystemCode = searchTerm;
-        //     }else if (columnName === 'TermOfPayment') {
-        //         this.searchTermPayment = searchTerm;
-        //     } else if (columnName === 'TermOfPaymentDes') {
-        //         this.searchTermPaymentDes = searchTerm;
-        //     } else if (columnName === 'TermOfPaymentSAP') {
-        //         this.searchTermPaymentSAP = searchTerm;
-        //     } else if (columnName === 'Description') {
-        //         this.searchDescription = searchTerm;
-        //     }
+                this.filteredData = this.datasExport.filter(item =>
 
-        //     this.filterData();
-        // },
-
-        filterData() {
-
-            this.filteredData = this.datasExport.filter(item =>
-
-            (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
-            (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
-            (this.selectedTermPayment.length === 0 || this.selectedTermPayment.includes(item.TermOfPayment)) &&
-            (this.selectedTermPaymentDes.length === 0 || this.selectedTermPaymentDes.includes(item.TermOfPaymentDes)) &&
-            (this.selectedTermPaymentSAP.length === 0 || this.selectedTermPaymentSAP.includes(item.TermOfPaymentSAP)) &&
-            (this.selectedDescription.length === 0 || this.selectedDescription.includes(item.Description))
-            );
-        },
+                (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
+                (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
+                (this.selectedTermPayment.length === 0 || this.selectedTermPayment.includes(item.TermOfPayment)) &&
+                (this.selectedTermPaymentDes.length === 0 || this.selectedTermPaymentDes.includes(item.TermOfPaymentDes)) &&
+                (this.selectedTermPaymentSAP.length === 0 || this.selectedTermPaymentSAP.includes(item.TermOfPaymentSAP)) &&
+                (this.selectedDescription.length === 0 || this.selectedDescription.includes(item.Description))
+                );
+            },
 
 
-       
+        
+        }
     }
-}
 </script>
 
 <style scoped>

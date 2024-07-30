@@ -66,91 +66,87 @@
 </template>
 <!--  -->
 <script>
+    import store  from '../store/index.js';
 
-// import axios from "axios";
-// import Swal from 'sweetalert2';
-import store  from '../store/index.js';
+    export default {
 
+        data: () => ({
+            dialog: false,
+            valid: true,
+            showPassword: false,
+            disabled: false,
+            check: false,
+            check_user : false,
+            errorMessage:'',
+            username: '',
+            usernameRules: [
+                v => !!v || 'กรุณากรอกข้อมูล',
+                // v => v.length >= 8 || 'ชื่อผู้ใช้ต้องมีอักษรอย่างน้อย 8 ตัว'
+            ],
+            password: '',
+            passwordRules: [
+                v => !!v || 'กรุณากรอกข้อมูล',
+            ],
+            user: store.getters
+        }),
+        computed: {},
+        methods: {
+            encodeBase64(str) {
+            return btoa(str);
+            },
 
-export default {
+            async login(){
 
-    data: () => ({
-        dialog: false,
-        valid: true,
-        showPassword: false,
-        disabled: false,
-        check: false,
-        check_user : false,
-        errorMessage:'',
-        username: '',
-        usernameRules: [
-            v => !!v || 'กรุณากรอกข้อมูล',
-            // v => v.length >= 8 || 'ชื่อผู้ใช้ต้องมีอักษรอย่างน้อย 8 ตัว'
-        ],
-        password: '',
-        passwordRules: [
-            v => !!v || 'กรุณากรอกข้อมูล',
-        ],
-        user: store.getters
-    }),
-    computed: {},
-    methods: {
-        encodeBase64(str) {
-           return btoa(str);
-        },
+                if( this.$refs.form.validate()){
 
-        async login(){
+                    try {
+                        await store.dispatch('login',{
+                            username: this.username,
+                            password: this.password,
+                        })
 
-            if( this.$refs.form.validate()){
-
-                try {
-                    await store.dispatch('login',{
-                        username: this.username,
-                        password: this.password,
-                    })
-
-                    if(this.user.checkUser === "204")
-                        {
+                        if(this.user.checkUser === "204")
+                            {
+                                await this.$swal.fire({
+                                title: 'Error!',
+                                text: 'รหัสผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
+                                icon: 'error',
+                                confirmButtonText: 'Ok'
+                            })
+                        }
+                        else{
+                            await this.$router.push({ path: '/' });
+                            // location.reload();
                             await this.$swal.fire({
+                                position: 'center',
+                                title: 'เข้าสู่ระบบสำเร็จ',
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 1000
+                            })
+
+                            // const expiryDate = new Date().getTime() + (60 * 60 * 1000);
+                        
+                            // store.dispatch('setLoginExpiry', expiryDate);
+
+                            
+                        }
+
+
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                        await this.$swal.fire({
                             title: 'Error!',
                             text: 'รหัสผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
                             icon: 'error',
                             confirmButtonText: 'Ok'
                         })
                     }
-                    else{
-                        await this.$router.push({ path: '/' });
-                        // location.reload();
-                        await this.$swal.fire({
-                            position: 'center',
-                            title: 'เข้าสู่ระบบสำเร็จ',
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 1000
-                        })
-
-                        // const expiryDate = new Date().getTime() + (60 * 60 * 1000);
-                       
-                        // store.dispatch('setLoginExpiry', expiryDate);
-
-                        
-                    }
-
-
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    await this.$swal.fire({
-                        title: 'Error!',
-                        text: 'รหัสผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    })
                 }
+            
             }
-          
-        }
-    },
-}
+        },
+    }
 </script>
 
 <style scoped>

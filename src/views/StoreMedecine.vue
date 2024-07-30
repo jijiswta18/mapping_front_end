@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-tabs v-model="tab" class="mb-2">
-          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab)">{{ tab.name }}</v-tab>
+          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/StoreMedicine`)">{{ tab.name }}</v-tab>
         </v-tabs>
 
         <v-tabs-items v-model="tab">
@@ -27,10 +27,10 @@
                                         label="HNReceive Code / HNReceive Name" 
                                         code="HNReceive Code" 
                                         name="HNReceive name"
-                                        type="Receive" 
+                                        type="StoreMedecine" 
                                         @childEvent="getselectedItemStorMedicine"
                                     />
-                                    <!-- <InputSearchHN label="HNReceive Code / HNReceive Name" type="Receive"  @childEvent="getselectedItemHNOne"/> -->
+
                                 </v-col>
 
                                 <v-col cols="12" md="6"  align-self="center" class="d-flex justify-space-between align-center">
@@ -67,7 +67,6 @@
                             ref="formMapping"
                             v-model="valid"
                             lazy-validation
-                        
                         >
 
                      
@@ -143,14 +142,13 @@
                                             label="Text" 
                                             code="HNReceive Code" 
                                             name="HNReceive name"
-                                            type="Receive" 
+                                            type="StoreMedecine" 
                                             ref="selectHNReceive"
                                             :isError="isError"
                                             @childEvent="getselectedItemHNTwo"
                                         />
 
-                                        <!-- <InputSearchHN label="Text" type="Receive"  @childEvent="getselectedItemHNTwo" /> -->
-                                       
+
                                     </v-col>
                                 </v-row>
 
@@ -178,7 +176,7 @@
                                             label="Text" 
                                             code="GLSAR Code" 
                                             name="GLSAR Name" 
-                                            type="SapGL"
+                                            type="StoreMedecine"
                                             dataUpdate="GLSAR"
                                             ref="selectGLSAR"
                                             :isError="isError"
@@ -217,7 +215,7 @@
                                             label="Text" 
                                             code="GLSAP Code" 
                                             name="GLSAP Name" 
-                                            type="SapGL"
+                                            type="StoreMedecine"
                                             dataUpdate="GLSAP"
                                             ref="selectGLSAP"
                                             :isError="isError"
@@ -251,7 +249,7 @@
                                             label="Text" 
                                             code="SpecialGL Code" 
                                             name="SpecialGL Name"
-                                            type="SapGL"
+                                            type="StoreMedecine"
                                             dataUpdate="SpecialGL"
                                             ref="selectSpecialGL"
                                             :isError="isError"
@@ -295,7 +293,7 @@
                         </v-col>
 
                         <v-col class="text-right">
-                            <v-btn class="bg-blue"  @click="exportToExcel(filteredData, 'CashAndGL')">Export</v-btn>
+                            <v-btn class="bg-blue"  @click="exportToExcel(filteredData, 'StoreMedicine')">Export</v-btn>
                         </v-col>
                     </v-row>
                     <v-data-table
@@ -434,348 +432,331 @@
 
 
 </template>
+
 <script>
-// import axios from "axios";
-// import * as XLSX from 'xlsx';
-// import Swal from 'sweetalert2';
-import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
-import SelectSystemCode from '@/components/SelectSystemCode.vue';
-import InputSearch from '@/components/InputSearch.vue';
-import InputSearchHN from '@/components/InputSearchHN.vue';
-import HeaderSelect from '@/components/HeaderSelect.vue';
-export default{
-    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
-    data: () => ({
-        tab: null, // Selected tab
-        tabs: [
-            { name: 'Create/Change' },
-            { name: 'Export' },
-        ],
-        menu: false,
-        search: '',
-        valid:true,
-        loading: true,
-        dataHNReceive : [],
-        selectedItemStorMedicine: {},
-        selectedItemHNTwo: {},
-        selectedItemGLSAR:{},
-        selectedItemGLSAP: {},
-        selectedItemSpecialGL: {},
-        // datasExport : [],
-        filteredData: [],
-        selectedCompanyCode: [],
-        selectedSystemCode: [],
-        selectedHNReceiveCode: [],
-        selectedHNReceiveName: [],
-        // selectedEnglishName: [],
-        selectedGLSARCode: [],
-        selectedGLSARName: [],
-        selectedGLSAPCode: [],
-        // selectedGLSAPName: [],
-        selectedSpecialGL: [],
-        posting_key: null,
-        posting_key2: null,
-        headersDataHNActivity: [
-            { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-            { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-            { text: 'HNReceive Code', align: 'left', sortable: false, value: 'HNReceiveCode' },
-            { text: 'HNReceive Name', align: 'left', sortable: false, value: 'LocalName' },
-            // { text: 'English Name', align: 'left', sortable: false, value: 'EnglishName' },
-            { text: 'GLSAR Code', align: 'left', sortable: false, value: 'GLSARCode' },
-            { text: 'GLSAR Name', align: 'left', sortable: false, value: 'GLSARName' },
-            { text: 'GLSAP Code', align: 'left', sortable: false, value: 'GLSAPCode' },
-            // { text: 'Key2Description', align: 'left', sortable: false, value: 'Key2Description' },
-            { text: 'SpecialGL', align: 'left', sortable: false, value: 'SpecialGL' },
-            { text: 'Posting Key', align: 'left', sortable: false, value: 'PostingKey' },
-            { text: 'Posting Key2', align: 'left', sortable: false, value: 'PostingKey2' },
-            { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
-        ],
-        headersExport: [
-            { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-            { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-            { text: 'HNReceive Code', align: 'left', sortable: false, value: 'HNReceiveCode' },
-            { text: 'HNReceive Name', align: 'left', sortable: false, value: 'LocalName' },
-            // { text: 'English Name', align: 'left', sortable: false, value: 'EnglishName' },
-            { text: 'GLSAR Code', align: 'left', sortable: false, value: 'GLSARCode' },
-            { text: 'GLSAR Name', align: 'left', sortable: false, value: 'GLSARName' },
-            { text: 'GLSAP Code', align: 'left', sortable: false, value: 'GLSAPCode' },
-            // { text: 'GLSAP Name', align: 'left', sortable: false, value: 'GLSAPName' },
-            { text: 'SpecialGL', align: 'left', sortable: false, value: 'SpecialGL' },
-    
-        ],
-     
-        isError: false
-    
-    }),
-
-    watch: {
-      
-        selectedCompanyCode: {
+    import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
+    import SelectSystemCode from '@/components/SelectSystemCode.vue';
+    import InputSearch from '@/components/InputSearch.vue';
+    import InputSearchHN from '@/components/InputSearchHN.vue';
+    import HeaderSelect from '@/components/HeaderSelect.vue';
+    export default{
+        components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
+        data: () => ({
+            tab: null,
+            tabs: [{ name: 'Create/Change' },{ name: 'Export' }],
+            search: '',
+            loading: true,
+            dataHNReceive : [],
+            selectedItemStorMedicine: {},
+            selectedItemHNTwo: {},
+            selectedItemGLSAR:{},
+            selectedItemGLSAP: {},
+            selectedItemSpecialGL: {},
+            filteredData: [],
+            selectedCompanyCode: [],
+            selectedSystemCode: [],
+            selectedHNReceiveCode: [],
+            selectedHNReceiveName: [],
+            selectedGLSARCode: [],
+            selectedGLSARName: [],
+            selectedGLSAPCode: [],
+            selectedSpecialGL: [],
+            posting_key: null,
+            posting_key2: null,
+            headersDataHNActivity: [
+                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
+                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
+                { text: 'HNReceive Code', align: 'left', sortable: false, value: 'HNReceiveCode' },
+                { text: 'HNReceive Name', align: 'left', sortable: false, value: 'LocalName' },
+            
+                { text: 'GLSAR Code', align: 'left', sortable: false, value: 'GLSARCode' },
+                { text: 'GLSAR Name', align: 'left', sortable: false, value: 'GLSARName' },
+                { text: 'GLSAP Code', align: 'left', sortable: false, value: 'GLSAPCode' },
+                { text: 'SpecialGL', align: 'left', sortable: false, value: 'SpecialGL' },
+                { text: 'Posting Key', align: 'left', sortable: false, value: 'PostingKey' },
+                { text: 'Posting Key2', align: 'left', sortable: false, value: 'PostingKey2' },
+                { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
+            ],
+            headersExport: [
+                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
+                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
+                { text: 'HNReceive Code', align: 'left', sortable: false, value: 'HNReceiveCode' },
+                { text: 'HNReceive Name', align: 'left', sortable: false, value: 'LocalName' },
+                { text: 'GLSAR Code', align: 'left', sortable: false, value: 'GLSARCode' },
+                { text: 'GLSAR Name', align: 'left', sortable: false, value: 'GLSARName' },
+                { text: 'GLSAP Code', align: 'left', sortable: false, value: 'GLSAPCode' },
+                { text: 'SpecialGL', align: 'left', sortable: false, value: 'SpecialGL' },
         
-            handler() {
-                this.filterData();
+            ],
+        
+            isError: false
+        
+        }),
+
+        watch: {
+        
+            selectedCompanyCode: {
+            
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
             },
-            deep: true,
-        },
-    
-        selectedSystemCode: {
-            handler() {
-                this.filterData();
+        
+            selectedSystemCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
             },
-            deep: true,
-        },
 
-        selectedHNReceiveCode: {
-            handler() {
-                this.filterData();
+            selectedHNReceiveCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
             },
-            deep: true,
-        },
 
-        selectedHNReceiveName: {
-            handler() {
-                this.filterData();
+            selectedHNReceiveName: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
             },
-            deep: true,
-        },
 
-        // selectedEnglishName: {
-        //     handler() {
-        //         this.filterData();
-        //     },
-        //     deep: true,
-        // },
+            // selectedEnglishName: {
+            //     handler() {
+            //         this.filterData();
+            //     },
+            //     deep: true,
+            // },
 
-        selectedGLSARCode: {
-            handler() {
-                this.filterData();
+            selectedGLSARCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
             },
-            deep: true,
-        },
 
-        selectedGLSARName: {
-            handler() {
-                this.filterData();
+            selectedGLSARName: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
             },
-            deep: true,
-        },
 
-        selectedGLSAPCode: {
-            handler() {
-                this.filterData();
+            selectedGLSAPCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
             },
-            deep: true,
-        },
 
-        // selectedGLSAPName: {
-        //     handler() {
-        //         this.filterData();
-        //     },
-        //     deep: true,
-        // },
+            // selectedGLSAPName: {
+            //     handler() {
+            //         this.filterData();
+            //     },
+            //     deep: true,
+            // },
 
-        selectedSpecialGL: {
-            handler() {
-                this.filterData();
+            selectedSpecialGL: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
             },
-            deep: true,
+
+
+        
         },
 
+        methods: {
+        
+            async removeCashGL(){
 
-      
-    },
+                await this.$swal.fire({
+                    title: "Warning",
+                    text: "Are you sure you want to delete this item? ",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#52A1DB",
+                    cancelButtonColor: "#52A1DB",
+                    confirmButtonText: "OK",
+                    customClass: {
+                    title: 'text-warning' // Add your custom class here
+                }
+                    }).then(async(result) => {
+                    if (result.isConfirmed) {
+                        console.log(result.isConfirmed);
+                        // let fd  = {
+                        //     "companyCode"       : selectCompanyCode,
+                        //     "systemCode"        : selectSystemCode,
+                        //     "hnActivityCode"    : this.selectedItemHNTwo.Code,
+                        //     "localName"         : this.selectedItemHNTwo.LocalName,
+                        //     "englishName"       : this.selectedItemHNTwo.EnglishName,
+                        //     "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
+                        //     "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
+                        //     "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
+                        //     "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
+                        //     "postingKey"        : this.posting_key
+                        // }
+                        // let MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
+                        // let response                    =    await axios.post(`${MappingActivityGLPath}`, fd)
+                        // console.log(response);
+                        // console.log(fd);
 
-    methods: {
-        async getExportStoreMedecine(){
-            try {
-                this.loading        = await true
-                let StoreMedecinePath = '/api/SAP/StoreMedecine'
-                let response        = await this.$axios.get(StoreMedecinePath);
-                setTimeout(() => {
-                    this.loading = false;
-                    this.datasExport = response.data;
-                    this.filteredData = this.datasExport.slice();
-                   
-                }, 500);
-            } catch (error) {
-                this.loading = await false
-                console.error('Error fetching data:', error);
-            }
-        },
-        async removeCashGL(){
+                        // // if(response){
+                        //     Swal.fire({
+                        //         icon: "success",
+                        //         title: "Complete",
+                        //         text: "You data was saved.",
+                        //         customClass: {
+                        //             title: 'text-success' // Add your custom class here
+                        //         }
+                        //     });
+                        // // }
 
-            await this.$swal.fire({
-                title: "Warning",
-                text: "Are you sure you want to delete this item? ",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#52A1DB",
-                cancelButtonColor: "#52A1DB",
-                confirmButtonText: "OK",
-                customClass: {
-                title: 'text-warning' // Add your custom class here
-            }
-                }).then(async(result) => {
-                if (result.isConfirmed) {
-                    console.log(result.isConfirmed);
-                    // let fd  = {
-                    //     "companyCode"       : selectCompanyCode,
-                    //     "systemCode"        : selectSystemCode,
-                    //     "hnActivityCode"    : this.selectedItemHNTwo.Code,
-                    //     "localName"         : this.selectedItemHNTwo.LocalName,
-                    //     "englishName"       : this.selectedItemHNTwo.EnglishName,
-                    //     "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
-                    //     "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
-                    //     "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
-                    //     "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
-                    //     "postingKey"        : this.posting_key
-                    // }
-                    // let MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
-                    // let response                    =    await axios.post(`${MappingActivityGLPath}`, fd)
-                    // console.log(response);
-                    // console.log(fd);
+                
+                    }
+                });
+            },
 
-                    // // if(response){
-                    //     Swal.fire({
-                    //         icon: "success",
-                    //         title: "Complete",
-                    //         text: "You data was saved.",
-                    //         customClass: {
-                    //             title: 'text-success' // Add your custom class here
-                    //         }
-                    //     });
-                    // // }
+            async checkStoreMedicine(){
+
+                if(this.selectedItemStorMedicine){
+                    this.checkInputData('StoreMedicine', this.$refs.StoreMedicineField)
+                }else{
+                    try {
+                        this.loading                = await true
+                        let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetStoreMedicineFieldID?StoreMedicineFieldCode=${this.selectedItemStorMedicine.Code}`
+                        let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                        this.dataHNReceive         = response.data;
+                    
+                    } catch (error) {
+                        this.loading = await false
+                        console.error('Error fetching data:', error);
+                    }
+                }
+            
+            },
+            
+            async MappingCashGL(){
 
             
-                }
-            });
-        },
+                // เช็ค value
+                if(this.$refs.formMapping.validate()){
 
-        async checkStoreMedicine(){
+                    // เช็คค่า dataHNReceive ใน Table ที่จะ Mapping
+                    if(this.dataHNReceive.length > 0){
 
-            if(this.selectedItemStorMedicine){
-                this.checkInputData('StoreMedicine', this.$refs.StoreMedicineField)
-            }else{
-                try {
-                    this.loading                = await true
-                    let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetStoreMedicineFieldID?StoreMedicineFieldCode=${this.selectedItemStorMedicine.Code}`
-                    let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                    this.dataHNReceive         = response.data;
-                  
-                } catch (error) {
-                    this.loading = await false
-                    console.error('Error fetching data:', error);
-                }
-            }
-           
-        },
-        
-        async MappingCashGL(){
+            
 
-         
-            // เช็ค value
-            if(this.$refs.formMapping.validate()){
+                        const HNReceive = this.dataHNReceive[0].HNReceiveCode
+                        const selectedHNReceive = this.selectedItemHNTwo.Code
 
-                // เช็คค่า dataHNReceive ใน Table ที่จะ Mapping
-                if(this.dataHNReceive.length > 0){
+                        
+                        const GLSAR = this.dataHNReceive[0].GLSARCode
+                        const selectedItemGLSAR = this.selectedItemGLSAR.GLNo
 
-        
+                        const GLSAP = this.dataHNReceive[0].GLSAPCode
+                        const selectedItemGLSAP = this.selectedItemGLSAP.GLNo
 
-                    const HNReceive = this.dataHNReceive[0].HNReceiveCode
-                    const selectedHNReceive = this.selectedItemHNTwo.Code
+                        const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
+                        const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
 
-                    
-                    const GLSAR = this.dataHNReceive[0].GLSARCode
-                    const selectedItemGLSAR = this.selectedItemGLSAR.GLNo
+                        // เช็คค่า HNReceive ในตารางต้องตรงกับ selectedHNReceive ที่เลือก หรือ GLSAR และ GLSAP ข้อมูลต้องไม่เหมือนกัน
+                        if(HNReceive !== selectedHNReceive || GLSAR === selectedItemGLSAR && GLSAP === selectedItemGLSAP){
+                            this.$swal.fire({
+                                icon: "error",
+                                title: "Incomplete",
+                                text: "Unable to update . Please check data agian.",
+                                customClass: {
+                                    title: 'text-error' // Add your custom class here
+                                }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        this.isError = true
+                                    }
+                                });
 
-                    const GLSAP = this.dataHNReceive[0].GLSAPCode
-                    const selectedItemGLSAP = this.selectedItemGLSAP.GLNo
+                        }else{
+                            await this.$swal.fire({
+                                title: "Warning",
+                                text: "Data has already map. Are you sure to map again? ",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#52A1DB",
+                                cancelButtonColor: "#52A1DB",
+                                confirmButtonText: "OK",
+                                customClass: {
+                                    title: 'text-warning' // Add your custom class here
+                                }
+                            }).then(async(result) => {
+                                if (result.isConfirmed) {
+                                    let fd  = {
+                                        "companyCode": selectCompanyCode,
+                                        "systemCode": selectSystemCode,
+                                        "hnReceiveCode": this.dataHNReceive[0].HNReceiveCode === null ? '' : this.dataHNReceive[0].HNReceiveCode,
+                                        "localName": this.dataHNReceive[0].LocalName === null ? '' : this.dataHNReceive[0].LocalName,
+                                        "englishName": this.dataHNReceive[0].EnglishName === null ? '' : this.dataHNReceive[0].EnglishName,
+                                        "glsarCode": this.selectedItemGLSAR.GLNo,
+                                        "glsarName": this.selectedItemGLSAR.GLDes,
+                                        "postingKey": this.posting_key,
+                                        "postingKey2": this.posting_key2,
+                                        "glsapCode": this.selectedItemGLSAP.GLNo,
+                                        "glsapName": this.selectedItemGLSAP.GLDes,
+                                        "key2Description": "",
+                                        "specialGL":this.selectedItemSpecialGL.GLNo,
+                                        // "specialGL":this.selectedItemSpecialGL.GLDes,
+                                    }
+                                    try {
+                                        
+                                        const MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
+                                        await this.$axios.post(`${MappingCashGLPath}`, fd)
 
-                    const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
-                    const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
+                                        
+                                    
+                                        this.$swal.fire({
+                                            icon: 'success',
+                                            title: 'Complete',
+                                            text: 'Your data was saved.',
+                                            customClass: {
+                                            title: 'text-success', // Example of adding custom class
+                                            },
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                this.clearData(); // Call method to clear data
+                                                this.checkHNReceive()
+                                            }
+                                        });
 
-                    // เช็คค่า HNReceive ในตารางต้องตรงกับ selectedHNReceive ที่เลือก หรือ GLSAR และ GLSAP ข้อมูลต้องไม่เหมือนกัน
-                    if(HNReceive !== selectedHNReceive || GLSAR === selectedItemGLSAR && GLSAP === selectedItemGLSAP){
+                                    } catch (error) {
+                                        console.log(error);
+                                        this.$swal.fire({
+                                            icon: "error",
+                                            title: "Incomplete",
+                                            text: "Unable to update . Please check data agian.",
+                                            customClass: {
+                                                title: 'text-error' // Add your custom class here
+                                            }
+                                        });
+                                    }
+
+                                }
+
+                            });
+                        }
+                    }else{
                         this.$swal.fire({
                             icon: "error",
                             title: "Incomplete",
-                            text: "Unable to update . Please check data agian.",
+                            text: "Unable to update. Please check data again.",
                             customClass: {
                                 title: 'text-error' // Add your custom class here
                             }
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    this.isError = true
-                                }
-                            });
-
-                    }else{
-                        await this.$swal.fire({
-                            title: "Warning",
-                            text: "Data has already map. Are you sure to map again? ",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#52A1DB",
-                            cancelButtonColor: "#52A1DB",
-                            confirmButtonText: "OK",
-                            customClass: {
-                                title: 'text-warning' // Add your custom class here
-                            }
-                        }).then(async(result) => {
-                            if (result.isConfirmed) {
-                                let fd  = {
-                                    "companyCode": selectCompanyCode,
-                                    "systemCode": selectSystemCode,
-                                    "hnReceiveCode": this.dataHNReceive[0].HNReceiveCode === null ? '' : this.dataHNReceive[0].HNReceiveCode,
-                                    "localName": this.dataHNReceive[0].LocalName === null ? '' : this.dataHNReceive[0].LocalName,
-                                    "englishName": this.dataHNReceive[0].EnglishName === null ? '' : this.dataHNReceive[0].EnglishName,
-                                    "glsarCode": this.selectedItemGLSAR.GLNo,
-                                    "glsarName": this.selectedItemGLSAR.GLDes,
-                                    "postingKey": this.posting_key,
-                                    "postingKey2": this.posting_key2,
-                                    "glsapCode": this.selectedItemGLSAP.GLNo,
-                                    "glsapName": this.selectedItemGLSAP.GLDes,
-                                    "key2Description": "",
-                                    "specialGL":this.selectedItemSpecialGL.GLNo,
-                                    // "specialGL":this.selectedItemSpecialGL.GLDes,
-                                }
-                                try {
-                                    
-                                    const MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                    await this.$axios.post(`${MappingCashGLPath}`, fd)
-
-                                    
-                                
-                                    this.$swal.fire({
-                                        icon: 'success',
-                                        title: 'Complete',
-                                        text: 'Your data was saved.',
-                                        customClass: {
-                                        title: 'text-success', // Example of adding custom class
-                                        },
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            this.clearData(); // Call method to clear data
-                                            this.checkHNReceive()
-                                        }
-                                    });
-
-                                } catch (error) {
-                                    console.log(error);
-                                    this.$swal.fire({
-                                        icon: "error",
-                                        title: "Incomplete",
-                                        text: "Unable to update . Please check data agian.",
-                                        customClass: {
-                                            title: 'text-error' // Add your custom class here
-                                        }
-                                    });
-                                }
-
-                            }
-
-                        });
+                        })
                     }
+                
                 }else{
                     this.$swal.fire({
                         icon: "error",
@@ -786,148 +767,94 @@ export default{
                         }
                     })
                 }
-               
-            }else{
-                this.$swal.fire({
-                    icon: "error",
-                    title: "Incomplete",
-                    text: "Unable to update. Please check data again.",
-                    customClass: {
-                        title: 'text-error' // Add your custom class here
-                    }
-                })
-            }
-        },
+            },
 
-        handleTabClick(tab) {
-            switch (tab.name) {
-                case "Create/Change":
-                    break;
-                case "Export":
-                    this.getExportStoreMedecine()
-                    break;
-                default:
-                    // Default action
-                    break;
-            }
-            // Add custom logic here, such as updating data or calling methods
-        },
+            getselectedItemStorMedicine(data) {
+                this.selectedItemStorMedicine = data;
+            },
 
-       
-        getselectedItemStorMedicine(data) {
-              this.selectedItemStorMedicine = data;
-        },
-        getselectedItemHNTwo(data) {
-              this.selectedItemHNTwo = data;
-        },
-        getselectedItemGLSAR(data) {
-              this.selectedItemGLSAR = data;
-        },
-    
-        getselectedItemGLSAP(data){
-            this.selectedItemGLSAP = data;
-        },
-        getselectedItemSpecialGL(data){
-            this.selectedItemSpecialGL = data;
-        },
-        // updateSelectedCompanyCode(value) {
-        //     this.selectedCompanyCode = value;
-        // },
-        // updateSelectedSystemCode(value) {
-        //     this.selectedSystemCode = value;
-        // },
-        updateSelectedHNReceiveCode(value) {
-            this.selectedHNReceiveCode = value;
-        },
-        updateSelectedHNReceiveName(value) {
-            this.selectedHNReceiveName = value;
-        },
-        // updateSelectedEnglishName(value) {
-        //     this.selectedEnglishName = value;
-        // },
-        updateSelectedGLSARCode(value) {
-            this.selectedGLSARCode = value;
-        },
-        updateSelectedGLSARName(value) {
-            this.selectedGLSARName = value;
-        },
-        updateSelectedGLSAPCode(value) {
-            this.selectedGLSAPCode = value;
-        },
-        // updateSelectedGLSAPName(value) {
-        //     this.selectedGLSAPName = value;
-        // },
-        updateSelectedSpecialGL(value) {
-            this.selectedSpecialGL = value;
-        },
-       
-        // searchCompanies(columnName, searchTerm) {
-        //     if(columnName === 'CompanyCode'){
-        //         this.searchCompanyCode = searchTerm;
-        //     }else if (columnName === 'SystemCode') {
-        //         this.searchSystemCode = searchTerm;
-        //     }else if (columnName === 'HNReceiveCode') {
-        //         this.searchHNReceiveCode = searchTerm;
-        //     } else if (columnName === 'LocalName') {
-        //         this.searchLocalName = searchTerm;
-        //     // } else if (columnName === 'EnglishName') {
-        //     //     this.searchEnglishName = searchTerm;
-        //     } else if (columnName === 'GLSARCode') {
-        //         this.searchGLSARCode = searchTerm;
-        //     } else if (columnName === 'GLSARName') {
-        //         this.searchGLSARName = searchTerm;
-        //     } else if (columnName === 'GLSAPCode') {
-        //         this.searchGLSAPCode = searchTerm; 
-        //     // } else if (columnName === 'GLSAPName') {
-        //     //     this.searchGLSAPName = searchTerm;  
-        //     } else if (columnName === 'SpecialGL') {
-        //         this.searchSpecialGL = searchTerm;  
-        //     }
+            getselectedItemHNTwo(data) {
+                this.selectedItemHNTwo = data;
+            },
 
-        //     this.filterData();
-        // }, 
+            getselectedItemGLSAR(data) {
+                this.selectedItemGLSAR = data;
+            },
         
-        filterData() {
+            getselectedItemGLSAP(data){
+                this.selectedItemGLSAP = data;
+            },
 
-
-            this.filteredData = this.datasExport.filter(item =>
-
-            (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
-            (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
-            (this.selectedHNReceiveCode.length === 0 || this.selectedHNReceiveCode.includes(item.HNReceiveCode)) &&
-            (this.selectedHNReceiveName.length === 0 || this.selectedHNReceiveName.includes(item.LocalName)) &&
-            // (this.selectedEnglishName.length === 0 || this.selectedEnglishName.includes(item.EnglishName)) &&
-            (this.selectedGLSARCode.length === 0 || this.selectedGLSARCode.includes(item.GLSARCode)) &&
-            (this.selectedGLSARName.length === 0 || this.selectedGLSARName.includes(item.GLSARName)) &&
-            (this.selectedGLSAPCode.length === 0 || this.selectedGLSAPCode.includes(item.GLSAPCode)) &&
-            // (this.selectedGLSAPName.length === 0 || this.selectedGLSAPName.includes(item.GLSAPName)) &&
-            (this.selectedSpecialGL.length === 0 || this.selectedSpecialGL.includes(item.SpecialGL))
+            getselectedItemSpecialGL(data){
+                this.selectedItemSpecialGL = data;
+            },
+        
+            updateSelectedHNReceiveCode(value) {
+                this.selectedHNReceiveCode = value;
+            },
+            updateSelectedHNReceiveName(value) {
+                this.selectedHNReceiveName = value;
+            },
+        
+            updateSelectedGLSARCode(value) {
+                this.selectedGLSARCode = value;
+            },
             
-            );
-        },
-        clearData(){
-            this.$refs.formMapping.resetValidation()
-            this.$refs.selectHNReceive.selectedItem = {}
-            this.$refs.selectGLSAR.selectedItem = {},
-            this.$refs.selectGLSAP.selectedItem = {},
-            this.$refs.selectSpecialGL.selectedItem = {},
-            this.$refs.selectCompanyCode.selecItem = null 
-            this.$refs.selectSystemCode.selecItem = null 
-            this.selectedItemHNTwo = {},
-            this.selectedItemGLSAR = {},
-            this.selectedItemGLSAP = {},
-            this.selectedItemSpecialGL = {},
-            this.posting_key = null,
-            this.posting_key2 = null,
-            this.isError = false
-        },
-        
+            updateSelectedGLSARName(value) {
+                this.selectedGLSARName = value;
+            },
 
+            updateSelectedGLSAPCode(value) {
+                this.selectedGLSAPCode = value;
+            },
+        
+            updateSelectedSpecialGL(value) {
+                this.selectedSpecialGL = value;
+            },
+        
+        
+            filterData() {
+
+
+                this.filteredData = this.datasExport.filter(item =>
+
+                (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
+                (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
+                (this.selectedHNReceiveCode.length === 0 || this.selectedHNReceiveCode.includes(item.HNReceiveCode)) &&
+                (this.selectedHNReceiveName.length === 0 || this.selectedHNReceiveName.includes(item.LocalName)) &&
+            
+                (this.selectedGLSARCode.length === 0 || this.selectedGLSARCode.includes(item.GLSARCode)) &&
+                (this.selectedGLSARName.length === 0 || this.selectedGLSARName.includes(item.GLSARName)) &&
+                (this.selectedGLSAPCode.length === 0 || this.selectedGLSAPCode.includes(item.GLSAPCode)) &&
+
+                (this.selectedSpecialGL.length === 0 || this.selectedSpecialGL.includes(item.SpecialGL))
+                
+                );
+            },
+            clearData(){
+                this.$refs.formMapping.resetValidation()
+                this.$refs.selectHNReceive.selectedItem = {}
+                this.$refs.selectGLSAR.selectedItem = {},
+                this.$refs.selectGLSAP.selectedItem = {},
+                this.$refs.selectSpecialGL.selectedItem = {},
+                this.$refs.selectCompanyCode.selecItem = null 
+                this.$refs.selectSystemCode.selecItem = null 
+                this.selectedItemHNTwo = {},
+                this.selectedItemGLSAR = {},
+                this.selectedItemGLSAP = {},
+                this.selectedItemSpecialGL = {},
+                this.posting_key = null,
+                this.posting_key2 = null,
+                this.isError = false
+            },
+            
+
+        }
     }
-}
 </script>
 
 <style scoped>
+
     .v-tab{
         background: #D9D9D9!important;
         color: #000!important;

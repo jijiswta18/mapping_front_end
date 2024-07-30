@@ -1,7 +1,8 @@
 <template>
     <div>
+
         <v-tabs v-model="tab" class="mb-2">
-          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab)">{{ tab.name }}</v-tab>
+          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/AccountGroup`)">{{ tab.name }}</v-tab>
         </v-tabs>
 
         <v-tabs-items v-model="tab">
@@ -37,7 +38,6 @@
                                 <v-col cols="12" md="6"  class="d-flex justify-space-between align-center">
                                     
                                     <span class="f-12 pr-3">AR Compose Category Name : {{ selectedItemHNOne.LocalName }}</span>
-                                    <!-- <v-btn @click="checkHNReceive(selectedItemHNOne.Code)" class="bg-orange">Check</v-btn> -->
                                     <v-btn @click="checkAccountGroup" class="bg-orange">Check</v-btn>
                                 </v-col>
                             </v-row>
@@ -50,8 +50,8 @@
                             :items="checkData"
                             density="compact"
                             item-key="name"
-                            :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                             class="style-table"
+                            hide-default-footer
                         >
                             <template v-slot:[`item.Action`]="{ item }">
                                 <v-btn density="compact" icon class="bg-red text-white" @click="removeHNActivity(item)">
@@ -75,7 +75,7 @@
                      
                         <v-row class="mb-3">
 
-                            <v-col cols="12" md="2"></v-col>
+                            <v-col cols="12" md="2" class="d-xs-none"></v-col>
 
                             <v-col cols="12" md="4">
                                 <SelectCompanyCode ref="selectCompanyCode"/>
@@ -87,7 +87,7 @@
                                 <SelectSystemCode ref="selectSystemCode"/>
                             </v-col>
 
-                            <v-col cols="12" md="2"></v-col>
+                            <v-col cols="12" md="2" class="d-xs-none"></v-col>
                          
 
                         </v-row>
@@ -101,11 +101,10 @@
                             <v-col cols="12" md="5">
                                 <h2 class="f-16">AR Compose Category</h2>
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4" >
+                                    <v-col>
                                         <span class="f-12">AR Compose Category</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
-
+                                    <v-col cols="8">
                                         <InputSearchHN 
                                             title="AR Compose Category"
                                             label="AR Compose Category" 
@@ -123,10 +122,10 @@
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">Description</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedItemAccGroup2.LocalName}}</p>
                                     </v-col>
                                 </v-row>
@@ -136,10 +135,10 @@
                             <v-col cols="12" md="5">
                                 <h2 class="f-16">KTOKK</h2>
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">KTOKK</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
 
                                         <InputSearch 
                                             title="KTOKK"
@@ -157,10 +156,10 @@
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">Description</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedItemKTOKK.GLDes}}</p>
                                     </v-col>
                                     
@@ -179,10 +178,10 @@
                             <v-col cols="12" md="5">
                                 <h2 class="f-16">AR_AKONT</h2>
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">AR_AKONT</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
 
                                         <InputSearch 
                                             title="AR_AKONT"
@@ -200,10 +199,10 @@
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">Description</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedItemAR_AKONT.LocalName}}</p>
                                     </v-col>
                                 </v-row>
@@ -213,10 +212,10 @@
                             <v-col cols="12" md="5">
                                 <h2 class="f-16">AP_AKONT</h2>
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">AP_AKONT</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
 
                                         <InputSearch 
                                             title="AP_AKONT"
@@ -235,10 +234,10 @@
                                 </v-row>
 
                                 <v-row class="mt-3">
-                                    <v-col cols="12" md="4">
+                                    <v-col>
                                         <span class="f-12">Description</span>
                                     </v-col>
-                                    <v-col cols="12" md="8">
+                                    <v-col cols="8">
                                         <p class="f-12 border-bottom pb-0 h25">{{selectedItemAP_AKONT.LocalName}}</p>
                                     </v-col>
                                 </v-row>
@@ -247,8 +246,10 @@
                         
                         </v-row>
                         
-                   
-                        <v-btn @click="MappingCashGL" class="bg-orange" block>Update Data</v-btn>
+                            <div class="text-center">
+                                <v-btn @click="MappingCashGL" class="bg-orange">Update Data</v-btn>
+                            </div>
+                       
                         </v-form>
 
                     
@@ -269,7 +270,7 @@
                         </v-col>
 
                         <v-col class="text-right">
-                            <v-btn class="bg-blue"  @click="exportToExcel(filteredData)">Export</v-btn>
+                            <v-btn class="bg-blue"  @click="exportToExcel(filteredData, 'ARAccountGroup')">Export</v-btn>
                         </v-col>
                     </v-row>
                     <v-data-table
@@ -362,11 +363,10 @@
                 </v-card>
             </v-tab-item>
         </v-tabs-items>
-
+        
     </div>
-
-
 </template>
+
 <script>
     import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
     import SelectSystemCode from '@/components/SelectSystemCode.vue';
@@ -376,22 +376,13 @@
     export default{
         components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
         data: () => ({
-            // menu: false,
-            // selectedItem: null,
             search: '',
-            // selectedItems: [],
-            // scrollTo: null,
-            // valid:true,
             loading: true,
-            // checkData : [],
             selectedItemAccGroup: {},
             selectedItemAccGroup2: {},
             selectedItemKTOKK: {},
             selectedItemAR_AKONT: {},
             selectedItemAP_AKONT: {},
-            // selectedTermPayment: {},
-            // selectedTermPaymentSAP: {},
-            // datasExport : [],
             filteredData: [],
             selectedCompanyCode: [], 
             selectedARComposeCategory: [], 
@@ -400,8 +391,6 @@
             selectedKTOKK: [], 
             selectedDescriptionTwo: [], 
             selectedARAKONT: [], 
-            // posting_key: null,
-            // posting_key2: null,
             headersData: [
                 { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
                 { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
@@ -410,7 +399,6 @@
                 { text: 'KTOKK', align: 'left', sortable: false, value: 'KTOKK' },
                 { text: 'Description', align: 'left', sortable: false, value: 'Description' },
                 { text: 'AR_AKONT', align: 'left', sortable: false, value: 'ARAKONT' },
-                // { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
             ],
             headersExport: [
                 { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
@@ -472,12 +460,28 @@
 
         },
         methods: {
-            // updateSelectedSystemCode(value) {
-            //     this.selectedSystemCode = value;
+
+            // getselectedItemAccGroup(data) {
+            //     this.selectedItemAccGroup = data;
             // },
-            // updateSelectedCompanyCode(value) {
-            //     this.selectedCompanyCode = value;
+            // getselectedItemAccGroup2(data) {
+            //     this.selectedItemAccGroup2 = data;
             // },
+
+            // getselectedItemKTOKK(data) {
+            //     this.selectedItemKTOKK = data;
+            
+            // },
+        
+            // getselectedItemAR_AKONT(data){
+            //     this.selectedItemAR_AKONT = data;
+            // },
+
+            // getselectedItemAP_AKONT(data){
+            //     this.selectedItemAP_AKONT = data;
+            // },
+
+
             updateSelectedARComposeCategory(value){
                 this.selectedARComposeCategory = value;
             },
@@ -493,35 +497,7 @@
             updateSelectedARAKONT(value){
                 this.selectedARAKONT = value;
             },
-            handleTabClick(tab) {
-                switch (tab.name) {
-                    case "Create/Change":
-                        break;
-                    case "Export":
-                        this.getExportAccountGroup()
-                        break;
-                    default:
-                        // Default action
-                        break;
-                }
-
-            },
-            async getExportAccountGroup(){
-                try {
-                    this.loading        = await true
-                    let ActivityGLPath = '/api/SAP/AccountGroup'
-                    let response        = await this.$axios.get(ActivityGLPath);
-                    setTimeout(() => {
-                        this.loading = false;
-                        this.datasExport = response.data;
-                        this.filteredData = this.datasExport.slice();
-                    }, 300);
-                } catch (error) {
-                    this.loading = await false
-                    // console.error('Error fetching data:', error);
-                }
-            },
-           
+        
             async removeHNActivity(value){
                 console.log(value);
                 await this.$swal.fire({
@@ -685,28 +661,6 @@
                 }
             },
 
-           
-            getselectedItemAccGroup(data) {
-                this.selectedItemAccGroup = data;
-            },
-            getselectedItemAccGroup2(data) {
-                this.selectedItemAccGroup2 = data;
-            },
-
-            getselectedItemKTOKK(data) {
-                this.selectedItemKTOKK = data;
-            
-            },
-        
-            getselectedItemAR_AKONT(data){
-                this.selectedItemAR_AKONT = data;
-            },
-
-            getselectedItemAP_AKONT(data){
-                this.selectedItemAP_AKONT = data;
-            },
-
-           
             filterData() {
 
                 this.filteredData = this.datasExport.filter(item =>
@@ -727,6 +681,7 @@
 </script>
 
 <style scoped>
+
     .v-tab{
         background: #D9D9D9!important;
         color: #000!important;

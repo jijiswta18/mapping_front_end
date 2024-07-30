@@ -1,16 +1,18 @@
 <template>
     <div>
         <v-tabs v-model="tab" class="mb-2">
-          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab)">{{ tab.name }}</v-tab>
+          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/ActivityGL`)">{{ tab.name }}</v-tab>
         </v-tabs>
 
         <v-tabs-items v-model="tab">
+
             <!-- Create/Change -->
             <v-tab-item>
                 <v-card outlined class="mx-auto style-card" color="surface-variant">
                     <div class="box-check">
                         <h1 class="f-20 mb-1">Check</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
+                        
                         <v-container>
                             <v-row class="my-2">
 
@@ -34,7 +36,6 @@
                                     />
 
                                 </v-col>
-
                                 <v-col cols="12" md="6"  class="d-flex justify-space-between align-center">
                                     
                                     <span class="f-12 pr-3">HNActivity Name : {{ selectedItemHNOne.LocalName }}</span>
@@ -52,11 +53,11 @@
                             :items="dataHNActivity"
                             density="compact"
                             item-key="name"
-                            :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                             class="style-table"
+                            hide-default-footer
                         >
                             <template v-slot:[`item.Action`]="{ item }">
-                                <v-btn density="compact" icon class="bg-red text-white" @click="removeHNActivity(item)">
+                                <v-btn density="compact" icon class="bg-red text-white icon-delete" @click="removeHNActivity(item)">
                                     <v-icon>mdi-close</v-icon>
                                 </v-btn>
                             </template>
@@ -69,7 +70,6 @@
 
                         <v-form ref="formMapping" v-model="valid" lazy-validation>
 
-                     
                         <v-row class="mb-3">
 
                             <v-col cols="12" md="4">
@@ -97,15 +97,11 @@
                                             clearable 
                                         ></v-text-field>
                                     </v-col>
-                                </v-row>
-                                 
+                                </v-row> 
                             </v-col>
-
                         </v-row>
 
                         <div class=" border-bottom pb-0"></div>
-
-                
                         <v-row class="my-2">
                             
                             <v-col cols="12" md="4">
@@ -226,7 +222,10 @@
                          
                         </v-row>
                         <p v-if="isError" class="text-error f-13">*ข้อมูลไม่ถูกต้อง</p>
-                        <v-btn @click="MappingActivityGL" class="bg-orange" block>Update Data</v-btn>
+                        <div class="text-center">
+                            <v-btn @click="MappingActivityGL" class="bg-orange">Update Data</v-btn>
+                        </div>
+                      
                         </v-form>
 
                     
@@ -247,7 +246,7 @@
                         </v-col>
 
                         <v-col class="text-right">
-                            <v-btn class="bg-blue"  @click="exportToExcel(filteredData, 'TMHNActivity')">Export</v-btn>
+                            <v-btn class="bg-blue"  @click="exportToExcel">Export</v-btn>
                         </v-col>
                     </v-row>
                     
@@ -268,7 +267,6 @@
                                 :selected-value="selectedCompanyCode"
                                 :select-items="selectOptionsForColumn('CompanyCode')"
                                 @update:selectedValue="updateSelectedCompanyCode"
-                                @search="searchCompanies('CompanyCode', $event)"
                                 @sort="handleSort('CompanyCode', $event)"
                             />
                         </template>
@@ -280,7 +278,6 @@
                                 :selected-value="selectedSystemCode"
                                 :select-items="selectOptionsForColumn('SystemCode')"
                                 @update:selectedValue="updateSelectedSystemCode"
-                                @search="searchCompanies('SystemCode', $event)"
                                 @sort="handleSort('SystemCode', $event)"
                             />
                         </template>
@@ -292,7 +289,6 @@
                                 :selected-value="selectedHNActivity"
                                 :select-items="selectOptionsForColumn('HNActivityCode')"
                                 @update:selectedValue="updateSelectedHNActivity"
-                                @search="searchCompanies('HNActivityCode', $event)"
                                 @sort="handleSort('HNActivityCode', $event)"
                             />
                         </template>
@@ -304,7 +300,6 @@
                                 :selected-value="selectedHNActivityName"
                                 :select-items="selectOptionsForColumn('LocalName')"
                                 @update:selectedValue="updateSelectedHNActivityName"
-                                @search="searchCompanies('LocalName', $event)"
                                 @sort="handleSort('LocalName', $event)"
                             />
                         </template>
@@ -317,7 +312,6 @@
                                 :selected-value="selectedGLOPDCode"
                                 :select-items="selectOptionsForColumn('GLSAPCodeOPD')"
                                 @update:selectedValue="updateSelectedGLOPDCode"
-                                @search="searchCompanies('GLSAPCodeOPD', $event)"
                                 @sort="handleSort('GLSAPCodeOPD', $event)"
                             />
                         </template>
@@ -329,7 +323,6 @@
                                 :selected-value="selectedGLOPDName"
                                 :select-items="selectOptionsForColumn('GLSAPNameOPD')"
                                 @update:selectedValue="updateSelectedGLOPDName"
-                                @search="searchCompanies('GLSAPNameOPD', $event)"
                                 @sort="handleSort('GLSAPNameOPD', $event)"
                             />
                         </template>
@@ -341,7 +334,6 @@
                                 :selected-value="selectedGLIPDCode"
                                 :select-items="selectOptionsForColumn('GLSAPCodeIPD')"
                                 @update:selectedValue="updateSelectedGLIPDCode"
-                                @search="searchCompanies('GLSAPCodeIPD', $event)"
                                 @sort="handleSort('GLSAPCodeIPD', $event)"
                             />
                         </template>
@@ -353,7 +345,6 @@
                                 :selected-value="selectedGLIPDName"
                                 :select-items="selectOptionsForColumn('GLSAPNameIPD')"
                                 @update:selectedValue="updateSelectedGLIPDName"
-                                @search="searchCompanies('GLSAPNameIPD', $event)"
                                 @sort="handleSort('GLSAPNameIPD', $event)"
                             />
                         </template>
@@ -368,438 +359,400 @@
 
 
 </template>
+
 <script>
+    import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
+    import SelectSystemCode from '@/components/SelectSystemCode.vue';
+    import InputSearch from '@/components/InputSearch.vue';
+    import InputSearchHN from '@/components/InputSearchHN.vue';
+    import HeaderSelect from '@/components/HeaderSelect.vue';
+    import * as XLSX from 'xlsx';
+    export default{
+        components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
+        data: () => ({
+            tab: null,
+            tabs: [{ name: 'Create/Change' },{ name: 'Export' }],
+            selectedItem: null,
+            search: '',
+            selectedItems: [],
+            valid:true,
+            loading: true,
+            dataHNActivity : [],
+            selectedItemHNOne: {},
+            selectedItemHNTwo: {},
+            selectedItemGLIPD:{},
+            selectedItemGLOPD: {},
+            filteredData: [],
+            selectedHNActivity: [], 
+            selectedHNActivityName: [], 
+            selectedGLOPDCode: [],
+            selectedGLOPDName: [],
+            selectedGLIPDCode: [],
+            selectedGLIPDName: [],
+            posting_key: null,
+            headersDataHNActivity: [
+                { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
+                { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
+                { text: 'HNActivity Code', align: 'center', sortable: false, value: 'Code' },
+                { text: 'HNActivity Name', align: 'center', sortable: false, value: 'LocalName' },
+                { text: 'GL OPD Code', align: 'center', sortable: false, value: 'GLSAPCodeOPD' },
+                { text: 'GL OPD Name', align: 'center', sortable: false, value: 'GLSAPNameOPD' },
+                { text: 'GL IPD Code', align: 'center', sortable: false, value: 'GLSAPCodeIPD' },
+                { text: 'GL IPD  Name', align: 'center', sortable: false, value: 'GLSAPNameIPD' },
+                { text: 'Posting Key', align: 'center', sortable: false, value: 'PostingKey' },
+                { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
+            ],
+            headersExport: [
+                { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
+                { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
+                { text: 'HNActivity Code', align: 'center', sortable: false, value: 'HNActivityCode' },
+                { text: 'HNActivity Name', align: 'center', sortable: false, value: 'LocalName' },
+                { text: 'GL OPD Code', align: 'center', sortable: false, value: 'GLSAPCodeOPD' },
+                { text: 'GL OPD Name', align: 'center', sortable: false, value: 'GLSAPNameOPD' },
+                { text: 'GL IPD Code', align: 'center', sortable: false, value: 'GLSAPCodeIPD' },
+                { text: 'GL IPD  Name', align: 'center', sortable: false, value: 'GLSAPNameIPD' },
+                { text: 'Posting Key', align: 'center', sortable: false, value: 'PostingKey' },
+            ],
+        
+            isError: false
+        
+        }),
 
-import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
-import SelectSystemCode from '@/components/SelectSystemCode.vue';
-import InputSearch from '@/components/InputSearch.vue';
-import InputSearchHN from '@/components/InputSearchHN.vue';
-import HeaderSelect from '@/components/HeaderSelect.vue';
-export default{
-    components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
-    data: () => ({
-        tab: null,
-        tabs: [{ name: 'Create/Change' },{ name: 'Export' }],
-        // menu: false,
-        selectedItem: null,
-        search: '',
-        selectedItems: [],
-        // scrollTo: null,
-        valid:true,
-        loading: true,
-        dataHNActivity : [],
-        selectedItemHNOne: {},
-        selectedItemHNTwo: {},
-        selectedItemGLIPD:{},
-        selectedItemGLOPD: {},
-        // datasExport : [],
-        filteredData: [],
-        // selectedCompanyCode: [], 
-        // selectedSystemCode: [], 
-        selectedHNActivity: [], 
-        selectedHNActivityName: [], 
-        selectedGLOPDCode: [],
-        selectedGLOPDName: [],
-        selectedGLIPDCode: [],
-        selectedGLIPDName: [],
-        posting_key: null,
-        headersDataHNActivity: [
-            { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-            { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-            { text: 'HNActivity Code', align: 'left', sortable: false, value: 'Code' },
-            { text: 'HNActivity Name', align: 'left', sortable: false, value: 'LocalName' },
-            { text: 'GL OPD Code', align: 'left', sortable: false, value: 'GLSAPCodeOPD' },
-            { text: 'GL OPD Name', align: 'left', sortable: false, value: 'GLSAPNameOPD' },
-            { text: 'GL IPD Code', align: 'left', sortable: false, value: 'GLSAPCodeIPD' },
-            { text: 'GL IPD  Name', align: 'left', sortable: false, value: 'GLSAPNameIPD' },
-            { text: 'Posting Key', align: 'left', sortable: false, value: 'PostingKey' },
-            { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
-        ],
-        headersExport: [
-            { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-            { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-            { text: 'HNActivity Code', align: 'left', sortable: false, value: 'HNActivityCode' },
-            { text: 'HNActivity Name', align: 'left', sortable: false, value: 'LocalName' },
-            { text: 'GL OPD Code', align: 'left', sortable: false, value: 'GLSAPCodeOPD' },
-            { text: 'GL OPD Name', align: 'left', sortable: false, value: 'GLSAPNameOPD' },
-            { text: 'GL IPD Code', align: 'left', sortable: false, value: 'GLSAPCodeIPD' },
-            { text: 'GL IPD  Name', align: 'left', sortable: false, value: 'GLSAPNameIPD' },
-        ],
-      
-        isError: false
-
-        // classGLSAPCodeIPD: false,
-        // classGLSAPCodeOPD: false
-    
-    }),
-    watch: {
-        selectedCompanyCode: {
-            handler() {
-                this.filterData();
+        watch: {
+            selectedCompanyCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
             },
-            deep: true,
-        },
-    
-        selectedSystemCode: {
-            handler() {
-                this.filterData();
+        
+            selectedSystemCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
             },
-            deep: true,
+
+            selectedHNActivity: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+
+            selectedHNActivityName: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+
+            selectedGLOPDCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+
+            selectedGLOPDName: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+
+            selectedGLIPDCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+
+            selectedGLIPDName: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
         },
 
-        selectedHNActivity: {
-            handler() {
-                this.filterData();
-            },
-            deep: true,
-        },
+        methods: {
+            exportToExcel() {
+                const datas = this.filteredData.map(item => ({
+                    "Company Code": item.CompanyCode,
+                    "System Code": item.SystemCode,
+                    "HNActivity Code": item.HNActivityCode,
+                    "HNActivity Name": item.LocalName,
+                    "GL OPD Code": item.GLSAPCodeOPD,
+                    "GL OPD Name": item.GLSAPNameOPD,
+                    "GL IPD Code": item.GLSAPCodeIPD,
+                    "GL IPD Name": item.GLSAPNameIPD,
+                    "Posting Key": item.PostingKey,
+                }));
+     
+                const fileName = 'TMHNActivity' + '.xlsx'
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(datas);
+                XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
-        selectedHNActivityName: {
-            handler() {
-                this.filterData();
+                /* generate XLSX file and send to client */
+                XLSX.writeFile(wb, fileName);
             },
-            deep: true,
-        },
-
-        selectedGLOPDCode: {
-            handler() {
-                this.filterData();
+           
+            /* search table export */
+            updateSelectedHNActivity(value) {
+                this.selectedHNActivity = value;
             },
-            deep: true,
-        },
-
-        selectedGLOPDName: {
-            handler() {
-                this.filterData();
+            updateSelectedHNActivityName(value) {
+                this.selectedHNActivityName = value;
             },
-            deep: true,
-        },
-
-        selectedGLIPDCode: {
-            handler() {
-                this.filterData();
+            updateSelectedGLOPDCode(value) {
+                this.selectedGLOPDCode = value;
             },
-            deep: true,
-        },
-
-        selectedGLIPDName: {
-            handler() {
-                this.filterData();
+            updateSelectedGLOPDName(value) {
+                this.selectedGLOPDName = value;
             },
-            deep: true,
-        },
-    },
+            updateSelectedGLIPDCode(value) {
+                this.selectedGLIPDCode = value;
+            },
+            updateSelectedGLIPDName(value) {
+                this.selectedGLIPDName = value;
+            },
+        
+            clearData(){
+                this.$refs.formMapping.resetValidation()
+                this.$refs.selectHNActivity.selectedItem = {}
+                this.$refs.slectGLOPD.selectedItem = {},
+                this.$refs.slectGLIPD.selectedItem = {},
+                this.$refs.selectCompanyCode.selecItem = null 
+                this.$refs.selectSystemCode.selecItem = null 
+                this.selectedItemHNTwo = {},
+                this.selectedItemGLIPD = {},
+                this.selectedItemGLOPD = {},
+                this.posting_key = null,
+                this.isError = false
+            },
 
-    methods: {
-        async getExportActivityGL(){
-            try {
-                this.loading        = await true
-                let ActivityGLPath = '/api/SAP/ActivityGL'
-                let response        = await this.$axios.get(ActivityGLPath);
-                setTimeout(() => {
-                    this.loading = false;
-                    this.datasExport = response.data;
-                    this.filteredData = this.datasExport.slice();
+            filterData() {
+
+                this.filteredData = this.datasExport.filter(item =>
+
+                    (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
+                    (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
+                    (this.selectedHNActivity.length === 0 || this.selectedHNActivity.includes(item.HNActivityCode)) &&
+                    (this.selectedHNActivityName.length === 0 || this.selectedHNActivityName.includes(item.LocalName)) &&
+                    (this.selectedGLOPDCode.length === 0 || this.selectedGLOPDCode.includes(item.GLSAPCodeOPD)) &&
+                    (this.selectedGLOPDName.length === 0 || this.selectedGLOPDName.includes(item.GLSAPNameOPD)) &&
+                    (this.selectedGLIPDCode.length === 0 || this.selectedGLIPDCode.includes(item.GLSAPCodeIPD)) &&
+                    (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD))
+                );
+            },
+
+            async removeHNActivity(value){
+                console.log(value);
+                this.$swal.fire({
+                    title: "ไม่สามารถลบข้อมูลได้",
+                    icon: "question"
+                });
+                // await this.$swal.fire({
+                //     title: "Warning",
+                //     text: "Are you sure you want to delete this item? ",
+                //     icon: "warning",
+                //     showCancelButton: true,
+                //     confirmButtonColor: "#52A1DB",
+                //     cancelButtonColor: "#52A1DB",
+                //     confirmButtonText: "OK",
+                //     customClass: {
+                //     title: 'text-warning' // Add your custom class here
+                // }
+                //     }).then(async(result) => {
+                //     if (result.isConfirmed) {
+                //         console.log(result.isConfirmed);
+                //         let fd  = {
+                //             "companyCode"       : selectCompanyCode,
+                //             "systemCode"        : selectSystemCode,
+                //             "hnActivityCode"    : this.selectedItemHNTwo.Code,
+                //             "localName"         : this.selectedItemHNTwo.LocalName,
+                //             "englishName"       : this.selectedItemHNTwo.EnglishName,
+                //             "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
+                //             "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
+                //             "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
+                //             "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
+                //             "postingKey"        : this.posting_key
+                //         }
+                //         let MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
+                //         let response                    =    await axios.post(`${MappingActivityGLPath}`, fd)
+                //         console.log(response);
+                //         console.log(fd);
+
+                //         // if(response){
+                //             Swal.fire({
+                //                 icon: "success",
+                //                 title: "Complete",
+                //                 text: "You data was saved.",
+                //                 customClass: {
+                //                     title: 'text-success' // Add your custom class here
+                //                 }
+                //             });
+                //         // }
+
                 
-                   
-                }, 500);
-            } catch (error) {
-                this.loading = await false
-                console.error('Error fetching data:', error);
-            }
-        },
-        async removeHNActivity(value){
-            console.log(value);
-            await this.$swal.fire({
-                title: "Warning",
-                text: "Are you sure you want to delete this item? ",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#52A1DB",
-                cancelButtonColor: "#52A1DB",
-                confirmButtonText: "OK",
-                customClass: {
-                title: 'text-warning' // Add your custom class here
-            }
-                }).then(async(result) => {
-                if (result.isConfirmed) {
-                    console.log(result.isConfirmed);
-                    // let fd  = {
-                    //     "companyCode"       : selectCompanyCode,
-                    //     "systemCode"        : selectSystemCode,
-                    //     "hnActivityCode"    : this.selectedItemHNTwo.Code,
-                    //     "localName"         : this.selectedItemHNTwo.LocalName,
-                    //     "englishName"       : this.selectedItemHNTwo.EnglishName,
-                    //     "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
-                    //     "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
-                    //     "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
-                    //     "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
-                    //     "postingKey"        : this.posting_key
-                    // }
-                    // let MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
-                    // let response                    =    await axios.post(`${MappingActivityGLPath}`, fd)
-                    // console.log(response);
-                    // console.log(fd);
+                //     }
+                // });
+            },
 
-                    // // if(response){
-                    //     Swal.fire({
-                    //         icon: "success",
-                    //         title: "Complete",
-                    //         text: "You data was saved.",
-                    //         customClass: {
-                    //             title: 'text-success' // Add your custom class here
-                    //         }
-                    //     });
-                    // // }
-
+            async checkHNActivity(){
             
-                }
-            });
-        },
-        async checkHNActivity(){
-          
-            if(this.selectedItemHNOne && !this.selectedItemHNOne.Code){    
-                
-                this.checkInputData('HNACtivity', this.$refs.HNActivityField)
-               
-            }else{
-                try {
-                this.loading                = await true
-                let GetTmActivityIDPath     = `/api/SAP/GetTmActivityID?HNActivityCode=${this.selectedItemHNOne.Code}`
-                let response                = await this.$axios.get(GetTmActivityIDPath);
-                this.dataHNActivity         = response.data;
-
-                } catch (error) {
-                    this.loading = await false
-                    console.error('Error fetching data:', error);
-                }
-            }
-
-        },
-        async MappingActivityGL(){
-
-            // เช็ค value ใน ฟอร์ม Relationship Mapping
-            if(this.$refs.formMapping.validate()){
-                // เช็คค่า dataHNActivity ใน Table ที่จะ Mapping
-                if(this.dataHNActivity.length > 0){
-
-                    const HNActivity = this.dataHNActivity[0].Code
-                    const selectedHNActivity = this.selectedItemHNTwo.Code
-
-                    const GLSAPCodeIPD = this.dataHNActivity[0].GLSAPCodeIPD
-                    const selectedItemGLIPD = this.selectedItemGLIPD.GLNo
-
-                    const GLSAPCodeOPD = this.dataHNActivity[0].GLSAPCodeOPD
-                    const selectedItemGLOPD = this.selectedItemGLOPD.GLNo
-                
-                    const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
-                    const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
+                if(this.selectedItemHNOne && !this.selectedItemHNOne.Code){    
                     
-                    // เช็คค่า HNActivity ในตารางต้องตรงกับ selectedHNActivity ที่เลือก หรือ GLSAPCodeIPD และ GLSAPCodeOPD ข้อมูลต้องไม่เหมือนกัน
-                    if(HNActivity !== selectedHNActivity || GLSAPCodeIPD === selectedItemGLIPD && GLSAPCodeOPD === selectedItemGLOPD){
+                    this.checkInputData('HNACtivity', this.$refs.HNActivityField)
+                
+                }else{
+                    try {
+                    this.loading                = await true
+                    let GetTmActivityIDPath     = `/api/SAP/GetTmActivityID?HNActivityCode=${this.selectedItemHNOne.Code}`
+                    let response                = await this.$axios.get(GetTmActivityIDPath);
+                    this.dataHNActivity         = response.data;
 
-                        this.$swal.fire({
-                            icon: "error",
-                            title: "Incomplete",
-                            text: "Unable to update . Please check data agian.",
-                            customClass: {
-                                title: 'text-error' // Add your custom class here
-                            }
-                        }).then((result) => {
-                                        if (result.isConfirmed) {
+                    } catch (error) {
+                        this.loading = await false
+                        console.error('Error fetching data:', error);
+                    }
+                }
 
-                                            // GLSAPCodeOPD === selectedItemGLOPD ? this.classGLSAPCodeOPD = true  : false
-                                            // GLSAPCodeIPD === selectedItemGLIPD ? this.classGLSAPCodeIPD = true  : false
-                                            this.isError = true
+            },
 
-                        //                     if(GLSAPCodeOPD === selectedItemGLOPD){
-                        //     this.classGLSAPCodeOPD = true 
-                        // }
+            async MappingActivityGL(){
 
-                        // if(GLSAPCodeIPD === selectedItemGLIPD){
-                        //     this.classGLSAPCodeIPD = true 
-                        // }
+                // เช็ค value ใน ฟอร์ม Relationship Mapping
+                if(this.$refs.formMapping.validate()){
+                    // เช็คค่า dataHNActivity ใน Table ที่จะ Mapping
+                    if(this.dataHNActivity.length > 0){
+
+                        const HNActivity = this.dataHNActivity[0].Code
+                        const selectedHNActivity = this.selectedItemHNTwo.Code
+
+                        const GLSAPCodeIPD = this.dataHNActivity[0].GLSAPCodeIPD
+                        const selectedItemGLIPD = this.selectedItemGLIPD.GLNo
+
+                        const GLSAPCodeOPD = this.dataHNActivity[0].GLSAPCodeOPD
+                        const selectedItemGLOPD = this.selectedItemGLOPD.GLNo
                     
-                                        }
-                                    });
-
-                    }else{
-
-                    await this.$swal.fire({
-                        title: "Warning",
-                        text: "Data has already map. Are you sure to map again? ",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#52A1DB",
-                        cancelButtonColor: "#52A1DB",
-                        confirmButtonText: "OK",
-                        customClass: {
-                            title: 'text-warning' // Add your custom class here
-                        }
-                        }).then(async(result) => {
-                            if (result.isConfirmed) {
-                                let fd  = {
-
-                                "companyCode"       : selectCompanyCode != null ? selectCompanyCode : this.dataHNActivity[0].companyCode,
-                                "systemCode"        : selectSystemCode!= null ? selectSystemCode : this.dataHNActivity[0].systemCode,
-                                "hnActivityCode"    : this.selectedItemHNTwo.Code,
-                                "localName"         : this.selectedItemHNTwo.LocalName,
-                                "englishName"       : this.selectedItemHNTwo.EnglishName,
-                                "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
-                                "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
-                                "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
-                                "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
-                                "postingKey"        : this.posting_key != null ? this.posting_key : this.dataHNActivity[0].postingKey
-                                }
-
-                                try {
-
-
-                                    const MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
-                                    await this.$axios.post(`${MappingActivityGLPath}`, fd)
-
-                                    this.$swal.fire({
-                                        icon: 'success',
-                                        title: 'Complete',
-                                        text: 'Your data was saved.',
-                                        customClass: {
-                                        title: 'text-success', // Example of adding custom class
-                                        },
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            this.clearData(); // Call method to clear data
-                                            this.checkHNActivity()
-                                        }
-                                    });
-                                
-                                
-                                
-                                } catch (error) {
-
-                                    this.$swal.fire({
-                                        icon: "error",
-                                        title: "Incomplete",
-                                        text: "Unable to update . Please check data agian.",
-                                        customClass: {
-                                            title: 'text-error' // Add your custom class here
-                                        }
-                                    });
-                                }
-
-                            }
+                        const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
+                        const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
                         
-                        });
+                        // เช็คค่า HNActivity ในตารางต้องตรงกับ selectedHNActivity ที่เลือก หรือ GLSAPCodeIPD และ GLSAPCodeOPD ข้อมูลต้องไม่เหมือนกัน
+                        if(HNActivity !== selectedHNActivity || GLSAPCodeIPD === selectedItemGLIPD && GLSAPCodeOPD === selectedItemGLOPD){
+
+                            this.$swal.fire({
+                                icon: "error",
+                                title: "Incomplete",
+                                text: "Record already exists",
+                                customClass: {
+                                    title: 'text-error' // Add your custom class here
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    this.isError = true
+                                }
+                            });
+
+                        }else{
+
+                        await this.$swal.fire({
+                            title: "Warning",
+                            text: 'Record already exists. "Are you sure you want to save?"',
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#52A1DB",
+                            cancelButtonColor: "#52A1DB",
+                            confirmButtonText: "OK",
+                            customClass: {
+                                title: 'text-warning' // Add your custom class here
+                            }
+                            }).then(async(result) => {
+                                if (result.isConfirmed) {
+                                    let fd  = {
+                                        "companyCode"       : selectCompanyCode != null ? selectCompanyCode : this.dataHNActivity[0].companyCode,
+                                        "systemCode"        : selectSystemCode!= null ? selectSystemCode : this.dataHNActivity[0].systemCode,
+                                        "hnActivityCode"    : this.selectedItemHNTwo.Code,
+                                        "localName"         : this.selectedItemHNTwo.LocalName,
+                                        "englishName"       : this.selectedItemHNTwo.EnglishName != null ? this.selectedItemHNTwo.EnglishName : "",
+                                        "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
+                                        "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
+                                        "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
+                                        "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
+                                        "postingKey"        : this.posting_key != null ? this.posting_key : this.dataHNActivity[0].postingKey
+                                    }
+
+                                    console.log(fd);
+
+                                    try {
+
+
+                                        const MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
+                                        await this.$axios.post(`${MappingActivityGLPath}`, fd)
+
+                                        this.$swal.fire({
+                                            icon: 'success',
+                                            title: 'Complete',
+                                            text: 'Your data was saved.',
+                                            customClass: {
+                                            title: 'text-success', // Example of adding custom class
+                                            },
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                this.clearData(); // Call method to clear data
+                                                this.checkHNActivity()
+                                            }
+                                        });
+                                    
+                                    
+                                    
+                                    } catch (error) {
+
+                                        this.$swal.fire({
+                                            icon: "error",
+                                            title: "Incomplete",
+                                            text: "Unable to update . Please check data agian.",
+                                            customClass: {
+                                                title: 'text-error' // Add your custom class here
+                                            }
+                                        });
+                                    }
+
+                                }
+                            
+                            });
+
+                        }
+                    }else{
+                        this.$swal.fire({
+                                icon: "error",
+                                title: "Incomplete",
+                                text: "Unable to update . Please check data agian.",
+                                customClass: {
+                                    title: 'text-error' // Add your custom class here
+                                }
+                            });
 
                     }
                 }else{
+                
                     this.$swal.fire({
-                            icon: "error",
-                            title: "Incomplete",
-                            text: "Unable to update . Please check data agian.",
-                            customClass: {
-                                title: 'text-error' // Add your custom class here
-                            }
-                        });
+                        icon: "error",
+                        title: "Incomplete",
+                        text: "Unable to update. Please check data again.",
+                        customClass: {
+                            title: 'text-error' // Add your custom class here
+                        }
+                    })
 
                 }
-            }else{
-            
-                this.$swal.fire({
-                    icon: "error",
-                    title: "Incomplete",
-                    text: "Unable to update. Please check data again.",
-                    customClass: {
-                        title: 'text-error' // Add your custom class here
-                    }
-                })
+            },
 
-            }
-        },
-
-
-        filterData() {
-
-            this.filteredData = this.datasExport.filter(item =>
-
-            (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
-            (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
-            (this.selectedHNActivity.length === 0 || this.selectedHNActivity.includes(item.HNActivityCode)) &&
-            (this.selectedHNActivityName.length === 0 || this.selectedHNActivityName.includes(item.LocalName)) &&
-            (this.selectedGLOPDCode.length === 0 || this.selectedGLOPDCode.includes(item.GLSAPCodeOPD)) &&
-            (this.selectedGLOPDName.length === 0 || this.selectedGLOPDName.includes(item.GLSAPNameOPD)) &&
-            (this.selectedGLIPDCode.length === 0 || this.selectedGLIPDCode.includes(item.GLSAPCodeIPD)) &&
-            (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD))
-            );
-        },
-
-        handleTabClick(tab) {
-            switch (tab.name) {
-                case "Create/Change":
-                    break;
-                case "Export":
-                    this.getExportActivityGL()
-                    break;
-                default:
-                    // Default action
-                    break;
-            }
-        },
-        
-        getselectedItemHNOne(data) {
-              this.selectedItemHNOne = data;
-        },
-        getselectedItemHNTwo(data) {
-            this.selectedItemHNTwo = data;
-        },
-        getselectedItemGLOPD(data){
-            this.selectedItemGLOPD = data;
-        },
-        getselectedItemGLIPD(data){
-            this.selectedItemGLIPD = data;
-        },
-       
-        // updateSelectedCompanyCode(value) {
-        //     this.selectedCompanyCode = value;
-        // },
-        // updateSelectedSystemCode(value) {
-        //     this.selectedSystemCode = value;
-        // },
-        updateSelectedHNActivity(value) {
-            this.selectedHNActivity = value;
-        },
-        updateSelectedHNActivityName(value) {
-            this.selectedHNActivityName = value;
-        },
-        updateSelectedGLOPDCode(value) {
-            this.selectedGLOPDCode = value;
-        },
-        updateSelectedGLOPDName(value) {
-            this.selectedGLOPDName = value;
-        },
-        updateSelectedGLIPDCode(value) {
-            this.selectedGLIPDCode = value;
-        },
-        updateSelectedGLIPDName(value) {
-            this.selectedGLIPDName = value;
-        },
-      
-        clearData(){
-            this.$refs.formMapping.resetValidation()
-            this.$refs.selectHNActivity.selectedItem = {}
-            this.$refs.slectGLOPD.selectedItem = {},
-            this.$refs.slectGLIPD.selectedItem = {},
-            this.$refs.selectCompanyCode.selecItem = null 
-            this.$refs.selectSystemCode.selecItem = null 
-            this.selectedItemHNTwo = {},
-            this.selectedItemGLIPD = {},
-            this.selectedItemGLOPD = {},
-            this.posting_key = null,
-            this.isError = false
-        },
-
- 
+        }
     }
-}
 </script>
 
 <style scoped>
@@ -891,5 +844,6 @@ export default{
     .line-height{
         line-height: 1.8;
     }
+
     
 </style>

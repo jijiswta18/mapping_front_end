@@ -90,203 +90,170 @@
             </v-card>
         </v-dialog>
 
-    </div>
-   
+    </div> 
 </template>
+
 <script>
-import axios from "axios";
-export default{
-    props: ['title', 'label', 'code', 'name', 'type', 'dataUpdate', 'isError'],
-    data: () => ({
-        search: '',
-        dialogSearch: false,
-        selectData: [],
-        loading: true,
-        header: [],
-        dataCode: null,
-        dataName: null,
-        selectedItem: {
-            GLNo: '',
-            GLDes: ''
-            // Add more fields as needed
+    export default{
+        props: ['title', 'label', 'code', 'name', 'type', 'dataUpdate', 'isError'],
+        data: () => ({
+            search: '',
+            dialogSearch: false,
+            selectData: [],
+            loading: true,
+            header: [],
+            dataCode: null,
+            dataName: null,
+            selectedItem: {
+                GLNo: '',
+                GLDes: ''
+                // Add more fields as needed
+            },
+            textFieldValue: '',
+            textFieldClass: '', // Dynamic class binding for input field
+            searchCode:'',
+            searchName:'',
+        }),
+        mounted() {
+            this.generateHeader();
         },
-        textFieldValue: '',
-        textFieldClass: '', // Dynamic class binding for input field
-        searchCode:'',
-        searchName:'',
-    }),
-    mounted() {
-        this.generateHeader();
-    },
-    computed: {
-        filteredData() {
-            return this.selectData.filter(item => {
-                const codeMatch = (!this.searchCode || item.GLNo?.toLowerCase().includes(this.searchCode.toLowerCase()));
-                const nameMatch = (!this.searchName || item.GLDes?.toLowerCase().includes(this.searchName.toLowerCase()));
-                return codeMatch && nameMatch;
-            });
-        }
-    },
-    methods:{
- 
-        generateHeader() {
-            this.header = [
-                { text: `${this.code}`, align: 'left', sortable: true, value: 'GLNo' },
-                { text: `${this.name}`, align: 'left', sortable: true, value: 'GLDes' }
-            ];
+        computed: {
+            filteredData() {
+                return this.selectData.filter(item => {
+                    const codeMatch = !this.searchCode || this.searchCheck(item.GLNo.toLowerCase(), this.searchCode.toLowerCase());
+                    const nameMatch = !this.searchName || this.searchCheck(item.GLDes.toLowerCase(), this.searchName.toLowerCase());
+                    
+                    return codeMatch && nameMatch;
+                }); 
+            }
+            // filteredData() {
+            //     return this.selectData.filter(item => {
+            //         const codeMatch = (!this.searchCode || item.GLNo?.toLowerCase().includes(this.searchCode.toLowerCase()));
+            //         const nameMatch = (!this.searchName || item.GLDes?.toLowerCase().includes(this.searchName.toLowerCase()));
+            //         return codeMatch && nameMatch;
+            //     });
+            // }
         },
-        selectRow(item) {
-            this.selectedItem = { ...item };
-            this.$emit('childEvent', item);
-        },
-        
-        
-        // onClick () {
+        methods:{
+    
+            generateHeader() {
+                this.header = [
+                    { text: `${this.code}`, align: 'left', sortable: true, value: 'GLNo' },
+                    { text: `${this.name}`, align: 'left', sortable: true, value: 'GLDes' }
+                ];
+            },
+            selectRow(item) {
+                this.selectedItem = { ...item };
+                this.$emit('childEvent', item);
+            },
             
-        //     this.dialogSearch = true
-        //     // this.getSAPGL()
-        //     switch(this.type){
-        //         case "GLSAP": 
-        //         setTimeout(() => {
-        //             this.loading = false;
-        //             this.selectData = [{ GLNo: 'SAPArCode', GLDes: 'SAPArCode',}]
-        //         }, 300);
-              
-        //         break;
-        //         case "SapGL" :
-        //             this.getSAPGL()
-        //         break;
-        //         case "TermPamynetAfterInvoice" :
-        //         this.loading = false; 
-        //         break;
+            searchCheck(inputString, searchTerm) {
 
-        //         default:
-        //         // Default action
-        //         break;
-        //     }
-        //     switch (title) {
-        //         case "OPD":
-        //             this.getSAPGL()
-        //             this.header = [
-        //                 { text: 'GL OPD Code', align: 'left', sortable: true, value: 'GLNo' },
-        //                 { text: 'GL OPD Name', align: 'left', sortable: true, value: 'GLDes' },
-                    
-        //             ]
-
-                    
-        //             break;
-        //         case "IPD":
-        //             this.$emit('childEvent', 'Data to send to parent');
-        //             this.getSAPGL()
-        //             this.header = [
-        //                 { text: 'GL IPD Code', align: 'left', sortable: true, value: 'GLNo' },
-        //                 { text: 'GL IPD Name', align: 'left', sortable: true, value: 'GLDes' },
-                    
-        //             ]
-        //             break;
-        //         default:
-        //             // Default action
-        //             break;
-        //     }
-        // setTimeout(() => {
-
-        // }, 2000)
-        // },
-
-        onClick () {
-            this.dialogSearch = true
-            this.LoadData()
-
-        },
-
-        
-
-        async LoadData(){
-            try {
-                this.loading        = await true
-                let LoadDataPath    = null 
-
-                switch (this.type) {
-                    case "GLSAP": 
-                        setTimeout(() => {
-                            this.loading = false;
-                            this.selectData = [{ GLNo: 'SAPArCode', GLDes: 'SAPArCode',}]
-                        }, 300);
-                    break;
-
-                    case "SapGL" :
-                        LoadDataPath = '/api/SAP/SapGL'
-                        // this.getSAPGL()
-                    break;
-
-                    case "TermPaymentSAP" :
-                        LoadDataPath = '/api/TermPaymentSAP'
-                    break;
-
-                    case "KTOKK" :
-                        LoadDataPath = '/api/KTOKK'
-                    break;
-                    
-                    case "AR_AKONT" :
-                        LoadDataPath = '/api/AR_AKONT'
-                    break;
-
-                    case "AP_AKONT" :
-                        LoadDataPath = '/api/AR_AKONT'
-                    break;
-
-                    default:
-                        break;
+                // Check if searchTerm starts and ends with *
+                if (searchTerm.startsWith('*') && searchTerm.endsWith('*')) {
+                    const term = searchTerm.substring(1, searchTerm.length - 1); // Remove the leading and trailing '*'
+                    return inputString.includes(term);
                 }
 
+                // Check if the searchTerm starts with '*'
+                if (searchTerm.startsWith('*')) {
+                    const term = searchTerm.substring(1); // Remove the '*'
+                    return inputString.endsWith(term);
+                }
+                // Check if the searchTerm ends with '*'
+                else if (searchTerm.endsWith('*')) {
+                    const term = searchTerm.slice(0, -1); // Remove the '*'
+                    return inputString.startsWith(term);
 
-                let response        = await axios.get(LoadDataPath);
+
+                }
+                // Exact match check
+                else {
+                    return inputString === searchTerm;
+                }
                 
-                await setTimeout(() => {
+            },
+        
+
+            onClick () {
+                this.dialogSearch = true
+                this.LoadData()
+
+            },
+
+            
+
+            async LoadData(){
+                try {
+                    this.loading        = await true
+                    let LoadDataPath    = null 
+
+                    switch (this.type) {
+                        case "GLSAP": 
+                            setTimeout(() => {
+                                this.loading = false;
+                                this.selectData = [{ GLNo: 'SAPArCode', GLDes: 'SAPArCode',}]
+                            }, 300);
+                        break;
+
+                        case "SapGL" :
+                            LoadDataPath = '/api/SAP/SapGL'
+                            // this.getSAPGL()
+                        break;
+
+                        case "TermPaymentSAP" :
+                            LoadDataPath = '/api/TermPaymentSAP'
+                        break;
+
+                        case "KTOKK" :
+                            LoadDataPath = '/api/KTOKK'
+                        break;
+                        
+                        case "AR_AKONT" :
+                            LoadDataPath = '/api/AR_AKONT'
+                        break;
+
+                        case "AP_AKONT" :
+                            LoadDataPath = '/api/AR_AKONT'
+                        break;
+
+                        default:
+                            break;
+                    }
+
+
+                    let response        = await this.$axios.get(LoadDataPath);
+                    
+                    await setTimeout(() => {
+                        this.loading = false;
+                        this.selectData = response.data;
+                    }, 300);
+
+                } catch (error) {
+                    // console.error('Error fetching data:', error);
                     this.loading = false;
-                    this.selectData = response.data;
-                }, 300);
+                }
+            },
 
-            } catch (error) {
-                // console.error('Error fetching data:', error);
-                 this.loading = false;
-            }
-        },
+            dialogClearSearch(){
+                this.dialogSearch = false
+                this.searchCode = ''
+                this.searchName = ''
+            },
 
-        // async getSAPGL(){ 
-        //     try {
-        //         let LoadSapGLPath = '/api/SAP/SapGL'
-        //         let response        = await axios.get(LoadSapGLPath);
-        //         await setTimeout(() => {
-        //             this.loading = false;
-        //             this.selectData = response.data;
-        //         }, 300);
-        //     } catch (error) {
-        //         console.error('Error fetching data:', error);
-        //     }
-        // },
-
-        dialogClearSearch(){
-            this.dialogSearch = false
-            this.searchCode = ''
-            this.searchName = ''
-        },
-
-        clearTextField() {
-            // Handle clearing logic here
-            this.selectedItem.Code = ''; // Example: Reset the v-model
-            this.emitToPage(); // Example: Emitting to parent component/page
-        },
-        emitToPage() {
-            // Your code to emit data to the parent or elsewhere
-            this.$emit('data-updated', this.selectedItem.Code, this.dataUpdate); // Example emit
-        },
-   
-     
-       
+            clearTextField() {
+                // Handle clearing logic here
+                this.selectedItem.Code = ''; // Example: Reset the v-model
+                this.emitToPage(); // Example: Emitting to parent component/page
+            },
+            emitToPage() {
+                // Your code to emit data to the parent or elsewhere
+                this.$emit('data-updated', this.selectedItem.Code, this.dataUpdate); // Example emit
+            },
+        }
     }
-}
 </script>
+
 <style scoped>
     ::v-deep .table-container tr td{
         border-bottom: none!important;
