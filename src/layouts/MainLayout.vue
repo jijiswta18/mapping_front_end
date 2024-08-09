@@ -5,6 +5,12 @@
       <v-btn icon @click.stop="toggleMenu" class="display-none responsive-block">
             <v-icon >mdi-menu</v-icon>
           </v-btn> 
+          <div class="box-left">
+            <a href="/" class="text-decoration">
+              <div class="text-white f-14">Mapping Interface</div>
+            </a>
+           
+          </div>
       <div class="box-right">
         <div class="btn-logout" @click="logout">
           <i class="fas fa-sign-out-alt"></i>
@@ -47,9 +53,7 @@
           </div>
         </v-row>
 
-        <!-- Main content area -->
         <div class="box-content mt-6">
-          <!-- Router view for displaying different pages based on route -->
           <router-view></router-view>
         </div>
       </v-container>
@@ -64,13 +68,14 @@
 
   export default {
     name: 'MainLayout',
+   
 
     data: () => ({
       drawer: true,
       items: [
         { title: 'ArPaymentTerm', route: '/' },
         { title: 'ARAccountGroup', route: '/ARAccountGroup' },
-        { title: 'StoreMedecine', route: '/StoreMedecine' },
+        // { title: 'StoreMedecine', route: '/StoreMedecine' },
         { title: 'TMHNActivityAndGL', route: '/TMHNActivity' },
         { title: 'CashAndGL', route: '/CashAndGL' },
         { title: 'EmployeeStatus', route: '/EmployeeStatus' }
@@ -85,13 +90,11 @@
       },
       navigateTo(route) {
         if (this.$route.path !== route) {
-          // Navigate to the specified route
           this.$router.push(route);
         }
       },
 
       isRouteActive(route) {
-        // Check if the given route matches the current route
         return this.$route.path === route;
       },
       async logout() {
@@ -103,10 +106,8 @@
           confirmButtonText: "ยืนยัน",
           cancelButtonText: `ยกเลิก`
         }).then(async (result) => {
-          /* Read more about isConfirmed, isDenied below */
           if (result.isConfirmed) {
             await store.dispatch("logout");
-
             await this.$router.push("/login");
             // await location.reload();
 
@@ -124,9 +125,6 @@
     .pl3{
       padding-left: 0!important;
     }
-    .responsive-block{
-      display: block!important;
-    }
     .banner h1{
       font-size: 20px;
     }
@@ -135,9 +133,18 @@
     }
   }
 
-  .display-none{
-    display: none;
+  @media only screen and (max-width: 767px) {
+   .f-14{
+    font-size: 14px;
+   }
   }
+
+  @media (max-width: 599px) {
+      .style-table tr {
+          margin-bottom: 1rem;
+      }
+    }
+    
 
   .responsive-block i{
     color: white!important;
@@ -211,12 +218,8 @@
     width: 100%;
 
   }
-    /* .menu .v-list-item {
-      background: white;
-      margin-bottom: 0.5rem;
-    } */
+
   .banner{
-    /* height: 225px; */
     overflow: hidden;
     position: relative;
     width: 100%;
@@ -338,19 +341,21 @@
     background: #F9BA7F!important;
   }
 
+
+
   ::v-deep .v-tabs-slider{
     display: none;
   }
 
-  ::v-deep .style-table thead.v-data-table-header {
+  .style-table thead.v-data-table-header {
     background: #D9D9D9!important;
   }
 
-  ::v-deep .style-table thead.v-data-table-header span{
+  .style-table thead.v-data-table-header span{
     color: #000;
   }
   
-  ::v-deep .style-table td{
+  .style-table td{
     border: 1px solid #D9D9D9;
   }
 
@@ -440,8 +445,29 @@
   }
    
   .v-menu__content{
-        width: 275px!important;
-    }
+    width: 275px!important;
+  }
+
+  .box-left{
+    width: 100%;
+    height: 64px;
+    display: flex;
+    align-items: center;
+  }
+  .box-left .v-image{
+    /* border: 2px solid #f4742b; */
+    /* border-radius: 50%; */
+    /* background: #f4742b; */
+    margin-right: 14px;
+    overflow: inherit!important;
+    flex: none!important;
+    width: 50px;
+    box-shadow: rgb(0 0 0 / 29%) 0px 5px 15px;
+  }
+
+  .text-decoration{
+    text-decoration: none;
+  }
  
       
 </style>

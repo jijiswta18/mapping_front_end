@@ -28,16 +28,16 @@
                                         code="Term Of Payment" 
                                         name="Term Of Payment Des."
                                         type="Term Of Payment" 
-                                        dataUpdate="TermPayment"
                                         @childEvent="getselectedTermPayment"
-                                        @data-updated="handleDataUpdated"
+                                        @data-updated="handleClearData('selectedTermPayment', 'TermPayment')"
+                                
                                     />
                                 </v-col>
 
                                 <v-col cols="12" md="6"  align-self="center" class="d-flex justify-space-between align-center">
                                     
                                     <span class="f-12 pr-3">Term of Payment Des. : {{ selectedItemHNOne.LocalName }}</span>
-                                    <v-btn @click="checkTermPayment" class="bg-orange">Check</v-btn>
+                                    <v-btn @click="checkMapping" class="bg-orange">Check</v-btn>
                                 
                                 </v-col>
                             </v-row>
@@ -46,14 +46,15 @@
                         <div class="border-gray border-b-lg mb-3" style="height: 64px; width: 64px;"></div>
                         <h1 class="f-16 mb-1">Table Mapping</h1>
                         <v-data-table
-                            :headers="headersDataHNActivity"
+                            :headers="headers"
                             :items="checkData"
                             density="compact"
                             item-key="name"
                             class="style-table"
+                            hide-default-footer
                         >
                             <template v-slot:[`item.Action`]="{ item }">
-                                <v-btn density="compact" icon class="bg-red text-white" @click="removeHNActivity(item)">
+                                <v-btn density="compact" icon class="bg-red text-white" @click="removeTermPayment(item)">
                                     <v-icon>mdi-close</v-icon>
                                 </v-btn>
                             </template>
@@ -61,7 +62,7 @@
                     </div>
 
                     <div class="box-relationship-mapping">
-                        <h1 class="f-20 mb-1">Relationship Mapping</h1>
+                        <h1 class="f-20 mb-1 mt-2">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
 
                         <v-form
@@ -103,14 +104,15 @@
                                     <v-col cols="8">
 
                                         <InputSearchHN 
+                                            ref="TermPayment"
                                             title="Term Of Payment"
                                             label="Text" 
                                             code="Term Of Payment" 
                                             name="Term Of Payment Des."
                                             type="Term Of Payment" 
-                                            dataUpdate="TermPayment2"
-                                            @data-updated="handleDataUpdated"
+                                            :isError="isError"
                                             @childEvent="getselectedTermPayment2"
+                                            @data-updated="handleClearData('selectedTermPayment2', 'TermPayment')"
                                         />
                                        
                                     </v-col>
@@ -121,7 +123,13 @@
                                         <span class="f-12">Term of Payment Description</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedTermPayment.LocalName}}</p>
+                                        <p 
+                                            class="f-12 border-bottom pb-0 h25"
+                                            :class="{ 'text-error': isError}"
+
+                                        >
+                                            {{selectedTermPayment.LocalName}}
+                                        </p>
                                     </v-col>
                                 </v-row>
 
@@ -140,10 +148,10 @@
                                             code="Term Of Payment" 
                                             name="Term Of Payment Des."
                                             type="TermPaymentSAP"
-                                            dataUpdate="TermPaymentSAP"
-                                            ref="GL_OPD"
+                                            ref="TermPaymentSAP"
+                                            :isError="isError"
                                             @childEvent="getselectedTermPaymentSAP" 
-                                            @data-updated="handleDataUpdated"
+                                            @data-updated="handleClearData('selectedTermPaymentSAP', 'TermPaymentSAP')"
                                         />
                                     </v-col>
                                 </v-row>
@@ -153,16 +161,21 @@
                                         <span class="f-12">Description</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedTermPaymentSAP.GLDes}}</p>
+                                        <p 
+                                            class="f-12 border-bottom pb-0 h25"
+                                            :class="{ 'text-error': isError}"
+                                        >
+                                            {{selectedTermPaymentSAP.GLDes}}
+                                        </p>
                                     </v-col>
                                     
                                 </v-row>
                             </v-col>
                         
                         </v-row>
-                        
+                        <p v-if="isError" class="text-error f-13">*ข้อมูลไม่ถูกต้อง</p>
                         <div class="text-center">
-                            <v-btn @click="MappingCashGL" class="bg-orange">Update Data</v-btn>
+                            <v-btn @click="MappingTermPayment" class="bg-orange">Update Data</v-btn>
                         </div>
                         </v-form>
 
@@ -215,7 +228,6 @@
                                 :selected-value="selectedSystemCode"
                                 :select-items="selectOptionsForColumn('SystemCode')"
                                 @update:selectedValue="updateSelectedSystemCode"
-                                @search="searchCompanies('SystemCode', $event)"
                                 @sort="handleSort('SystemCode', $event)"
                             />
                         </template>
@@ -227,7 +239,6 @@
                                 :selected-value="selectedTermPayment"
                                 :select-items="selectOptionsForColumn('TermOfPayment')"
                                 @update:selectedValue="updateSelectedTermPayment"
-                                @search="searchCompanies('TermOfPayment', $event)"
                                 @sort="handleSort('TermOfPayment', $event)"
                             />
                         </template>
@@ -239,7 +250,6 @@
                                 :selected-value="selectedTermPaymentDes"
                                 :select-items="selectOptionsForColumn('TermOfPaymentDes')"
                                 @update:selectedValue="updateSelectedTermPaymentDes"
-                                @search="searchCompanies('TermOfPaymentDes', $event)"
                                 @sort="handleSort('TermOfPaymentDes', $event)"
                             />
                         </template>
@@ -251,7 +261,6 @@
                                 :selected-value="selectedTermPaymentSAP"
                                 :select-items="selectOptionsForColumn('TermOfPaymentSAP')"
                                 @update:selectedValue="updateSelectedTermPaymentSAP"
-                                @search="searchCompanies('TermOfPaymentSAP', $event)"
                                 @sort="handleSort('TermOfPaymentSAP', $event)"
                             />
                         </template>
@@ -263,7 +272,6 @@
                                 :selected-value="selectedDescription"
                                 :select-items="selectOptionsForColumn('Description')"
                                 @update:selectedValue="updateSelectedDescription"
-                                @search="searchCompanies('Description', $event)"
                                 @sort="handleSort('Description', $event)"
                             />
                         </template>
@@ -284,6 +292,7 @@
     import InputSearch from '@/components/InputSearch.vue';
     import InputSearchHN from '@/components/InputSearchHN.vue';
     import HeaderSelect from '@/components/HeaderSelect.vue';
+    import * as XLSX from 'xlsx';
     export default{
         components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
         data: () => ({
@@ -299,35 +308,79 @@
             selectedTermPaymentDes: [], 
             selectedTermPaymentSAP: [], 
             selectedDescription: [], 
-            headersDataHNActivity: [
-                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-                { text: 'Term of payment', align: 'left', sortable: false, value: 'TermOfPayment' },
-                { text: 'Term of payment Des.', align: 'left', sortable: false, value: 'TermOfPaymentDes' },
-                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-                { text: 'Term of payment in SAP', align: 'left', sortable: false, value: 'TermOfPaymentSAP' },
-                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
+            headers: [
+                { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
+                { text: 'Term of payment', align: 'center', sortable: false, value: 'TermOfPayment' },
+                { text: 'Term of payment Des.', align: 'center', sortable: false, value: 'TermOfPaymentDes' },
+                { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
+                { text: 'Term of payment in SAP', align: 'center', sortable: false, value: 'TermOfPaymentSAP' },
+                { text: 'Description', align: 'center', sortable: false, value: 'Description' },
                 { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
             ],
             headersExport: [
-                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-                { text: 'Term of payment', align: 'left', sortable: false, value: 'TermOfPayment' },
-                { text: 'Term of payment Des.', align: 'left', sortable: false, value: 'TermOfPaymentDes' },
-                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-                { text: 'Term of payment in SAP', align: 'left', sortable: false, value: 'TermOfPaymentSAP' },
-                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
+                { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
+                { text: 'Term of payment', align: 'center', sortable: false, value: 'TermOfPayment' },
+                { text: 'Term of payment Des.', align: 'center', sortable: false, value: 'TermOfPaymentDes' },
+                { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
+                { text: 'Term of payment in SAP', align: 'center', sortable: false, value: 'TermOfPaymentSAP' },
+                { text: 'Description', align: 'center', sortable: false, value: 'Description' },
         
             ],
+            isError: false
         
         }),
+
+        watch: {
+            selectedCompanyCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedSystemCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedTermPayment: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedTermPaymentDes: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedTermPaymentSAP: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedDescription: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+        },
 
 
         methods: {
 
-            removeHNActivity(value){
+            async removeTermPayment(value){
                 console.log(value);
+                this.$swal.fire({
+                    title: "ไม่สามารถลบข้อมูลได้",
+                    icon: "question"
+                });
             },
             
-            async checkTermPayment(){
+            async checkMapping(){
                 if(this.selectedItemTermPayment){
 
                     this.checkInputData('Term of Payment', this.$refs.TermPaymentField)
@@ -347,77 +400,52 @@
 
             },
             
-            async MappingCashGL(){
-
-                const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
-                const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
-
+            async MappingTermPayment(){
+       
+                // เช็ค value
                 if(this.$refs.formMapping.validate()){
+                
+                    // เช็คค่าใน Table Mapping กับค่าที่จะ Mapping
+                    if(this.checkData.length > 0){
 
-                    try {
+                        const TermPayment               = this.checkData[0].Code
+                        const selectTermPayment         = this.selectedTermPayment2.Code
 
-                        if(this.checkData.length > 0){
+                        const TermOfPaymentSAP          = this.checkData[0].TermOfPaymentSAP
+                        const selectedTermPaymentSAP    = this.selectedTermPaymentSAP.GLNo
+                        
+                        const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
+                        const selectSystemCode    = this.$refs.selectSystemCode.selecItem;   
 
-                            await this.$swal.fire({
-                                title: "Warning",
-                                text: "Data has already map. Are you sure to map again? ",
-                                icon: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#52A1DB",
-                                cancelButtonColor: "#52A1DB",
-                                confirmButtonText: "OK",
-                                customClass: {
-                                    title: 'text-warning' // Add your custom class here
-                                }
-                                }).then(async(result) => {
-                                if (result.isConfirmed) {
-                                    let fd  = {
-                                        "companyCode": selectCompanyCode,
-                                        "systemCode": selectSystemCode,
-                                        "hnReceiveCode": this.selectedItemHNTwo.Code,
-                                        "localName": this.selectedItemHNTwo.LocalName,
-                                        "englishName": this.selectedItemHNTwo.EnglishName,
-                                        "glsarCode": this.selectedItemGLSAR.GLNo,
-                                        "glsarName": this.selectedItemGLSAR.GLDes,
-                                        "postingKey": this.posting_key,
-                                        "postingKey2": this.posting_key2,
-                                        "glsapCode": this.selectedItemGLSAP.GLNo,
-                                        "key2Description": "string",
-                                        "specialGL":this.selectedItemspecialGL.GLNo,
-                                    }
+                        // เช็คค่า TermPayment และ TermOfPaymentSAP เหมือนกัน จะเข้าเงื่อนไข if
+                        const checkRecord = (
+                            TermPayment === selectTermPayment &&
+                            TermOfPaymentSAP === selectedTermPaymentSAP
+                        );
 
-                                    let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                    await this.$axios.post(`${MappingCashGLPath}`, fd)
+                        const resultRecord = checkRecord ? true : false;
 
+                        const MappingArPaymentTermPath       =   `/api/`
 
-                                    // if(response){
-                                        this.$swal.fire({
-                                            icon: "success",
-                                            title: "Complete",
-                                            text: "You data was saved.",
-                                            customClass: {
-                                                title: 'text-success' // Add your custom class here
-                                            }
-                                        });
-                                    // }
-
-                            
-                                }
-                            });
-
-                        }else{
-                            this.$swal.fire({
-                                icon: "error",
-                                title: "Incomplete",
-                                text: "Unable to update . Please check data agian.",
-                                customClass: {
-                                    title: 'text-error' // Add your custom class here
-                                }
-                            });
+                        const fd  = {
+                            "companyCode": selectCompanyCode,
+                            "systemCode": selectSystemCode,
+                            "hnReceiveCode": this.selectedItemHNTwo.Code,
+                            "localName": this.selectedItemHNTwo.LocalName,
+                            "englishName": this.selectedItemHNTwo.EnglishName,
+                            "glsarCode": this.selectedItemGLSAR.GLNo,
+                            "glsarName": this.selectedItemGLSAR.GLDes,
+                            "postingKey": this.posting_key,
+                            "postingKey2": this.posting_key2,
+                            "glsapCode": this.selectedItemGLSAP.GLNo,
+                            "key2Description": "string",
+                            "specialGL":this.selectedItemspecialGL.GLNo,
                         }
 
-                    } catch (error) {
-                        console.log('MappingCashGL',error);
+                         // globalMixin.js
+                        this.MappingData(resultRecord, MappingArPaymentTermPath, fd)
+
+                    }else{
                         this.$swal.fire({
                             icon: "error",
                             title: "Incomplete",
@@ -439,20 +467,27 @@
                     });
                 }
             },
-            // getselectedItemHNOne(data) {
-            //       this.selectedItemHNOne = data;
-            // },
-            // getselectedTermPayment(data) {
-            //       this.selectedItemTermPayment = data;
-            // },
-            // getselectedTermPayment2(data) {
-            //       this.selectedItemTermPayment2 = data;
-            // },
-        
-            // getselectedTermPaymentSAP(data){
-            //     this.selectedItemTermPaymentSAP = data;
-            // },
 
+            exportToExcel() {
+                const datas = this.filteredData.map(item => ({
+                    "System Code": item.SystemCode,
+                    "Term of payment": item.Termofpayment,
+                    "Term of payment Des.": item.TermofpaymentDes,
+                    "Company Code": item.CompanyCode,
+                    "Term of payment in SAP": item.TermofpaymentSAP,
+                    "Description": item.Description,
+                }));
+     
+                const fileName = 'ARPaymentTerm.xlsx';
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(datas);
+                XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+                /* Generate XLSX file and send to client */
+                XLSX.writeFile(wb, fileName);
+              
+            },
+            
             updateSelectedTermPayment(value) {
                 this.SelectedTermPayment = value;
             },
@@ -469,7 +504,6 @@
             filterData() {
 
                 this.filteredData = this.datasExport.filter(item =>
-
                 (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
                 (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
                 (this.selectedTermPayment.length === 0 || this.selectedTermPayment.includes(item.TermOfPayment)) &&
@@ -477,6 +511,15 @@
                 (this.selectedTermPaymentSAP.length === 0 || this.selectedTermPaymentSAP.includes(item.TermOfPaymentSAP)) &&
                 (this.selectedDescription.length === 0 || this.selectedDescription.includes(item.Description))
                 );
+            },
+
+            clearData(){
+                this.$refs.formMapping.resetValidation()
+                this.$refs.TermPayment.selectedItem     = {}
+                this.$refs.TermPaymentSAP.selectedItem  = {},
+                this.$refs.selectCompanyCode.selecItem  = null 
+                this.$refs.selectSystemCode.selecItem   = null 
+                this.isError                            = false
             },
 
 
@@ -498,7 +541,7 @@
         display: none;
     }
 
-    ::v-deep .style-table thead.v-data-table-header {
+    /* ::v-deep .style-table thead.v-data-table-header {
         background: #D9D9D9!important;
     }
 
@@ -508,7 +551,7 @@
   
     ::v-deep .style-table td{
         border: 1px solid #D9D9D9;
-    }
+    } */
 
     .border-b-lg{
         height: 5px!important;

@@ -4,7 +4,7 @@
         <v-col>
             <span class="f-12">Company Code</span>
         </v-col>
-        <v-col cols="8">
+        <v-col cols="8" >
             <v-autocomplete
                 label="Select"
                 v-model="selecItem"

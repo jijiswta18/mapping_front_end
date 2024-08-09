@@ -28,9 +28,8 @@
                                         code="AR Compose Category" 
                                         name="Description"
                                         type="Term Of Payment" 
-                                        dataUpdate="AccountGroup"
                                         @childEvent="getselectedItemAccGroup"
-                                        @data-updated="handleDataUpdated"
+                                        @data-updated="handleClearData('selectedItemAccGroup', 'AccountGroup')"
                                     />
                                   
                                 </v-col>
@@ -38,7 +37,7 @@
                                 <v-col cols="12" md="6"  class="d-flex justify-space-between align-center">
                                     
                                     <span class="f-12 pr-3">AR Compose Category Name : {{ selectedItemHNOne.LocalName }}</span>
-                                    <v-btn @click="checkAccountGroup" class="bg-orange">Check</v-btn>
+                                    <v-btn @click="checkMapping" class="bg-orange">Check</v-btn>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -54,7 +53,7 @@
                             hide-default-footer
                         >
                             <template v-slot:[`item.Action`]="{ item }">
-                                <v-btn density="compact" icon class="bg-red text-white" @click="removeHNActivity(item)">
+                                <v-btn density="compact" icon class="bg-red text-white" @click="removeAccountGroup(item)">
                                     <v-icon>mdi-close</v-icon>
                                 </v-btn>
                             </template>
@@ -106,13 +105,14 @@
                                     </v-col>
                                     <v-col cols="8">
                                         <InputSearchHN 
+                                            ref="ARComposeCategory"
                                             title="AR Compose Category"
                                             label="AR Compose Category" 
                                             code="AR Compose Category" 
                                             name="Description"
                                             type="Term Of Payment" 
-                                            dataUpdate="AccountGroup2"
-                                            @childEvent="getselectedItemAccGroup2"
+                                            @childEvent="getselectedItemAccGroupTwo"
+                                            @data-updated="handleClearData('selectedItemAccGroupTwo', 'AccountGroup')"
                                         />
 
                                       
@@ -126,7 +126,10 @@
                                         <span class="f-12">Description</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemAccGroup2.LocalName}}</p>
+                                        <p 
+                                            class="f-12 border-bottom pb-0 h25"
+                                            :class="{ 'text-error': isError}"
+                                        >{{selectedItemAccGroupTwo.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
@@ -141,14 +144,14 @@
                                     <v-col cols="8">
 
                                         <InputSearch 
+                                            ref="KTOKK"
                                             title="KTOKK"
                                             label="Text" 
                                             code="KTOKK" 
                                             name="Description"
                                             type="KTOKK" 
-                                            dataUpdate="KTOKK"
-                                            @data-updated="handleDataUpdated"
                                             @childEvent="getselectedItemKTOKK"
+                                            @data-updated="handleClearData('selectedItemKTOKK', 'KTOKK')"
                                         />
 
                                        
@@ -160,7 +163,10 @@
                                         <span class="f-12">Description</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemKTOKK.GLDes}}</p>
+                                        <p 
+                                            class="f-12 border-bottom pb-0 h25"
+                                            :class="{ 'text-error': isError}"
+                                        >{{selectedItemKTOKK.GLDes}}</p>
                                     </v-col>
                                     
                                 </v-row>
@@ -184,14 +190,14 @@
                                     <v-col cols="8">
 
                                         <InputSearch 
+                                            ref="AR_AKONT"
                                             title="AR_AKONT"
                                             label="Text" 
                                             code="AR_AKONT" 
                                             name="Description"
                                             type="AR_AKONT" 
-                                            dataUpdate="AR_AKONT"
                                             @childEvent="getselectedItemAR_AKONT"
-                                            @data-updated="handleDataUpdated"
+                                            @data-updated="handleClearData('selectedItemAR_AKONT', 'AR_AKONT')"
                                         />
                                     
                                        
@@ -203,7 +209,10 @@
                                         <span class="f-12">Description</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemAR_AKONT.LocalName}}</p>
+                                        <p 
+                                            class="f-12 border-bottom pb-0 h25"
+                                            :class="{ 'text-error': isError}"
+                                        >{{selectedItemAR_AKONT.LocalName}}</p>
                                     </v-col>
                                 </v-row>
 
@@ -218,14 +227,14 @@
                                     <v-col cols="8">
 
                                         <InputSearch 
+                                            ref="AP_AKONT"
                                             title="AP_AKONT"
                                             label="Text" 
                                             code="AP_AKONT" 
                                             name="Description"
                                             type="AP_AKONT" 
-                                            dataUpdate="AP_AKONT"
                                             @childEvent="getselectedItemAP_AKONT"
-                                            @data-updated="handleDataUpdated"
+                                            @data-updated="handleClearData('selectedItemAP_AKONT', 'AP_AKONT')"
                                         />
                                     
                                        
@@ -238,16 +247,19 @@
                                         <span class="f-12">Description</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemAP_AKONT.LocalName}}</p>
+                                        <p 
+                                            class="f-12 border-bottom pb-0 h25" 
+                                            :class="{ 'text-error': isError}"
+                                        >{{selectedItemAP_AKONT.LocalName}}</p>
                                     </v-col>
                                 </v-row>
                             </v-col>
                             <v-col cols="12" md="1"></v-col>
                         
                         </v-row>
-                        
+                            <p v-if="isError" class="text-error f-13">*ข้อมูลไม่ถูกต้อง</p>
                             <div class="text-center">
-                                <v-btn @click="MappingCashGL" class="bg-orange">Update Data</v-btn>
+                                <v-btn @click="MappingAccountGroup" class="bg-orange">Update Data</v-btn>
                             </div>
                        
                         </v-form>
@@ -289,7 +301,6 @@
                                 :selected-value="selectedCompanyCode"
                                 :select-items="selectOptionsForColumn('CompanyCode')"
                                 @update:selectedValue="updateSelectedCompanyCode"
-                                @search="searchCompanies('CompanyCode', $event)"
                                 @sort="handleSort('CompanyCode', $event)"
                             />
                         </template>
@@ -300,7 +311,6 @@
                                 :selected-value="selectedSystemCode"
                                 :select-items="selectOptionsForColumn('SystemCode')"
                                 @update:selectedValue="updateSelectedSystemCode"
-                                @search="searchCompanies('SystemCode', $event)"
                                 @sort="handleSort('SystemCode', $event)"
                             />
                         </template>
@@ -311,7 +321,6 @@
                                 :selected-value="selectedARComposeCategory"
                                 :select-items="selectOptionsForColumn('ARComposeCategory')"
                                 @update:selectedValue="updateSelectedARComposeCategory"
-                                @search="searchCompanies('ARComposeCategory', $event)"
                                 @sort="handleSort('ARComposeCategory', $event)"
                             />
                         </template>
@@ -322,7 +331,6 @@
                                 :selected-value="selectedDescription"
                                 :select-items="selectOptionsForColumn('Description')"
                                 @update:selectedValue="updateSelectedDescription"
-                                @search="searchCompanies('Description', $event)"
                                 @sort="handleSort('Description', $event)"
                             />
                         </template>
@@ -333,7 +341,6 @@
                                 :selected-value="selectedDescriptionTwo"
                                 :select-items="selectOptionsForColumn('DescriptionTwo')"
                                 @update:selectedValue="updateSelectedDescriptionTwo"
-                                @search="searchCompanies('DescriptionTwo', $event)"
                                 @sort="handleSort('DescriptionTwo', $event)"
                             />
                         </template>
@@ -344,7 +351,6 @@
                                 :selected-value="selectedKTOKK"
                                 :select-items="selectOptionsForColumn('KTOKK')"
                                 @update:selectedValue="updateSelectedKTOKK"
-                                @search="searchCompanies('KTOKK', $event)"
                                 @sort="handleSort('KTOKK', $event)"
                             />
                         </template>
@@ -355,7 +361,6 @@
                                 :selected-value="selectedARAKONT"
                                 :select-items="selectOptionsForColumn('ARAKONT')"
                                 @update:selectedValue="updateSelectedARAKONT"
-                                @search="searchCompanies('ARAKONT', $event)"
                                 @sort="handleSort('ARAKONT', $event)"
                             />
                         </template>
@@ -373,13 +378,14 @@
     import InputSearch from '@/components/InputSearch.vue';
     import InputSearchHN from '@/components/InputSearchHN.vue';
     import HeaderSelect from '@/components/HeaderSelect.vue';
+    import * as XLSX from 'xlsx';
     export default{
         components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
         data: () => ({
             search: '',
             loading: true,
             selectedItemAccGroup: {},
-            selectedItemAccGroup2: {},
+            selectedItemAccGroupTwo: {},
             selectedItemKTOKK: {},
             selectedItemAR_AKONT: {},
             selectedItemAP_AKONT: {},
@@ -392,25 +398,25 @@
             selectedDescriptionTwo: [], 
             selectedARAKONT: [], 
             headersData: [
-                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-                { text: 'AR Compose Category', align: 'left', sortable: false, value: 'ARComposeCategory' },
-                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
-                { text: 'KTOKK', align: 'left', sortable: false, value: 'KTOKK' },
-                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
-                { text: 'AR_AKONT', align: 'left', sortable: false, value: 'ARAKONT' },
+                { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
+                { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
+                { text: 'AR Compose Category', align: 'center', sortable: false, value: 'ARComposeCategory' },
+                { text: 'Description', align: 'center', sortable: false, value: 'Description' },
+                { text: 'KTOKK', align: 'center', sortable: false, value: 'KTOKK' },
+                { text: 'Description', align: 'center', sortable: false, value: 'Description' },
+                { text: 'AR_AKONT', align: 'center', sortable: false, value: 'ARAKONT' },
+                { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
             ],
             headersExport: [
-                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-                { text: 'AR Compose Category', align: 'left', sortable: false, value: 'ARComposeCategory' },
-                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
-                { text: 'KTOKK', align: 'left', sortable: false, value: 'KTOKK' },
-                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
-                { text: 'AR_AKONT', align: 'left', sortable: false, value: 'ARAKONT' },
-            
-        
+                { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
+                { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
+                { text: 'AR Compose Category', align: 'center', sortable: false, value: 'ARComposeCategory' },
+                { text: 'Description', align: 'center', sortable: false, value: 'Description' },
+                { text: 'KTOKK', align: 'center', sortable: false, value: 'KTOKK' },
+                { text: 'Description', align: 'center', sortable: false, value: 'Description' },
+                { text: 'AR_AKONT', align: 'center', sortable: false, value: 'ARAKONT' },
             ],
+            isError: false
 
         }),
 
@@ -460,94 +466,16 @@
 
         },
         methods: {
-
-            // getselectedItemAccGroup(data) {
-            //     this.selectedItemAccGroup = data;
-            // },
-            // getselectedItemAccGroup2(data) {
-            //     this.selectedItemAccGroup2 = data;
-            // },
-
-            // getselectedItemKTOKK(data) {
-            //     this.selectedItemKTOKK = data;
-            
-            // },
         
-            // getselectedItemAR_AKONT(data){
-            //     this.selectedItemAR_AKONT = data;
-            // },
-
-            // getselectedItemAP_AKONT(data){
-            //     this.selectedItemAP_AKONT = data;
-            // },
-
-
-            updateSelectedARComposeCategory(value){
-                this.selectedARComposeCategory = value;
-            },
-            updateSelectedDescription(value){
-                this.selectedADescription = value;
-            },
-            updateSelectedKTOKK(value){
-                this.selectedKTOKK = value;
-            },
-            updateSelectedDescriptionTwo(value){
-                this.selectedDescriptionTwo = value;
-            },
-            updateSelectedARAKONT(value){
-                this.selectedARAKONT = value;
-            },
-        
-            async removeHNActivity(value){
+            async removeAccountGroup(value){
                 console.log(value);
-                await this.$swal.fire({
-                    title: "Warning",
-                    text: "Are you sure you want to delete this item? ",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#52A1DB",
-                    cancelButtonColor: "#52A1DB",
-                    confirmButtonText: "OK",
-                    customClass: {
-                    title: 'text-warning' // Add your custom class here
-                }
-                    }).then(async(result) => {
-                    if (result.isConfirmed) {
-                        console.log(result.isConfirmed);
-                        // let fd  = {
-                        //     "companyCode"       : selectCompanyCode,
-                        //     "systemCode"        : selectSystemCode,
-                        //     "hnActivityCode"    : this.selectedItemHNTwo.Code,
-                        //     "localName"         : this.selectedItemHNTwo.LocalName,
-                        //     "englishName"       : this.selectedItemHNTwo.EnglishName,
-                        //     "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
-                        //     "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
-                        //     "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
-                        //     "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
-                        //     "postingKey"        : this.posting_key
-                        // }
-                        // let MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
-                        // let response                    =    await axios.post(`${MappingActivityGLPath}`, fd)
-                        // console.log(response);
-                        // console.log(fd);
-
-                        // // if(response){
-                        //     Swal.fire({
-                        //         icon: "success",
-                        //         title: "Complete",
-                        //         text: "You data was saved.",
-                        //         customClass: {
-                        //             title: 'text-success' // Add your custom class here
-                        //         }
-                        //     });
-                        // // }
-
-                
-                    }
+                this.$swal.fire({
+                    title: "ไม่สามารถลบข้อมูลได้",
+                    icon: "question"
                 });
             },
 
-            async checkAccountGroup(){
+            async checkMapping(){
 
                 if(this.selectedItemAccGroup){
 
@@ -555,10 +483,12 @@
                  
                 }else{
                     try {
+
                         this.loading                = await true
                         let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetAccGroupID?AccGroup=${this.selectedItemAccGroup}`
                         let response                = await this.$axios.get(GetTmCashAndGLIDPath);
                         this.checkData              = response.data;
+
                     } catch (error) {
                         this.loading = await false
                         console.error('Error fetching data:', error);
@@ -568,77 +498,58 @@
                 
             },
             
-            async MappingCashGL(){
+            async MappingAccountGroup(){
 
-                const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
-                const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
-
+                // เช็ค value
                 if(this.$refs.formMapping.validate()){
 
-                    try {
+                    // เช็คค่าใน Table Mapping กับค่าที่จะ Mapping
+                    if(this.checkData.length > 0){
 
-                        if(this.checkData.length > 0){
+                        const AccountGroup              = this.checkData[0].Code
+                        const selectedItemAccGroupTwo   = this.selectedItemAccGroupTwo.Code
+                        
+                        const KTOKK                     = this.checkData[0].KTOKK
+                        const selectedItemKTOKK         = this.selectedItemKTOKK.GLNo
+                        
+                        const AR_AKONT                  = this.checkData[0].AR_AKONT
+                        const selectedItemAR_AKONT      = this.selectedItemAR_AKONT.GLNo
 
-                            await this.$swal.fire({
-                                title: "Warning",
-                                text: "Data has already map. Are you sure to map again? ",
-                                icon: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#52A1DB",
-                                cancelButtonColor: "#52A1DB",
-                                confirmButtonText: "OK",
-                                customClass: {
-                                    title: 'text-warning' // Add your custom class here
-                                }
-                                }).then(async(result) => {
-                                if (result.isConfirmed) {
-                                    let fd  = {
-                                        "companyCode": selectCompanyCode,
-                                        "systemCode": selectSystemCode,
-                                        "hnReceiveCode": this.selectedItemHNTwo.Code,
-                                        "localName": this.selectedItemHNTwo.LocalName,
-                                        "englishName": this.selectedItemHNTwo.EnglishName,
-                                        "glsarCode": this.selectedItemGLSAR.GLNo,
-                                        "glsarName": this.selectedItemGLSAR.GLDes,
-                                        "postingKey": this.posting_key,
-                                        "postingKey2": this.posting_key2,
-                                        "glsapCode": this.selectedItemGLSAP.GLNo,
-                                        "key2Description": "string",
-                                        "specialGL":this.selectedItemspecialGL.GLNo,
-                                    }
+                        const AP_AKONT                  = this.checkData[0].AP_AKONT
+                        const selectedItemAP_AKONT      = this.selectedItemAP_AKONT.GLNo
 
-                                    let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                    await this.$axios.post(`${MappingCashGLPath}`, fd)
-                            
+                        const selectCompanyCode         = this.$refs.selectCompanyCode.selecItem;
+                        const selectSystemCode          = this.$refs.selectSystemCode.selecItem;
 
-                                    // if(response){
-                                        this.$swal.fire({
-                                            icon: "success",
-                                            title: "Complete",
-                                            text: "You data was saved.",
-                                            customClass: {
-                                                title: 'text-success' // Add your custom class here
-                                            }
-                                        });
-                                    // }
+                        // เช็คค่า AccountGroup KTOKK AR_AKONT และ AP_AKONT เหมือนกัน จะเข้าเงื่อนไข if
+                        const checkRecord = (
+                            AccountGroup === selectedItemAccGroupTwo &&
+                            KTOKK === selectedItemKTOKK &&
+                            AR_AKONT === selectedItemAR_AKONT && 
+                            AP_AKONT === selectedItemAP_AKONT
+                        );
 
-                            
-                                }
-                            });
-
-                        }else{
-                            this.$swal.fire({
-                                icon: "error",
-                                title: "Incomplete",
-                                text: "Unable to update . Please check data agian.",
-                                customClass: {
-                                    title: 'text-error' // Add your custom class here
-                                }
-                            });
+                        const resultRecord                  = checkRecord ? true : false;
+                        const MappingAccountGroupPath       =   `/api/`
+                        const fd  = {
+                            "companyCode": selectCompanyCode,
+                            "systemCode": selectSystemCode,
+                            "hnReceiveCode": this.selectedItemHNTwo.Code,
+                            "localName": this.selectedItemHNTwo.LocalName,
+                            "englishName": this.selectedItemHNTwo.EnglishName,
+                            "glsarCode": this.selectedItemGLSAR.GLNo,
+                            "glsarName": this.selectedItemGLSAR.GLDes,
+                            "postingKey": this.posting_key,
+                            "postingKey2": this.posting_key2,
+                            "glsapCode": this.selectedItemGLSAP.GLNo,
+                            "key2Description": "string",
+                            "specialGL":this.selectedItemspecialGL.GLNo,
                         }
 
-                    } catch (error) {
-                        console.log('MappingCashGL',error);
+                         // globalMixin.js
+                        this.MappingData(resultRecord, MappingAccountGroupPath, fd)
+
+                    }else{
                         this.$swal.fire({
                             icon: "error",
                             title: "Incomplete",
@@ -661,6 +572,27 @@
                 }
             },
 
+            exportToExcel() {
+                const datas = this.filteredData.map(item => ({
+                    "Company Code": item.CompanyCode,
+                    "System Code": item.SystemCode,
+                    "AR Compose Category": item.ARComposeCategory,
+                    "Description AR Compose Category": item.Description,
+                    "KTOKK": item.KTOKK,
+                    "Description KTOKK": item.Description,
+                    "AR_AKONT": item.AR_AKONT,
+                }));
+     
+                const fileName = 'ARAccountGroup.xlsx';
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(datas);
+                XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+                /* Generate XLSX file and send to client */
+                XLSX.writeFile(wb, fileName);
+              
+            },
+
             filterData() {
 
                 this.filteredData = this.datasExport.filter(item =>
@@ -675,6 +607,36 @@
                 );
             },
 
+            updateSelectedARComposeCategory(value){
+                this.selectedARComposeCategory = value;
+            },
+            updateSelectedDescription(value){
+                this.selectedADescription = value;
+            },
+            updateSelectedKTOKK(value){
+                this.selectedKTOKK = value;
+            },
+            updateSelectedDescriptionTwo(value){
+                this.selectedDescriptionTwo = value;
+            },
+            updateSelectedARAKONT(value){
+                this.selectedARAKONT = value;
+            },
+
+            clearData(){
+                this.$refs.formMapping.resetValidation()
+                this.$refs.ARComposeCategory.selectedItem   = {}
+                this.$refs.KTOKK.selectedItem               = {}
+                this.$refs.AR_AKONT.selectedItem            = {}
+                this.$refs.AP_AKONT.selectedItem            = {} 
+                this.selectedItemAccGroupTwo                = {}
+                this.selectedItemKTOKK                      = {}
+                this.selectedItemAR_AKONT                   = {}
+                this.selectedItemAP_AKONT                   = {}
+                this.$refs.selectCompanyCode.selecItem      = null 
+                this.$refs.selectSystemCode.selecItem       = null 
+                this.isError                                = false
+            },
         
         }
     }
@@ -694,7 +656,7 @@
         display: none;
     }
 
-    ::v-deep .style-table thead.v-data-table-header {
+    /* ::v-deep .style-table thead.v-data-table-header {
         background: #D9D9D9!important;
     }
 
@@ -704,7 +666,7 @@
   
     ::v-deep .style-table td{
         border: 1px solid #D9D9D9;
-    }
+    } */
 
     .border-b-lg{
         height: 5px!important;

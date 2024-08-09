@@ -29,9 +29,8 @@
                                         code="HNActivity Code" 
                                         name="HNActivity name"
                                         type="Activity" 
-                                        dataUpdate="ActivityOne"
                                         @childEvent="getselectedItemHNOne"
-                                        @data-updated="handleDataUpdated"
+                                        @data-updated="handleClearData('selectedItemHNOne', 'HNActivityCode')"
 
                                     />
 
@@ -39,7 +38,7 @@
                                 <v-col cols="12" md="6"  class="d-flex justify-space-between align-center">
                                     
                                     <span class="f-12 pr-3">HNActivity Name : {{ selectedItemHNOne.LocalName }}</span>
-                                    <v-btn @click="checkHNActivity" class="bg-orange">Check</v-btn>
+                                    <v-btn @click="checkMapping" class="bg-orange">Check</v-btn>
 
                                 </v-col>
                             </v-row>
@@ -65,7 +64,7 @@
                     </div>
 
                     <div class="box-relationship-mapping">
-                        <h1 class="f-20 mb-1">Relationship Mapping</h1>
+                        <h1 class="f-20 mb-1 mt-2">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
 
                         <v-form ref="formMapping" v-model="valid" lazy-validation>
@@ -95,6 +94,7 @@
                                             single-line
                                             hide-details="auto"
                                             clearable 
+                                            @keyup="handleInput('posting_key')"
                                         ></v-text-field>
                                     </v-col>
                                 </v-row> 
@@ -118,11 +118,10 @@
                                             code="HNActivity Code" 
                                             name="HNActivity name"
                                             type="Activity"
-                                            dataUpdate="ActivityTwo"
                                             ref="selectHNActivity"
                                             :isError="isError" 
                                             @childEvent="getselectedItemHNTwo"
-                                            @data-updated="handleDataUpdated"
+                                            @data-updated="handleClearData('selectedItemHNTwo', 'HNActivityCode')"
                                         />
 
                                     </v-col>
@@ -154,10 +153,10 @@
                                             name="GL OPD Name" 
                                             ref="slectGLOPD" 
                                             type="SapGL"
-                                            dataUpdate="G/L OPD"
+                                           
                                             :isError="isError"
                                             @childEvent="getselectedItemGLOPD"
-                                            @data-updated="handleDataUpdated"
+                                            @data-updated="handleClearData('selectedItemGLOPD', 'SapGL')"
                                         />
 
                                     </v-col>
@@ -193,11 +192,10 @@
                                             code="GL IPD Code" 
                                             name="GL IPD Name" 
                                             type="SapGL"
-                                            dataUpdate="G/L IPD"
                                             ref="slectGLIPD" 
                                             :isError="isError"
                                             @childEvent="getselectedItemGLIPD"
-                                            @data-updated="handleDataUpdated"
+                                            @data-updated="handleClearData('selectedItemGLIPD', 'SapGL')"
                                         />
 
                                     </v-col>
@@ -349,6 +347,17 @@
                             />
                         </template>
 
+                        <!-- Header Template for Posting Key -->
+                        <template v-slot:[`header.PostingKey`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedPostingKey"
+                                :select-items="selectOptionsForColumn('PostingKey')"
+                                @update:selectedValue="updateSelectedPostingKey"
+                                @sort="handleSort('PostingKey', $event)"
+                            />
+                        </template>
+
                     </v-data-table>
 
                 </v-card>
@@ -367,6 +376,7 @@
     import InputSearchHN from '@/components/InputSearchHN.vue';
     import HeaderSelect from '@/components/HeaderSelect.vue';
     import * as XLSX from 'xlsx';
+
     export default{
         components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
         data: () => ({
@@ -389,6 +399,7 @@
             selectedGLOPDName: [],
             selectedGLIPDCode: [],
             selectedGLIPDName: [],
+            selectedPostingKey: [],
             posting_key: null,
             headersDataHNActivity: [
                 { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
@@ -419,9 +430,12 @@
         }),
 
         watch: {
+            // filter หน้า Export
             selectedCompanyCode: {
+              
                 handler() {
                     this.filterData();
+                  
                 },
                 deep: true,
             },
@@ -474,6 +488,12 @@
                 },
                 deep: true,
             },
+            selectedPostingKey: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
         },
 
         methods: {
@@ -490,13 +510,14 @@
                     "Posting Key": item.PostingKey,
                 }));
      
-                const fileName = 'TMHNActivity' + '.xlsx'
+                const fileName = 'TMHNActivity.xlsx';
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.json_to_sheet(datas);
                 XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
-                /* generate XLSX file and send to client */
+                /* Generate XLSX file and send to client */
                 XLSX.writeFile(wb, fileName);
+              
             },
            
             /* search table export */
@@ -518,6 +539,10 @@
             updateSelectedGLIPDName(value) {
                 this.selectedGLIPDName = value;
             },
+            updateSelectedPostingKey(value) {
+                this.selectedPostingKey = value;
+            },
+            
         
             clearData(){
                 this.$refs.formMapping.resetValidation()
@@ -544,7 +569,8 @@
                     (this.selectedGLOPDCode.length === 0 || this.selectedGLOPDCode.includes(item.GLSAPCodeOPD)) &&
                     (this.selectedGLOPDName.length === 0 || this.selectedGLOPDName.includes(item.GLSAPNameOPD)) &&
                     (this.selectedGLIPDCode.length === 0 || this.selectedGLIPDCode.includes(item.GLSAPCodeIPD)) &&
-                    (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD))
+                    (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD)) &&
+                    (this.selectedPostingKey.length === 0 || this.selectedPostingKey.includes(item.PostingKey))
                 );
             },
 
@@ -554,54 +580,9 @@
                     title: "ไม่สามารถลบข้อมูลได้",
                     icon: "question"
                 });
-                // await this.$swal.fire({
-                //     title: "Warning",
-                //     text: "Are you sure you want to delete this item? ",
-                //     icon: "warning",
-                //     showCancelButton: true,
-                //     confirmButtonColor: "#52A1DB",
-                //     cancelButtonColor: "#52A1DB",
-                //     confirmButtonText: "OK",
-                //     customClass: {
-                //     title: 'text-warning' // Add your custom class here
-                // }
-                //     }).then(async(result) => {
-                //     if (result.isConfirmed) {
-                //         console.log(result.isConfirmed);
-                //         let fd  = {
-                //             "companyCode"       : selectCompanyCode,
-                //             "systemCode"        : selectSystemCode,
-                //             "hnActivityCode"    : this.selectedItemHNTwo.Code,
-                //             "localName"         : this.selectedItemHNTwo.LocalName,
-                //             "englishName"       : this.selectedItemHNTwo.EnglishName,
-                //             "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
-                //             "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
-                //             "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
-                //             "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
-                //             "postingKey"        : this.posting_key
-                //         }
-                //         let MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
-                //         let response                    =    await axios.post(`${MappingActivityGLPath}`, fd)
-                //         console.log(response);
-                //         console.log(fd);
-
-                //         // if(response){
-                //             Swal.fire({
-                //                 icon: "success",
-                //                 title: "Complete",
-                //                 text: "You data was saved.",
-                //                 customClass: {
-                //                     title: 'text-success' // Add your custom class here
-                //                 }
-                //             });
-                //         // }
-
-                
-                //     }
-                // });
             },
 
-            async checkHNActivity(){
+            async checkMapping(){
             
                 if(this.selectedItemHNOne && !this.selectedItemHNOne.Code){    
                     
@@ -641,91 +622,34 @@
                         const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
                         const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
                         
-                        // เช็คค่า HNActivity ในตารางต้องตรงกับ selectedHNActivity ที่เลือก หรือ GLSAPCodeIPD และ GLSAPCodeOPD ข้อมูลต้องไม่เหมือนกัน
-                        if(HNActivity !== selectedHNActivity || GLSAPCodeIPD === selectedItemGLIPD && GLSAPCodeOPD === selectedItemGLOPD){
+                        // เช็คค่า HNActivity GLSAPCodeIPD และ GLSAPCodeOPD เหมือนกัน จะเข้าเงื่อนไข if
+                        const checkRecord = (
+                            HNActivity === selectedHNActivity &&
+                            GLSAPCodeIPD === selectedItemGLIPD &&
+                            GLSAPCodeOPD === selectedItemGLOPD 
 
-                            this.$swal.fire({
-                                icon: "error",
-                                title: "Incomplete",
-                                text: "Record already exists",
-                                customClass: {
-                                    title: 'text-error' // Add your custom class here
-                                }
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    this.isError = true
-                                }
-                            });
+                        );
 
-                        }else{
+                        const resultRecord = checkRecord ? true : false;
 
-                        await this.$swal.fire({
-                            title: "Warning",
-                            text: 'Record already exists. "Are you sure you want to save?"',
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#52A1DB",
-                            cancelButtonColor: "#52A1DB",
-                            confirmButtonText: "OK",
-                            customClass: {
-                                title: 'text-warning' // Add your custom class here
-                            }
-                            }).then(async(result) => {
-                                if (result.isConfirmed) {
-                                    let fd  = {
-                                        "companyCode"       : selectCompanyCode != null ? selectCompanyCode : this.dataHNActivity[0].companyCode,
-                                        "systemCode"        : selectSystemCode!= null ? selectSystemCode : this.dataHNActivity[0].systemCode,
-                                        "hnActivityCode"    : this.selectedItemHNTwo.Code,
-                                        "localName"         : this.selectedItemHNTwo.LocalName,
-                                        "englishName"       : this.selectedItemHNTwo.EnglishName != null ? this.selectedItemHNTwo.EnglishName : "",
-                                        "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
-                                        "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
-                                        "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
-                                        "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
-                                        "postingKey"        : this.posting_key != null ? this.posting_key : this.dataHNActivity[0].postingKey
-                                    }
+                        const MappingActivityGLPath     = `/api/SAP/MappingActivityGL`
 
-                                    console.log(fd);
-
-                                    try {
-
-
-                                        const MappingActivityGLPath       =   `/api/SAP/MappingActivityGL`
-                                        await this.$axios.post(`${MappingActivityGLPath}`, fd)
-
-                                        this.$swal.fire({
-                                            icon: 'success',
-                                            title: 'Complete',
-                                            text: 'Your data was saved.',
-                                            customClass: {
-                                            title: 'text-success', // Example of adding custom class
-                                            },
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                this.clearData(); // Call method to clear data
-                                                this.checkHNActivity()
-                                            }
-                                        });
-                                    
-                                    
-                                    
-                                    } catch (error) {
-
-                                        this.$swal.fire({
-                                            icon: "error",
-                                            title: "Incomplete",
-                                            text: "Unable to update . Please check data agian.",
-                                            customClass: {
-                                                title: 'text-error' // Add your custom class here
-                                            }
-                                        });
-                                    }
-
-                                }
-                            
-                            });
-
+                        const fd  = {
+                            "companyCode"       : selectCompanyCode != null ? selectCompanyCode : this.dataHNActivity[0].companyCode,
+                            "systemCode"        : selectSystemCode!= null ? selectSystemCode : this.dataHNActivity[0].systemCode,
+                            "hnActivityCode"    : this.selectedItemHNTwo.Code,
+                            "localName"         : this.selectedItemHNTwo.LocalName,
+                            "englishName"       : this.selectedItemHNTwo.EnglishName != null ? this.selectedItemHNTwo.EnglishName : "",
+                            "glsapCodeOPD"      : this.selectedItemGLOPD.GLNo,
+                            "glsapNameOPD"      : this.selectedItemGLOPD.GLDes,
+                            "glsapCodeIPD"      : this.selectedItemGLIPD.GLNo,
+                            "glsapNameIPD"      : this.selectedItemGLIPD.GLDes,
+                            "postingKey"        : this.posting_key != null ? this.posting_key : this.dataHNActivity[0].postingKey
                         }
+
+                         // globalMixin.js
+                        this.MappingData(resultRecord, MappingActivityGLPath, fd)
+                        
                     }else{
                         this.$swal.fire({
                                 icon: "error",
@@ -756,6 +680,8 @@
 </script>
 
 <style scoped>
+
+
     .v-tab{
         background: #D9D9D9!important;
         color: #000!important;
@@ -768,7 +694,7 @@
         display: none;
     }
 
-    ::v-deep .style-table thead.v-data-table-header {
+    /* ::v-deep .style-table thead.v-data-table-header {
         background: #D9D9D9!important;
     }
 
@@ -779,6 +705,11 @@
     ::v-deep .style-table td{
         border: 1px solid #D9D9D9;
     }
+
+    ::v-deep .style-table td{
+        border: 1px solid #D9D9D9;
+    } */
+
 
     .border-b-lg{
         height: 5px!important;

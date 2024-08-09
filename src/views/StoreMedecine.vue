@@ -587,7 +587,7 @@
                 }
                     }).then(async(result) => {
                     if (result.isConfirmed) {
-                        console.log(result.isConfirmed);
+                      
                         // let fd  = {
                         //     "companyCode"       : selectCompanyCode,
                         //     "systemCode"        : selectSystemCode,
@@ -649,12 +649,9 @@
                     // เช็คค่า dataHNReceive ใน Table ที่จะ Mapping
                     if(this.dataHNReceive.length > 0){
 
-            
-
                         const HNReceive = this.dataHNReceive[0].HNReceiveCode
                         const selectedHNReceive = this.selectedItemHNTwo.Code
 
-                        
                         const GLSAR = this.dataHNReceive[0].GLSARCode
                         const selectedItemGLSAR = this.selectedItemGLSAR.GLNo
 
@@ -714,8 +711,6 @@
                                         const MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
                                         await this.$axios.post(`${MappingCashGLPath}`, fd)
 
-                                        
-                                    
                                         this.$swal.fire({
                                             icon: 'success',
                                             title: 'Complete',
@@ -731,7 +726,6 @@
                                         });
 
                                     } catch (error) {
-                                        console.log(error);
                                         this.$swal.fire({
                                             icon: "error",
                                             title: "Incomplete",
@@ -867,7 +861,7 @@
         display: none;
     }
 
-    ::v-deep .style-table thead.v-data-table-header {
+    /* ::v-deep .style-table thead.v-data-table-header {
         background: #D9D9D9!important;
     }
 
@@ -877,7 +871,7 @@
   
     ::v-deep .style-table td{
         border: 1px solid #D9D9D9;
-    }
+    } */
 
     .border-b-lg{
         height: 5px!important;

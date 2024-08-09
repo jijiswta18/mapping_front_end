@@ -90,7 +90,7 @@
 
                     <template v-slot:footer>
                      <div class="text-right pr-3 pt-3 border-top">
-                        <v-btn @click="addItem" color="primary">OK</v-btn>
+                        <v-btn @click="dialogClearSearch" color="primary">OK</v-btn>
                      </div>
                     </template>
 
@@ -116,15 +116,10 @@
             search: '',
             loading: true,
             header: [],
-            selectedItem: {
-                Code: '',
-                LocalName: ''
-                // Add more fields as needed
-            },
+            selectedItem: {Code: '', LocalName: ''},
             searchCode:'',
             searchName:'',
-        
-                
+          
         }),
 
         mounted() {
@@ -151,16 +146,10 @@
                 ];
             },
             selectRow(item) {
-                console.log(item);
                 this.selectedItem = { ...item };
                 this.$emit('childEvent', item);
             },
 
-            addItem() {
-
-                this.dialogSearch = false
-                console.log('==========', this.selectedItem);
-            },
 
 
             searchCheck(inputString, searchTerm) {
@@ -188,11 +177,6 @@
                     return inputString === searchTerm;
                 }
             },
-
-            handleButtonClick() {
-                alert('Button clicked!');
-            },
-            
 
             onClick () {
                 this.dialogSearch = true
@@ -236,7 +220,6 @@
                     }, 300);
 
                 } catch (error) {
-                    // console.error('Error fetching data:', error);
                     this.loading = false;
                 }
             },
@@ -248,13 +231,11 @@
             },
             
             clearTextField() {
-            // Handle clearing logic here
-                this.selectedItem.Code = ''; // Example: Reset the v-model
-                this.emitToPage(); // Example: Emitting to parent component/page
+                this.selectedItem.Code = '';
+                this.emitToPage();
             },
             emitToPage() {
-                // Your code to emit data to the parent or elsewhere
-                this.$emit('data-updated', this.selectedItem.Code, this.dataUpdate); // Example emit
+                this.$emit('data-updated', this.selectedItem.Code, this.dataUpdate);
             },
 
           
@@ -277,7 +258,7 @@
     
 
     ::v-deep .table-container .v-data-table__wrapper {
-        height: 300px;
+        height: auto;
         max-height: 300px;
         overflow: auto;
     }

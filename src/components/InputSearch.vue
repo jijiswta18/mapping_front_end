@@ -13,7 +13,7 @@
             @click:append="onClick"
             @click:clear="clearTextField"
             class="input-search"
-            :class="{ 'text-danger': isError === true }"
+            :class="{ 'text-danger': isError}"
         ></v-text-field>
 
         <v-dialog
@@ -78,8 +78,25 @@
                         item-key="name"
                         :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                         class="dialog-table"
-                        @click:row="selectRow"
+                      
                     >
+
+                    <template v-slot:item="{ item, props }">
+                        <tr
+                            v-bind="props"
+                            :class="{ 'active-row': selectedItem && selectedItem.GLNo === item.GLNo }"
+                            @click="selectRow(item)"
+                        >
+                            <td>{{ item.GLNo }}</td>
+                            <td>{{ item.GLDes }}</td>
+                        </tr>
+                    </template>
+
+                    <template v-slot:footer>
+                     <div class="text-right pr-3 pt-3 border-top">
+                        <v-btn @click="dialogClearSearch" color="primary">OK</v-btn>
+                     </div>
+                    </template>
           
            </v-data-table>
                        
@@ -104,13 +121,9 @@
             header: [],
             dataCode: null,
             dataName: null,
-            selectedItem: {
-                GLNo: '',
-                GLDes: ''
-                // Add more fields as needed
-            },
+            selectedItem: {GLNo: '', GLDes: ''},
             textFieldValue: '',
-            textFieldClass: '', // Dynamic class binding for input field
+            textFieldClass: '',
             searchCode:'',
             searchName:'',
         }),
@@ -174,14 +187,11 @@
                 
             },
         
-
             onClick () {
                 this.dialogSearch = true
                 this.LoadData()
 
             },
-
-            
 
             async LoadData(){
                 try {
@@ -198,7 +208,6 @@
 
                         case "SapGL" :
                             LoadDataPath = '/api/SAP/SapGL'
-                            // this.getSAPGL()
                         break;
 
                         case "TermPaymentSAP" :
@@ -221,7 +230,6 @@
                             break;
                     }
 
-
                     let response        = await this.$axios.get(LoadDataPath);
                     
                     await setTimeout(() => {
@@ -230,7 +238,6 @@
                     }, 300);
 
                 } catch (error) {
-                    // console.error('Error fetching data:', error);
                     this.loading = false;
                 }
             },
@@ -242,14 +249,13 @@
             },
 
             clearTextField() {
-                // Handle clearing logic here
-                this.selectedItem.Code = ''; // Example: Reset the v-model
-                this.emitToPage(); // Example: Emitting to parent component/page
+                this.selectedItem.Code = '';
+                this.emitToPage();
             },
             emitToPage() {
-                // Your code to emit data to the parent or elsewhere
-                this.$emit('data-updated', this.selectedItem.Code, this.dataUpdate); // Example emit
+                this.$emit('data-updated', this.selectedItem.Code, this.dataUpdate);
             },
+
         }
     }
 </script>
@@ -264,10 +270,12 @@
         border-right: 1px solid #D9D9D9;
     }
 
-    ::v-deep .table-container {
-        max-height: 400px; /* Adjust the height as needed */
-        overflow-y: auto;
+    ::v-deep .table-container .v-data-table__wrapper {
+        height: auto;
+        max-height: 300px;
+        overflow: auto;
     }
+
 
     ::v-deep .table-container th {
         position: sticky;
@@ -295,6 +303,16 @@
     }
     ::v-deep .text-danger input{
         color: #C72C2C;
+    }
+
+    ::v-deep tr.active-row {
+        background: #d9d9d9;
+    }
+    .border-top{
+        border-top: 1px solid #d9d9d9;
+    }
+    ::v-deep .v-data-footer{
+        border-top: none !important;
     }
   
 

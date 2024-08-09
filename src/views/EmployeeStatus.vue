@@ -27,8 +27,8 @@
                                         code="Active Status Code" 
                                         name="Active Status name"
                                         type="EmployeeStatus" 
-                                        dataUpdate="EmployeeStatus"
                                         @childEvent="getselectedItemEmpStatus"
+                                        @data-updated="handleClearData('selectedItemEmpStatus', 'EmployeeStatus')"
                                     />
                                   
                                 </v-col>
@@ -36,7 +36,7 @@
                                 <v-col cols="12" md="6" align-self="center" class="d-flex justify-space-between align-center">
                                     
                                     <span class="f-12 pr-3">Employee Status Name : {{ selectedItemEmpStatus.LocalName }}</span>
-                                    <v-btn @click="checkEmpStatus" class="bg-orange">Check</v-btn>
+                                    <v-btn @click="checkMapping" class="bg-orange">Check</v-btn>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -102,8 +102,9 @@
                                             code="Active Status Code" 
                                             name="Active Status name"
                                             type="EmployeeStatus" 
-                                            dataUpdate="ActiveStatusSSB"
+                                            ref="ActivityStatusSSB"
                                             @childEvent="getselectedItemActiveStatusSSB"
+                                            @data-updated="handleClearData('selectedItemActiveStatusSSB', 'ActiveStatusSSB')"
                                         />
 
                                        
@@ -115,7 +116,12 @@
                                         <span class="f-12">Active Status Name</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemActiveStatusSSB.LocalName}}</p>
+                                        <p 
+                                            class="f-12 border-bottom pb-0 h25"
+                                            :class="{ 'text-error': isError}"
+                                        >
+                                            {{selectedItemActiveStatusSSB.LocalName
+                                        }}</p>
                                     </v-col>
                                 </v-row>
 
@@ -135,7 +141,9 @@
                                             code="Active Status Code" 
                                             name="Active Status name"
                                             type="EmployeeStatus" 
+                                            ref="ActiveStatusSAP"
                                             @childEvent="getselectedItemActiveStatusSAP"
+                                            @data-updated="handleClearData('selectedItemActiveStatusSAP', 'ActiveStatusSAP')"
                                         />
                                     </v-col>
                                 </v-row>
@@ -145,16 +153,21 @@
                                         <span class="f-12">Active Status Name</span>
                                     </v-col>
                                     <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25">{{selectedItemActiveStatusSAP.GLDes}}</p>
+                                        <p 
+                                            class="f-12 border-bottom pb-0 h25"
+                                            :class="{ 'text-error': isError}"
+                                        >
+                                            {{selectedItemActiveStatusSAP.GLDes}}
+                                        </p>
                                     </v-col>
                                     
                                 </v-row>
                             </v-col>
                         
                         </v-row>
-                        
+                            <p v-if="isError" class="text-error f-13">*ข้อมูลไม่ถูกต้อง</p>
                             <div class="text-center">
-                                <v-btn @click="MappingCashGL" class="bg-orange">Update Data</v-btn>
+                                <v-btn @click="MappingEmpStatus" class="bg-orange">Update Data</v-btn>
                             </div>
                         
                         </v-form>
@@ -196,7 +209,7 @@
                                 :selected-value="selectedCompanyCode"
                                 :select-items="selectOptionsForColumn('CompanyCode', datasExport)"
                                 @update:selectedValue="updateSelectedCompanyCode"
-                                @search="searchCompanies('CompanyCode', $event)"
+                                @sort="handleSort('CompanyCode', $event)"
                             />
                         </template>
 
@@ -207,7 +220,7 @@
                                 :selected-value="selectedSystemCode"
                                 :select-items="selectOptionsForColumn('SystemCode')"
                                 @update:selectedValue="updateSelectedSystemCode"
-                                @search="searchCompanies('SystemCode', $event)"
+                                @sort="handleSort('SystemCode', $event)"
                             />
                         </template>
 
@@ -218,7 +231,7 @@
                                 :selected-value="selectedActiveStatusCode"
                                 :select-items="selectOptionsForColumn('ActiveStatusCode', datasExport)"
                                 @update:selectedValue="updateSelectedActiveStatusCode"
-                                @search="searchCompanies('ActiveStatusCode', $event)"
+                                @sort="handleSort('ActiveStatusCode', $event)"
                             />
                         </template>
 
@@ -229,7 +242,7 @@
                                 :selected-value="selectedLocalName"
                                 :select-items="selectOptionsForColumn('LocalName', datasExport)"
                                 @update:selectedValue="updateSelectedLocalName"
-                                @search="searchCompanies('LocalName', $event)"
+                                @sort="handleSort('LocalName', $event)"
                             />
                         </template>
 
@@ -240,7 +253,7 @@
                                 :selected-value="selectedSTAT2"
                                 :select-items="selectOptionsForColumn('STAT2', datasExport)"
                                 @update:selectedValue="updateSelectedSTAT2"
-                                @search="searchCompanies('STAT2', $event)"
+                                @sort="handleSort('STAT2', $event)"
                             />
                         </template>
 
@@ -251,7 +264,7 @@
                                 :selected-value="selectedDescription"
                                 :select-items="selectOptionsForColumn('Description', datasExport)"
                                 @update:selectedValue="updateSelectedDescription"
-                                @search="searchCompanies('Description', $event)"
+                                @sort="handleSort('Description', $event)"
                             />
                         </template>
 
@@ -271,7 +284,7 @@
     import InputSearch from '@/components/InputSearch.vue';
     import InputSearchHN from '@/components/InputSearchHN.vue';
     import HeaderSelect from '@/components/HeaderSelect.vue';
-
+    import * as XLSX from 'xlsx';
     export default{
         components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
         data: () => ({
@@ -293,21 +306,21 @@
             posting_key: null,
             posting_key2: null,
             headersData: [
-                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-                { text: 'Active Status Code', align: 'left', sortable: false, value: 'ActiveStatusCode' },
-                { text: 'Local Name', align: 'left', sortable: false, value: 'LocalName' },
-                { text: 'STAT2', align: 'left', sortable: false, value: 'STAT2' },
-                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
+                { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
+                { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
+                { text: 'Active Status Code', align: 'center', sortable: false, value: 'ActiveStatusCode' },
+                { text: 'Local Name', align: 'center', sortable: false, value: 'LocalName' },
+                { text: 'STAT2', align: 'center', sortable: false, value: 'STAT2' },
+                { text: 'Description', align: 'center', sortable: false, value: 'Description' },
                 { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
             ],
             headersExport: [
-                { text: 'Company Code', align: 'left', sortable: false, value: 'CompanyCode' },
-                { text: 'System Code', align: 'left', sortable: false, value: 'SystemCode' },
-                { text: 'Active Status Code', align: 'left', sortable: false, value: 'ActiveStatusCode' },
-                { text: 'Local Name', align: 'left', sortable: false, value: 'LocalName' },
-                { text: 'STAT2', align: 'left', sortable: false, value: 'STAT2' },
-                { text: 'Description', align: 'left', sortable: false, value: 'Description' },
+                { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
+                { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
+                { text: 'Active Status Code', align: 'center', sortable: false, value: 'ActiveStatusCode' },
+                { text: 'Local Name', align: 'center', sortable: false, value: 'LocalName' },
+                { text: 'STAT2', align: 'center', sortable: false, value: 'STAT2' },
+                { text: 'Description', align: 'center', sortable: false, value: 'Description' },
             ],
             selectedCompanyCode: [],
             selectedSystemCode: [],
@@ -315,11 +328,167 @@
             selectedLocalName: [],
             selectedSTAT2: [],
             selectedDescription: [],
+            isError: false
         }),
 
-    
+        watch: {
+            selectedCompanyCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedSystemCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedActiveStatusCode: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedLocalName: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedSTAT2: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+            selectedDescription: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+          
+        },
+
         methods: {
+
+            async removeEmpStatus(value){
+                console.log(value);
+                this.$swal.fire({
+                    title: "ไม่สามารถลบข้อมูลได้",
+                    icon: "question"
+                });
+            },
+
+            async checkMapping(){
+
+                if(this.selectedItemEmpStatus){
+                    this.checkInputData('Employee Status', this.$refs.EmpStatusField)
+                }else{
+                    try {
+                        this.loading                = await true
+                        let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetEmpStatusID?HNReceiveCode=${this.selectedItemEmpStatus}`
+                        let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                        this.checkData              = response.data;
+                        
+                    } catch (error) {
+                        this.loading = await false
+                        console.error('Error fetching data:', error);
+                    }
+                }
+
+            
+            },
+            
+            async MappingEmpStatus(){
+                
+                // เช็ค value ใน ฟอร์ม Relationship Mapping
+                if(this.$refs.formMapping.validate()){
+                    // เช็คค่าใน Table Mapping กับค่าที่จะ Mapping
+                    if(this.checkData.length > 0){
+
+                        const ActiveStatusSSB           = this.checkData[0].ActiveStatusSSB
+                        const selectActiveStatusSSB     = this.selectedItemActiveStatusSSB.GLNo;
+
+                        const ActiveStatusSAP           = this.checkData[0].ActiveStatusSAP
+                        const selectActiveStatusSAP     = this.$refs.selectedItemActiveStatusSAP.GLNo;
+
+                        const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
+                        const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
+
+                        // เช็คค่า ActiveStatusSSB และ ActiveStatusSAP เหมือนกัน จะเข้าเงื่อนไข if
+                        const checkRecord = (
+
+                            ActiveStatusSSB === selectActiveStatusSSB &&
+                            ActiveStatusSAP === selectActiveStatusSAP 
+
+                        );
+
+                        const resultRecord = checkRecord ? true : false;
+
+                        const MappingEmpStatusPath       =   `/api/SAP/CashAndGL/MappingEmpStatus`
+
+                        const fd  = {
+                            "companyCode": selectCompanyCode,
+                            "systemCode": selectSystemCode,
+                            "hnReceiveCode": this.selectedItemHNTwo.Code,
+                            "localName": this.selectedItemHNTwo.LocalName,
+                            "englishName": this.selectedItemHNTwo.EnglishName,
+                            "glsarCode": this.selectedItemGLSAR.GLNo,
+                            "glsarName": this.selectedItemGLSAR.GLDes,
+                            "postingKey": this.posting_key,
+                            "postingKey2": this.posting_key2,
+                            "glsapCode": this.selectedItemGLSAP.GLNo,
+                            "key2Description": "string",
+                            "specialGL":this.selectedItemspecialGL.GLNo,
+                        }
+
+                         // globalMixin.js
+                        this.MappingData(resultRecord, MappingEmpStatusPath, fd)
+
+                    }else{
+                        this.$swal.fire({
+                            icon: "error",
+                            title: "Incomplete",
+                            text: "Unable to update . Please check data agian.",
+                            customClass: {
+                                title: 'text-error' // Add your custom class here
+                            }
+                        });
+                    }
+                }else{
+                    this.$swal.fire({
+                        icon: "error",
+                        title: "Incomplete",
+                        text: "Unable to update . Please check data agian.",
+                        customClass: {
+                            title: 'text-error' // Add your custom class here
+                        }
+                    });
+                }
+            },
     
+            exportToExcel() {
+                const datas = this.filteredData.map(item => ({
+                    "Company Code": item.CompanyCode,
+                    "System Code": item.SystemCode,
+                    "Active Status Code": item.ActiveStatusCode,
+                    "Local Name": item.LocalName,
+                    "STAT2": item.STAT2,
+                    "Description": item.Description
+                }));
+     
+                const fileName = 'EmployeeStatus.xlsx';
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(datas);
+                XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+                /* Generate XLSX file and send to client */
+                XLSX.writeFile(wb, fileName);
+              
+            },
+
             updateSelectedActiveStatusCode(value) {
                 this.selectedActiveStatusCode = value;
             },
@@ -336,133 +505,19 @@
                 this.selectedDescription = value;
             },
 
-            removeHNActivity(value){
-                console.log(value);
+            clearData(){
+                this.$refs.formMapping.resetValidation()
+                this.$refs.ActivityStatusSSB.selectedItem = {}
+                this.$refs.ActiveStatusSAP.selectedItem = {},
+                this.$refs.selectCompanyCode.selecItem = null 
+                this.$refs.selectSystemCode.selecItem = null 
+                this.selectedItemActiveStatusSSB = {},
+                this.selectedItemActiveStatusSAP = {},
+                this.isError = false
             },
 
-            async checkEmpStatus(){
-
-                if(this.selectedItemEmpStatus){
-                    this.checkInputData('Employee Status', this.$refs.EmpStatusField)
-                }else{
-                    try {
-                        this.loading                = await true
-                        let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetEmpStatusID?HNReceiveCode=${this.selectedItemEmpStatus}`
-                        let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                        this.dataTermPayment         = response.data;
-                        
-                    } catch (error) {
-                        this.loading = await false
-                        console.error('Error fetching data:', error);
-                    }
-                }
-
-            
-            },
-            
-            async MappingCashGL(){
-
-                const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
-                const selectSystemCode    = this.$refs.selectSystemCode.selecItem;
-
-                if(this.$refs.formMapping.validate()){
-
-                    try {
-
-                        if(this.dataTermPayment.length > 0){
-
-                            await this.$swal.fire({
-                                title: "Warning",
-                                text: "Data has already map. Are you sure to map again? ",
-                                icon: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#52A1DB",
-                                cancelButtonColor: "#52A1DB",
-                                confirmButtonText: "OK",
-                                customClass: {
-                                    title: 'text-warning' // Add your custom class here
-                                }
-                                }).then(async(result) => {
-                                if (result.isConfirmed) {
-                                    let fd  = {
-                                        "companyCode": selectCompanyCode,
-                                        "systemCode": selectSystemCode,
-                                        "hnReceiveCode": this.selectedItemHNTwo.Code,
-                                        "localName": this.selectedItemHNTwo.LocalName,
-                                        "englishName": this.selectedItemHNTwo.EnglishName,
-                                        "glsarCode": this.selectedItemGLSAR.GLNo,
-                                        "glsarName": this.selectedItemGLSAR.GLDes,
-                                        "postingKey": this.posting_key,
-                                        "postingKey2": this.posting_key2,
-                                        "glsapCode": this.selectedItemGLSAP.GLNo,
-                                        "key2Description": "string",
-                                        "specialGL":this.selectedItemspecialGL.GLNo,
-                                    }
-
-                                    let MappingCashGLPath       =   `/api/SAP/CashAndGL/MappingCashGL`
-                                    await this.$axios.post(`${MappingCashGLPath}`, fd)
-
-
-                                    // if(response){
-                                        this.$swal.fire({
-                                            icon: "success",
-                                            title: "Complete",
-                                            text: "You data was saved.",
-                                            customClass: {
-                                                title: 'text-success' // Add your custom class here
-                                            }
-                                        });
-                                    // }
-
-                            
-                                }
-                            });
-
-                        }else{
-                            this.$swal.fire({
-                                icon: "error",
-                                title: "Incomplete",
-                                text: "Unable to update . Please check data agian.",
-                                customClass: {
-                                    title: 'text-error' // Add your custom class here
-                                }
-                            });
-                        }
-
-                    } catch (error) {
-                        console.log('MappingCashGL',error);
-                        this.$swal.fire({
-                            icon: "error",
-                            title: "Incomplete",
-                            text: "Unable to update . Please check data agian.",
-                            customClass: {
-                                title: 'text-error' // Add your custom class here
-                            }
-                        });
-                    }
-
-                }else{
-                    this.$swal.fire({
-                        icon: "error",
-                        title: "Incomplete",
-                        text: "Unable to update . Please check data agian.",
-                        customClass: {
-                            title: 'text-error' // Add your custom class here
-                        }
-                    });
-                }
-            },
-            // getselectedItemEmpStatus(data) {
-            //       this.selectedItemEmpStatus = data;
-            // },
-            // getselectedItemActiveStatusSSB(data) {
-            //       this.selectedItemActiveStatusSSB = data;
-            
-            // },
-        
-            // getselectedItemActiveStatusSAP(data){
-            //     this.selectedItemActiveStatusSAP = data;
-            // },
+          
+          
         
         }
     }
@@ -481,7 +536,7 @@
         display: none;
     }
 
-    ::v-deep .style-table thead.v-data-table-header {
+    /* ::v-deep .style-table thead.v-data-table-header {
         background: #D9D9D9!important;
     }
 
@@ -491,7 +546,7 @@
   
     ::v-deep .style-table td{
         border: 1px solid #D9D9D9;
-    }
+    } */
 
     .border-b-lg{
         height: 5px!important;

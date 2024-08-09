@@ -1,7 +1,12 @@
 <template>
     <div class="page-login">
         <div class="box-login">
-            <div class="box-logo mb-3">
+            <div class="box-logo">
+                <v-img
+                    :aspect-ratio="1"
+                    src="../assets/image/mapping-interface.png"
+                    width="300"
+                ></v-img>
             </div>
             <h2 class="mb-7">Mapping Interface</h2>
             <v-form
@@ -165,7 +170,7 @@
         margin: 0 1rem;
         width: 100%;
         max-width: 450px;
-        max-height: 570px;
+        /* max-height: 570px; */
         padding: 1.5rem;
         background-color: #fff;
         border-radius: 15px;
@@ -200,6 +205,20 @@
     .not-match{
         background: #e7e7e7;
         text-align: center;
+    }
+
+    .box-logo{
+        width: 100px;
+        height: 100px;
+        margin: auto;
+        margin-bottom: 1rem;
+    }
+    .box-logo .v-image{
+        border: 3px solid #ea8953;
+        border-radius: 50%;
+        background: #ea8953;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        overflow: inherit!important;
     }
 
     
