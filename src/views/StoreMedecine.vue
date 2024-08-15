@@ -60,7 +60,7 @@
                     </div>
 
                     <div class="box-relationship-mapping">
-                        <h1 class="f-20 mb-1">Relationship Mapping</h1>
+                        <h1 class="f-20 mb-1 my-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
 
                         <v-form

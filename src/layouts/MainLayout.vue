@@ -468,6 +468,19 @@
   .text-decoration{
     text-decoration: none;
   }
+
+  .active_select span{
+      color: #001A78!important;
+      /* border-bottom: 2px solid #F9BA7F; */
+    }
+
+   .active_select span::before {
+      font-family: 'Font Awesome 5 Free'; /* Specify the font family */
+      content: '\f005'; /* Unicode of the icon (e.g., FontAwesome star icon) */
+      font-weight: 900; /* Adjust weight for FontAwesome solid icons */
+      margin-right: 5px; /* Adjust spacing between icon and text */
+    }
+
  
       
 </style>

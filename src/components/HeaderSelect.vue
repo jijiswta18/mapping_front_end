@@ -1,6 +1,6 @@
 
 <template>
-  <div class="d-flex align-center justify-space-between">
+  <div class="d-flex align-center justify-center">
     <span class="text-back mr-1">{{ headerText }}</span>
     <v-select
       v-model="internalSelectedValue"
@@ -8,10 +8,12 @@
       multiple
       hide-details
       class="custom-v-select"
+     @click="selectColumn"
       @input="emitSelectionChange"
     >
-      <!-- Prepend item slot for sorting and search -->
+
       <template v-slot:prepend-item>
+
         <div class="box-sort">
           <div class="cursor-pointer mb-2" @click="sortDirection = 'asc'; sortData()">
             <i class="fas fa-sort-amount-up"></i> Sort Ascending
@@ -36,6 +38,17 @@
             ></v-text-field>
           </v-list-item-content>
         </v-list-item>
+
+        <div class="text-right px-4 pb-1">
+            <button 
+              @click="clearSelection" 
+              class="clear-button"
+              aria-label="Clear selection"
+            >
+              Clear
+            </button>
+          </div>
+
       </template>
 
       <!-- Custom item slot with checkboxes and tooltips -->
@@ -68,7 +81,11 @@
           </v-tooltip>
         </v-list-item>
       </template>
+
+
     </v-select>
+
+   
   </div>
 </template>
 
@@ -78,117 +95,169 @@ export default {
     headerText: String,
     selectedValue: Array,
     selectItems: Array,
+    columnName: String,
+    dataFilters: Array,
+    // dataFilters: {
+    //   type: Array,
+    //   default: () => []
+    // }
   },
   data() {
     return {
       internalSelectedValue: [],
       searchTerms: '',
       sortDirection: '', // To track sort direction
+      filteredResults: [],
+      items: [],
     };
   },
+
   computed: {
 
+  //   sortedItems() {
+  //   // Check if selectItems is defined and is an array
+  //   if (!Array.isArray(this.filteredResults) || this.filteredResults.length === 0 || !this.filteredResults[0].value) {
+  //     return []; // or you could return a specific message or empty array if no data is present
+  //   }
 
-    sortedItems() {
-    // Check if selectItems is defined and is an array
-    if (!Array.isArray(this.selectItems) || this.selectItems.length === 0 || !this.selectItems[0].value) {
-      return []; // or you could return a specific message or empty array if no data is present
-    }
+  //   let items = [...this.filteredResults];
 
-    let items = [...this.selectItems];
+  //   // Filter items based on search terms
+  //   if (this.searchTerms && this.searchTerms.trim() !== '') {
+  //     items = items.filter(item =>
+  //       item.value?.toLowerCase().includes(this.searchTerms.toLowerCase())
+  //     );
+  //   }
 
-    // Filter items based on search terms
-    if (this.searchTerms && this.searchTerms.trim() !== '') {
-      items = items.filter(item =>
-        item.value?.toLowerCase().includes(this.searchTerms.toLowerCase())
-      );
-    }
 
-    // Sort items based on sort direction
-    items.sort((a, b) => {
-      const valueA = (a.value || '').toLowerCase();
-      const valueB = (b.value || '').toLowerCase();
+  //   // Sort items based on sort direction
+  //   items.sort((a, b) => {
+  //     const valueA = (a.value || '').toLowerCase();
+  //     const valueB = (b.value || '').toLowerCase();
 
-      if (this.sortDirection === 'asc') {
-        return valueA.localeCompare(valueB);
-      } else if (this.sortDirection === 'desc') {
-        return valueB.localeCompare(valueA);
-      }
-      return 0; // Default to no change if sortDirection is not set
-    });
+  //     if (this.sortDirection === 'asc') {
+  //       return valueA.localeCompare(valueB);
+  //     } else if (this.sortDirection === 'desc') {
+  //       return valueB.localeCompare(valueA);
+  //     }
+  //     return 0; // Default to no change if sortDirection is not set
+  //   });
 
-    return items;
-  }
+  //   return items;
+  // }
   
 
-    // sortedItems() {
-    //   let items = [...this.selectItems];
+  sortedItems() {
+      if (!Array.isArray(this.filteredResults) || this.filteredResults.length === 0) {
+        return [];
+      }
 
-    //   console.log('============>',this.headerText);
-    //   console.log('============',items);
+      let items = [...this.filteredResults];
+      const searchTerms = (this.searchTerms || '').trim().toLowerCase();
+      // const searchTerms = this.searchTerms.trim().toLowerCase();
 
-    //   // Check if searchTerms is not null or undefined before accessing its properties
-    //   if (this.searchTerms && this.searchTerms.trim() !== '') {
-    //     items = items.filter(item => 
-    //       item.value?.toLowerCase()?.includes(this.searchTerms.toLowerCase())
-    //     );
+      if (searchTerms) {
+        // Determine search type
+        const searchType = this.determineSearchType(searchTerms);
+        const term = searchTerms.replace(/^\*|\*$/g, ''); // Clean up search term
 
-    //   }
+        items = items.filter(item => {
+          const value = (item.value || '').toLowerCase();
+          switch (searchType) {
+            case 'start':
+              return value.startsWith(term);
+            case 'end':
+              return value.endsWith(term);
+            case 'contains':
+            default:
+              return value.includes(term);
+          }
+        });
+      }
 
-    //   items.sort((a, b) => {
-    //       // Extract values from objects
-    //       let valueA = a.value?.toLowerCase();
-    //       let valueB = b.value?.toLowerCase();
+      items.sort((a, b) => {
+        const valueA = (a.value || '').toLowerCase();
+        const valueB = (b.value || '').toLowerCase();
 
-    //       // Handle undefined or null values
-    //       if (valueA === undefined || valueA === null) return -1;
-    //       if (valueB === undefined || valueB === null) return 1;
+        if (this.sortDirection === 'asc') {
+          return valueA.localeCompare(valueB);
+        } else if (this.sortDirection === 'desc') {
+          return valueB.localeCompare(valueA);
+        }
+        return 0;
+      });
 
-    //       // Compare values based on sort order
-    //       if (this.sortDirection === 'asc') {
-    //       // Ascending order
-    //       if (valueA > valueB) return 1;
-    //       if (valueA < valueB) return -1;
-    //       } else if (this.sortDirection === 'desc') {
-    //       // Descending order
-    //       if (valueA > valueB) return -1;
-    //       if (valueA < valueB) return 1;
-    //       }
+      return items;
+    }
 
-    //       return 0; // Values are equal
-    //   });
-
-    //   return items;
-    // }
   },
+
   mounted() {
-    // Initialize internalSelectedValue with the prop value
     this.internalSelectedValue = this.selectedValue;
+
+    
+
+    // console.log(this.dataFilters);
+    
+    
   },
   watch: {
     // Watch for changes in selectedValue prop
     selectedValue(newValue) {
- 
       this.internalSelectedValue = newValue;
     },
+
+    dataFilters(newVal) {
+      if (JSON.stringify(newVal) !== JSON.stringify(this.items)) {
+        this.items = newVal;
+        this.selectColumn();
+      }
+    }
+    
   },
   methods: {
+    determineSearchType(searchTerm) {
+      if (searchTerm.startsWith('*') && searchTerm.endsWith('*')) {
+        return 'contains';
+      } else if (searchTerm.startsWith('*')) {
+        return 'end';
+      } else if (searchTerm.endsWith('*')) {
+        return 'start';
+      } else {
+        return 'contains';
+      }
+    },
+    selectColumn() {
+      let filteredOptions = this.items;
+      let columnName = this.columnName;
+
+      const allValues = filteredOptions.map(item => ({
+        text: item[columnName],
+        value: item[columnName],
+      }));
+
+      const uniqueValues = allValues.filter((value, index, self) =>
+        index === self.findIndex(t => t.value === value.value)
+      );
+
+      this.filteredResults = uniqueValues;
+    },
+    clearSelection() {
+      this.internalSelectedValue = [];
+      this.emitSelectionChange();
+    },
     emitSelectionChange() {
       this.$emit('update:selectedValue', this.internalSelectedValue);
     },
-    // search() {
-    //   console.log(this.searchTerms);
-    //   // this.$emit('search', this.searchTerms);
-    // },
+   
     sortData() {
-      // Toggle sort direction
       this.sortDirection = this.sortDirection === 'asc' ? 'asc' : 'desc';
-      // Emit a sort event with the current sort direction
       this.$emit('sort', this.sortDirection);
     },
 
     updateSelection(value) {
       const index = this.internalSelectedValue.indexOf(value);
+ 
       if (index === -1) {
         // Add value if not present
         this.internalSelectedValue.push(value);
@@ -197,7 +266,9 @@ export default {
         this.internalSelectedValue.splice(index, 1);
       }
       this.emitSelectionChange(); // Emit the updated selection
-    }
+    },
+
+    
   },
 };
 </script>
@@ -262,5 +333,13 @@ export default {
 ::v-deep .v-input--selection-controls__ripple {
     border-radius: 0;
     width: 0;
+}
+.clear-button{
+  padding: 0.25rem 0.5rem;
+  background: #001A78;
+  color: white;
+  font-size: 14px;
+  border-radius: 5px;
+  width: 100%;
 }
 </style>

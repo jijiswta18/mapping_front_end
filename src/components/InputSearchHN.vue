@@ -42,6 +42,7 @@
                                 single-line
                                 hide-details="auto"
                                 clearable 
+                               @click:clear="clearSearchCode"
                             ></v-text-field>
 
                         </v-col>
@@ -80,7 +81,7 @@
                     <template v-slot:item="{ item, props }">
                         <tr
                             v-bind="props"
-                            :class="{ 'active-row': selectedItem && selectedItem.Code === item.Code }"
+                            :class="{ 'active-row': rowItem && rowItem.Code === item.Code }"
                             @click="selectRow(item)"
                         >
                             <td>{{ item.Code }}</td>
@@ -90,7 +91,7 @@
 
                     <template v-slot:footer>
                      <div class="text-right pr-3 pt-3 border-top">
-                        <v-btn @click="dialogClearSearch" color="primary">OK</v-btn>
+                        <v-btn @click="selectRowData" color="primary">OK</v-btn>
                      </div>
                     </template>
 
@@ -119,21 +120,37 @@
             selectedItem: {Code: '', LocalName: ''},
             searchCode:'',
             searchName:'',
+            rowItem: null,
+         
           
         }),
 
         mounted() {
             this.generateHeader();
+
+            
         },
+
+        
 
         computed: {
             filteredData() {
-                return this.selectData.filter(item => {
-                    const codeMatch = !this.searchCode || this.searchCheck(item.Code.toLowerCase(), this.searchCode.toLowerCase());
-                    const nameMatch = !this.searchName || this.searchCheck(item.LocalName.toLowerCase(), this.searchName.toLowerCase());
+                // return this.selectData.filter(item => {
+                //     const codeMatch = !this.searchCode || this.searchCheck(item.Code.toLowerCase(), this.searchCode.toLowerCase());
+                //     const nameMatch = !this.searchName || this.searchCheck(item.LocalName.toLowerCase(), this.searchName.toLowerCase());
                     
+                //     return codeMatch && nameMatch;
+                // }); 
+                return this.selectData.filter(item => {
+                    // Ensure item.Code and item.LocalName are strings
+                    const code = (item.Code || '').toLowerCase();
+                    const name = (item.LocalName || '').toLowerCase();
+
+                    const codeMatch = !this.searchCode || this.searchCheck(code, this.searchCode.toLowerCase());
+                    const nameMatch = !this.searchName || this.searchCheck(name, this.searchName.toLowerCase());
+
                     return codeMatch && nameMatch;
-                }); 
+                });
             },
 
         },
@@ -146,8 +163,26 @@
                 ];
             },
             selectRow(item) {
-                this.selectedItem = { ...item };
-                this.$emit('childEvent', item);
+                this.rowItem = { ...item }
+
+                
+                
+                // this.selectedItem = { ...item };
+                // this.$emit('childEvent', item);
+            },
+            selectRowData(){
+
+                if(this.rowItem){
+                    this.selectedItem = this.rowItem
+                    this.$emit('childEvent', this.rowItem)
+                    this.dialogSearch = false
+                }else{
+                    this.$swal.fire({
+                    title: "กรุณาเลือกรายการ",
+                    icon: "question"
+                });
+                }
+              
             },
 
 
@@ -180,10 +215,10 @@
 
             onClick () {
                 this.dialogSearch = true
-                this.LoadHISActivity()
+                this.LoadHISActivity(this.selectedItem.Code)
 
             },
-            async LoadHISActivity(){
+            async LoadHISActivity(code){
                 try {
                     this.loading        = await true
                     let LoadDataPath    = null 
@@ -217,11 +252,42 @@
                     await setTimeout(() => {
                         this.loading = false;
                         this.selectData = response.data;
+
+                        this.findItemByCode(code);
+
+
+                        
                     }, 300);
 
                 } catch (error) {
                     this.loading = false;
                 }
+            },
+
+                
+
+            findItemByCode(code) {
+                // Ensure selectData is an array
+                if (!Array.isArray(this.selectData)) {
+                console.error('selectData is not an array');
+                return;
+                }
+                
+                // Find the item with the specified code or LocalName
+                this.rowItem = this.selectData.find(item => 
+                item.Code === code || item.LocalName === code
+                ) || null;
+
+                // Ensure rowItem is found before accessing its properties
+                if (this.rowItem) {
+                this.searchCode = this.rowItem.Code;
+                this.searchName = this.rowItem.LocalName;
+                } else {
+                // Handle case where no item is found
+                this.searchCode = null;
+                this.searchName = null;
+                }
+
             },
 
             dialogClearSearch(){
@@ -233,6 +299,11 @@
             clearTextField() {
                 this.selectedItem.Code = '';
                 this.emitToPage();
+            },
+            clearSearchCode(){
+                this.searchCode = '';
+                this.searchName = '',
+                this.rowItem = null
             },
             emitToPage() {
                 this.$emit('data-updated', this.selectedItem.Code, this.dataUpdate);
@@ -248,6 +319,10 @@
   
     ::v-deep .table-container tr td{
         border-bottom: none!important;
+    }
+
+    ::v-deep .table-container tr {
+       cursor: pointer;
     }
 
     ::v-deep .table-container tr td:first-child,
@@ -292,7 +367,11 @@
 
     ::v-deep tr.active-row {
         background: #d9d9d9;
+       
     }
+    /* tr{
+        cursor: pointer;
+    } */
     .border-top{
         border-top: 1px solid #d9d9d9;
     }

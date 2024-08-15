@@ -2,7 +2,7 @@
     <div>
 
         <v-tabs v-model="tab" class="mb-2">
-          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/PaymentTerm`)">{{ tab.name }}</v-tab>
+          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/ActivityGL`)">{{ tab.name }}</v-tab>
         </v-tabs>
 
         <v-tabs-items v-model="tab">
@@ -62,7 +62,7 @@
                     </div>
 
                     <div class="box-relationship-mapping">
-                        <h1 class="f-20 mb-1 mt-2">Relationship Mapping</h1>
+                        <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
 
                         <v-form
@@ -200,6 +200,7 @@
                             <v-btn class="bg-blue"  @click="exportToExcel(filteredData, 'ARPaymentTerm')">Export</v-btn>
                         </v-col>
                     </v-row>
+                   
                     <v-data-table
                         :headers="headersExport"
                         :items="filteredData"
@@ -209,7 +210,46 @@
                         :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                         class="style-table"
                     >
-                        <!-- Header Template for CompanyCode -->
+                 
+                        <!-- Header Template for HNActivity Code -->
+                        <template v-slot:[`header.HNActivityCode`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedHNActivity"
+                                :data-filters="filteredData"
+                                column-name="HNActivityCode"
+                                @update:selectedValue="updateSelectedHNActivity"
+                                @sort="handleSort('HNActivityCode', $event)"
+                                :class="{ active_select: isActive('HNActivityCode') }"
+                            />
+                        </template>
+
+                          <!-- Header Template for HNActivity Name -->
+                          <template v-slot:[`header.LocalName`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedHNActivityName"
+                                :data-filters="filteredData"
+                                column-name="LocalName"
+                                @update:selectedValue="updateSelectedHNActivityName"
+                                @sort="handleSort('LocalName', $event)"
+                                :class="{ active_select: isActive('LocalName') }"
+                            />
+                        </template>
+
+                        <template v-slot:[`header.GLSAPNameIPD`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedGLIPDName"
+                                :data-filters="filteredData"
+                                column-name="GLSAPNameIPD"
+                                @update:selectedValue="updateSelectedGLIPDName"
+                                @sort="handleSort('GLSAPNameIPD', $event)"
+                                :class="{ active_select: isActive('GLSAPNameIPD') }"
+                            />
+                        </template>
+
+
                         <template v-slot:[`header.CompanyCode`]="{ header }">
                                 <HeaderSelect
                                     :header-text="header.text"
@@ -218,6 +258,7 @@
                                     @update:selectedValue="updateSelectedCompanyCode"
                                     @search="searchCompanies('CompanyCode', $event)"
                                     @sort="handleSort('CompanyCode', $event)"
+                                    :class="{ active_select: isActive('CompanyCode') }"
                                 />
                         </template>
 
@@ -229,6 +270,7 @@
                                 :select-items="selectOptionsForColumn('SystemCode')"
                                 @update:selectedValue="updateSelectedSystemCode"
                                 @sort="handleSort('SystemCode', $event)"
+                                :class="{ active_select: isActive('SystemCode') }"
                             />
                         </template>
 
@@ -240,6 +282,7 @@
                                 :select-items="selectOptionsForColumn('TermOfPayment')"
                                 @update:selectedValue="updateSelectedTermPayment"
                                 @sort="handleSort('TermOfPayment', $event)"
+                                :class="{ active_select: isActive('TermOfPayment') }"
                             />
                         </template>
 
@@ -251,6 +294,7 @@
                                 :select-items="selectOptionsForColumn('TermOfPaymentDes')"
                                 @update:selectedValue="updateSelectedTermPaymentDes"
                                 @sort="handleSort('TermOfPaymentDes', $event)"
+                                :class="{ active_select: isActive('TermOfPaymentDes') }"
                             />
                         </template>
 
@@ -262,6 +306,7 @@
                                 :select-items="selectOptionsForColumn('TermOfPaymentSAP')"
                                 @update:selectedValue="updateSelectedTermPaymentSAP"
                                 @sort="handleSort('TermOfPaymentSAP', $event)"
+                                :class="{ active_select: isActive('TermOfPaymentSAP') }"
                             />
                         </template>
 
@@ -273,6 +318,7 @@
                                 :select-items="selectOptionsForColumn('Description')"
                                 @update:selectedValue="updateSelectedDescription"
                                 @sort="handleSort('Description', $event)"
+                                :class="{ active_select: isActive('Description') }"
                             />
                         </template>
 
@@ -308,7 +354,11 @@
             selectedTermPaymentDes: [], 
             selectedTermPaymentSAP: [], 
             selectedDescription: [], 
+            selectedHNActivity: [], 
+            selectedHNActivityName: [], 
+            selectedGLIPDName: [],
             headers: [
+              
                 { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
                 { text: 'Term of payment', align: 'center', sortable: false, value: 'TermOfPayment' },
                 { text: 'Term of payment Des.', align: 'center', sortable: false, value: 'TermOfPaymentDes' },
@@ -318,6 +368,9 @@
                 { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
             ],
             headersExport: [
+            { text: 'HNActivity Code', align: 'center', sortable: false, value: 'HNActivityCode' },
+                { text: 'HNActivity Name', align: 'center', sortable: false, value: 'LocalName' },
+                { text: 'GL IPD  Name', align: 'center', sortable: false, value: 'GLSAPNameIPD' },
                 { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
                 { text: 'Term of payment', align: 'center', sortable: false, value: 'TermOfPayment' },
                 { text: 'Term of payment Des.', align: 'center', sortable: false, value: 'TermOfPaymentDes' },
@@ -330,7 +383,30 @@
         
         }),
 
+        mounted(){},
+
         watch: {
+            selectedHNActivity: {
+                handler() {
+                    this.filterData();
+                    
+                },
+                deep: true,
+            },
+
+            selectedHNActivityName: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
+
+            selectedGLIPDName: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
             selectedCompanyCode: {
                 handler() {
                     this.filterData();
@@ -371,6 +447,23 @@
 
 
         methods: {
+
+            isActive(column) {
+                if(column === 'CompanyCode'){
+                    return this.selectedCompanyCode.length > 0;
+                }else if (column === 'SystemCode'){
+                    return this.selectedSystemCode.length > 0;
+                }else if (column === 'TermOfPayment') {
+                    return this.selectedTermPayment.length > 0;
+                }else if (column === 'TermOfPaymentDes') {
+                    return this.selectedTermPaymentDes.length > 0;
+                }else if(column === 'TermOfPaymentSAP'){
+                    return this.selectedTermPaymentSAP.length > 0;
+                }else if(column === 'Description'){
+                    return this.selectedDescription.length > 0;
+                }
+                return false;
+            },
 
             async removeTermPayment(value){
                 console.log(value);
@@ -487,6 +580,20 @@
                 XLSX.writeFile(wb, fileName);
               
             },
+
+            updateSelectedHNActivity(value) {
+                
+                this.selectedHNActivity = value;
+
+                
+            },
+            updateSelectedHNActivityName(value) {
+                this.selectedHNActivityName = value;
+            },
+
+            updateSelectedGLIPDName(value) {
+            this.selectedGLIPDName = value;
+            },
             
             updateSelectedTermPayment(value) {
                 this.SelectedTermPayment = value;
@@ -504,6 +611,9 @@
             filterData() {
 
                 this.filteredData = this.datasExport.filter(item =>
+                (this.selectedHNActivity.length === 0 || this.selectedHNActivity.includes(item.HNActivityCode)) &&
+                (this.selectedHNActivityName.length === 0 || this.selectedHNActivityName.includes(item.LocalName)) &&
+                (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD)) &&
                 (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
                 (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
                 (this.selectedTermPayment.length === 0 || this.selectedTermPayment.includes(item.TermOfPayment)) &&

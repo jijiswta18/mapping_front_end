@@ -60,7 +60,7 @@
                     </div>
 
                     <div class="box-relationship-mapping">
-                        <h1 class="f-20 mb-1">Relationship Mapping</h1>
+                        <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
 
                         <v-form ref="formMapping" v-model="valid" lazy-validation>
@@ -210,6 +210,7 @@
                                 :select-items="selectOptionsForColumn('CompanyCode', datasExport)"
                                 @update:selectedValue="updateSelectedCompanyCode"
                                 @sort="handleSort('CompanyCode', $event)"
+                                :class="{ active_select: isActive('CompanyCode') }"
                             />
                         </template>
 
@@ -221,6 +222,7 @@
                                 :select-items="selectOptionsForColumn('SystemCode')"
                                 @update:selectedValue="updateSelectedSystemCode"
                                 @sort="handleSort('SystemCode', $event)"
+                                :class="{ active_select: isActive('SystemCode') }"
                             />
                         </template>
 
@@ -232,6 +234,7 @@
                                 :select-items="selectOptionsForColumn('ActiveStatusCode', datasExport)"
                                 @update:selectedValue="updateSelectedActiveStatusCode"
                                 @sort="handleSort('ActiveStatusCode', $event)"
+                                :class="{ active_select: isActive('ActiveStatusCode') }"
                             />
                         </template>
 
@@ -243,6 +246,7 @@
                                 :select-items="selectOptionsForColumn('LocalName', datasExport)"
                                 @update:selectedValue="updateSelectedLocalName"
                                 @sort="handleSort('LocalName', $event)"
+                                :class="{ active_select: isActive('LocalName') }"
                             />
                         </template>
 
@@ -254,6 +258,7 @@
                                 :select-items="selectOptionsForColumn('STAT2', datasExport)"
                                 @update:selectedValue="updateSelectedSTAT2"
                                 @sort="handleSort('STAT2', $event)"
+                                :class="{ active_select: isActive('STAT2') }"
                             />
                         </template>
 
@@ -265,6 +270,7 @@
                                 :select-items="selectOptionsForColumn('Description', datasExport)"
                                 @update:selectedValue="updateSelectedDescription"
                                 @sort="handleSort('Description', $event)"
+                                :class="{ active_select: isActive('Description') }"
                             />
                         </template>
 
@@ -372,6 +378,23 @@
         },
 
         methods: {
+
+            isActive(column) {
+                if(column === 'CompanyCode'){
+                    return this.selectedCompanyCode.length > 0;
+                }else if (column === 'SystemCode'){
+                    return this.selectedSystemCode.length > 0;
+                }else if (column === 'ActiveStatusCode') {
+                    return this.selectedActiveStatusCode.length > 0;
+                }else if (column === 'LocalName') {
+                    return this.selectedLocalName.length > 0;
+                }else if(column === 'STAT2'){
+                    return this.selectedSTAT2.length > 0;
+                }else if(column === 'Description'){
+                    return this.selectedDescription.length > 0;
+                }
+                return false;
+            },
 
             async removeEmpStatus(value){
                 console.log(value);

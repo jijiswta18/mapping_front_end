@@ -62,7 +62,7 @@
                     </div>
 
                     <div class="box-relationship-mapping">
-                        <h1 class="f-20 mb-1 mt-2">Relationship Mapping</h1>
+                        <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
 
                         <v-form
@@ -319,6 +319,7 @@
                                 @update:selectedValue="updateSelectedCompanyCode"
                                 @search="searchCompanies('CompanyCode', $event)"
                                 @sort="handleSort('CompanyCode', $event)"
+                                :class="{ active_select: isActive('CompanyCode') }"
 
                             />
                         </template>
@@ -332,6 +333,7 @@
                             @update:selectedValue="updateSelectedSystemCode"
                             @search="searchCompanies('SystemCode', $event)"
                             @sort="handleSort('SystemCode', $event)"
+                            :class="{ active_select: isActive('SystemCode') }"
                         />
                         </template>
 
@@ -344,6 +346,7 @@
                             @update:selectedValue="updateSelectedHNReceiveCode"
                             @search="searchCompanies('HNReceiveCode', $event)"
                             @sort="handleSort('HNReceiveCode', $event)"
+                            :class="{ active_select: isActive('HNReceiveCode') }"
                         />
                         </template>
 
@@ -356,6 +359,7 @@
                             @update:selectedValue="updateSelectedHNReceiveName"
                             @search="searchCompanies('LocalName', $event)"
                             @sort="handleSort('LocalName', $event)"
+                            :class="{ active_select: isActive('LocalName') }"
                         />
                         </template>
 
@@ -368,6 +372,7 @@
                                 @update:selectedValue="updateSelectedGLSARCode"
                                 @search="searchCompanies('GLSARCode', $event)"
                                 @sort="handleSort('GLSARCode', $event)"
+                                :class="{ active_select: isActive('GLSARCode') }"
                             />
                         </template>
 
@@ -380,6 +385,7 @@
                                 @update:selectedValue="updateSelectedGLSARName"
                                 @search="searchCompanies('GLSARName', $event)"
                                 @sort="handleSort('GLSARName', $event)"
+                                :class="{ active_select: isActive('GLSARName') }"
                             />
                         </template>
 
@@ -392,6 +398,7 @@
                                 @update:selectedValue="updateSelectedGLSAPCode"
                                 @search="searchCompanies('GLSAPCode', $event)"
                                 @sort="handleSort('GLSAPCode', $event)"
+                                :class="{ active_select: isActive('GLSAPCode') }"
                             />
                         </template>
 
@@ -404,7 +411,8 @@
                                 :selected-value="selectedGLSAPName"
                                 :select-items="selectOptionsForColumn('GLSAPName')"
                                 @update:selectedValue="updateSelectedGLSAPName"
-                                @search="searchCompanies('GLSAPName', $event)"
+                                @search="HeaderSelect>searchCompanies('GLSAPName', $event)"
+                                :class="{ active_select: isActive('GLSAPName') }"
                             />
                         </template>
 
@@ -417,6 +425,7 @@
                             @update:selectedValue="updateSelectedSpecialGL"
                             @search="searchCompanies('SpecialGL', $event)"
                             @sort="handleSort('SpecialGL', $event)"
+                            :class="{ active_select: isActive('SpecialGL') }"
                         />
                         </template>
 
@@ -429,6 +438,7 @@
                                 @update:selectedValue="updateSelectedSpecialGLName"
                                 @search="searchCompanies('SpecialGLName', $event)"
                                 @sort="handleSort('SpecialGLName', $event)"
+                                :class="{ active_select: isActive('SpecialGLName') }"
                             />
 
                         </template>
@@ -441,6 +451,7 @@
                                 :select-items="selectOptionsForColumn('PostingKey')"
                                 @update:selectedValue="updateSelectedPostingKey"
                                 @sort="handleSort('PostingKey', $event)"
+                                :class="{ active_select: isActive('PostingKey') }"
                             />
                         </template>
 
@@ -451,6 +462,7 @@
                                 :select-items="selectOptionsForColumn('PostingKey2')"
                                 @update:selectedValue="updateSelectedPostingKey2"
                                 @sort="handleSort('PostingKey2', $event)"
+                                :class="{ active_select: isActive('PostingKey2') }"
                             />
                         </template>
 
@@ -629,6 +641,37 @@
         },
 
         methods: {
+
+            // Active column fiter export
+            isActive(column) {
+                if(column === 'CompanyCode'){
+                    return this.selectedCompanyCode.length > 0;
+                }else if (column === 'SystemCode'){
+                    return this.selectedSystemCode.length > 0;
+                }else if (column === 'HNReceiveCode') {
+                    return this.selectedHNReceiveCode.length > 0;
+                }else if (column === 'LocalName') {
+                    return this.selectedHNReceiveName.length > 0;
+                }else if(column === 'GLSARCode'){
+                    return this.selectedGLSARCode.length > 0;
+                }else if(column === 'GLSARName'){
+                    return this.selectedGLSARName.length > 0;
+                }else if (column === 'GLSAPCode'){
+                    return this.selectedGLSAPCode.length > 0;
+                }else if (column === 'GLSAPName'){
+                    return this.selectedGLSAPName.length > 0;
+                }else if(column === 'SpecialGL'){
+                    return this.selectedSpecialGL.length > 0;
+                }else if(column === 'SpecialGLName'){
+                    return this.selectedSpecialGLName.length > 0;
+                }else if(column === 'PostingKey'){
+                    return this.selectedPostingKey.length > 0;
+                }else if(column === 'PostingKey2'){
+                    return this.selectedPostingKey2.length > 0;
+                }
+                return false;
+            },
+
             exportToExcel() {
                 const datas = this.filteredData.map(item => ({
                     "Company Code": item.CompanyCode,
@@ -1053,4 +1096,5 @@
     .line-height{
         line-height: 1.8;
     }    
+    
 </style>

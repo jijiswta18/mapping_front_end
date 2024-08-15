@@ -17,7 +17,7 @@
                             <v-row class="my-2">
 
                                 <v-col cols="12" md="6" class="text-center px-0 py-0">
-                                    <span>HNACtivity</span>
+                                    <span>HNActivity</span>
                                 </v-col>
                                 <v-col cols="12" md="6" class="px-0 py-0"></v-col>
                                 <v-col cols="12" md="6" class="text-center">
@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="box-relationship-mapping">
-                        <h1 class="f-20 mb-1 mt-2">Relationship Mapping</h1>
+                        <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
 
                         <v-form ref="formMapping" v-model="valid" lazy-validation>
@@ -266,6 +266,7 @@
                                 :select-items="selectOptionsForColumn('CompanyCode')"
                                 @update:selectedValue="updateSelectedCompanyCode"
                                 @sort="handleSort('CompanyCode', $event)"
+                                :class="{ active_select: isActive('CompanyCode') }"
                             />
                         </template>
 
@@ -277,6 +278,7 @@
                                 :select-items="selectOptionsForColumn('SystemCode')"
                                 @update:selectedValue="updateSelectedSystemCode"
                                 @sort="handleSort('SystemCode', $event)"
+                                :class="{ active_select: isActive('SystemCode') }"
                             />
                         </template>
 
@@ -288,6 +290,7 @@
                                 :select-items="selectOptionsForColumn('HNActivityCode')"
                                 @update:selectedValue="updateSelectedHNActivity"
                                 @sort="handleSort('HNActivityCode', $event)"
+                                :class="{ active_select: isActive('HNActivityCode') }"
                             />
                         </template>
 
@@ -299,6 +302,7 @@
                                 :select-items="selectOptionsForColumn('LocalName')"
                                 @update:selectedValue="updateSelectedHNActivityName"
                                 @sort="handleSort('LocalName', $event)"
+                                :class="{ active_select: isActive('LocalName') }"
                             />
                         </template>
 
@@ -311,6 +315,7 @@
                                 :select-items="selectOptionsForColumn('GLSAPCodeOPD')"
                                 @update:selectedValue="updateSelectedGLOPDCode"
                                 @sort="handleSort('GLSAPCodeOPD', $event)"
+                                :class="{ active_select: isActive('GLSAPCodeOPD') }"
                             />
                         </template>
 
@@ -322,6 +327,7 @@
                                 :select-items="selectOptionsForColumn('GLSAPNameOPD')"
                                 @update:selectedValue="updateSelectedGLOPDName"
                                 @sort="handleSort('GLSAPNameOPD', $event)"
+                                :class="{ active_select: isActive('GLSAPNameOPD') }"
                             />
                         </template>
 
@@ -333,6 +339,7 @@
                                 :select-items="selectOptionsForColumn('GLSAPCodeIPD')"
                                 @update:selectedValue="updateSelectedGLIPDCode"
                                 @sort="handleSort('GLSAPCodeIPD', $event)"
+                                :class="{ active_select: isActive('GLSAPCodeIPD') }"
                             />
                         </template>
 
@@ -344,6 +351,7 @@
                                 :select-items="selectOptionsForColumn('GLSAPNameIPD')"
                                 @update:selectedValue="updateSelectedGLIPDName"
                                 @sort="handleSort('GLSAPNameIPD', $event)"
+                                :class="{ active_select: isActive('GLSAPNameIPD') }"
                             />
                         </template>
 
@@ -355,6 +363,7 @@
                                 :select-items="selectOptionsForColumn('PostingKey')"
                                 @update:selectedValue="updateSelectedPostingKey"
                                 @sort="handleSort('PostingKey', $event)"
+                                :class="{ active_select: isActive('PostingKey') }"
                             />
                         </template>
 
@@ -424,10 +433,11 @@
                 { text: 'GL IPD  Name', align: 'center', sortable: false, value: 'GLSAPNameIPD' },
                 { text: 'Posting Key', align: 'center', sortable: false, value: 'PostingKey' },
             ],
-        
+            columnNameFiled: '',
             isError: false
         
         }),
+
 
         watch: {
             // filter หน้า Export
@@ -435,7 +445,7 @@
               
                 handler() {
                     this.filterData();
-                  
+        
                 },
                 deep: true,
             },
@@ -450,6 +460,7 @@
             selectedHNActivity: {
                 handler() {
                     this.filterData();
+                    
                 },
                 deep: true,
             },
@@ -497,6 +508,31 @@
         },
 
         methods: {
+
+            // Active column fiter export
+            isActive(column) {
+                if(column === 'CompanyCode'){
+                    return this.selectedCompanyCode.length > 0;
+                }else if (column === 'SystemCode'){
+                    return this.selectedSystemCode.length > 0;
+                }else if (column === 'HNActivityCode') {
+                    return this.selectedHNActivity.length > 0;
+                }else if (column === 'LocalName') {
+                    return this.selectedHNActivityName.length > 0;
+                }else if(column === 'GLSAPCodeOPD'){
+                    return this.selectedGLOPDCode.length > 0;
+                }else if(column === 'GLSAPNameOPD'){
+                    return this.selectedGLOPDName.length > 0;
+                }else if (column === 'GLSAPCodeIPD'){
+                    return this.selectedGLIPDCode.length > 0;
+                }else if (column === 'GLSAPNameIPD'){
+                    return this.selectedGLIPDName.length > 0;
+                }else if(column === 'PostingKey'){
+                    return this.selectedPostingKey.length > 0;
+                }
+                return false;
+            },
+
             exportToExcel() {
                 const datas = this.filteredData.map(item => ({
                     "Company Code": item.CompanyCode,
@@ -521,8 +557,12 @@
             },
            
             /* search table export */
-            updateSelectedHNActivity(value) {
+            updateSelectedHNActivity(value, column) {
+                
                 this.selectedHNActivity = value;
+                this.columnNameFiled = column
+                // console.log(column);
+                
             },
             updateSelectedHNActivityName(value) {
                 this.selectedHNActivityName = value;
@@ -537,9 +577,12 @@
                 this.selectedGLIPDCode = value;
             },
             updateSelectedGLIPDName(value) {
+
                 this.selectedGLIPDName = value;
             },
             updateSelectedPostingKey(value) {
+
+                
                 this.selectedPostingKey = value;
             },
             
@@ -572,6 +615,9 @@
                     (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD)) &&
                     (this.selectedPostingKey.length === 0 || this.selectedPostingKey.includes(item.PostingKey))
                 );
+
+
+           
             },
 
             async removeHNActivity(value){
@@ -675,6 +721,7 @@
                 }
             },
 
+
         }
     }
 </script>
@@ -776,5 +823,4 @@
         line-height: 1.8;
     }
 
-    
 </style>

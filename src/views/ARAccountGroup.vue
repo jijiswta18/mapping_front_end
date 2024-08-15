@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="box-relationship-mapping">
-                        <h1 class="f-20 mb-1">Relationship Mapping</h1>
+                        <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
 
                         <v-form
@@ -302,6 +302,7 @@
                                 :select-items="selectOptionsForColumn('CompanyCode')"
                                 @update:selectedValue="updateSelectedCompanyCode"
                                 @sort="handleSort('CompanyCode', $event)"
+                                :class="{ active_select: isActive('CompanyCode') }"
                             />
                         </template>
                         <!-- Header Template for SystemCode -->
@@ -312,6 +313,7 @@
                                 :select-items="selectOptionsForColumn('SystemCode')"
                                 @update:selectedValue="updateSelectedSystemCode"
                                 @sort="handleSort('SystemCode', $event)"
+                                :class="{ active_select: isActive('SystemCode') }"
                             />
                         </template>
                         <!-- Header Template for ARComposeCategory -->
@@ -322,6 +324,7 @@
                                 :select-items="selectOptionsForColumn('ARComposeCategory')"
                                 @update:selectedValue="updateSelectedARComposeCategory"
                                 @sort="handleSort('ARComposeCategory', $event)"
+                                :class="{ active_select: isActive('ARComposeCategory') }"
                             />
                         </template>
                          <!-- Header Template for Description -->
@@ -332,6 +335,7 @@
                                 :select-items="selectOptionsForColumn('Description')"
                                 @update:selectedValue="updateSelectedDescription"
                                 @sort="handleSort('Description', $event)"
+                                :class="{ active_select: isActive('Description') }"
                             />
                         </template>
                             <!-- Header Template for Description -->
@@ -342,6 +346,7 @@
                                 :select-items="selectOptionsForColumn('DescriptionTwo')"
                                 @update:selectedValue="updateSelectedDescriptionTwo"
                                 @sort="handleSort('DescriptionTwo', $event)"
+                                :class="{ active_select: isActive('DescriptionTwo') }"
                             />
                         </template>
                         <!-- Header Template for KTOKK -->
@@ -352,6 +357,7 @@
                                 :select-items="selectOptionsForColumn('KTOKK')"
                                 @update:selectedValue="updateSelectedKTOKK"
                                 @sort="handleSort('KTOKK', $event)"
+                                :class="{ active_select: isActive('KTOKK') }"
                             />
                         </template>
                         <!-- Header Template for ARAKONT -->
@@ -362,6 +368,7 @@
                                 :select-items="selectOptionsForColumn('ARAKONT')"
                                 @update:selectedValue="updateSelectedARAKONT"
                                 @sort="handleSort('ARAKONT', $event)"
+                                :class="{ active_select: isActive('ARAKONT') }"
                             />
                         </template>
                     </v-data-table>
@@ -466,7 +473,24 @@
 
         },
         methods: {
-        
+            isActive(column) {
+                if(column === 'CompanyCode'){
+                    return this.selectedCompanyCode.length > 0;
+                }else if (column === 'SystemCode'){
+                    return this.selectedSystemCode.length > 0;
+                }else if (column === 'ARComposeCategory') {
+                    return this.selectedARComposeCategory.length > 0;
+                }else if (column === 'Description') {
+                    return this.selectedDescription.length > 0;
+                }else if(column === 'KTOKK'){
+                    return this.selectedKTOKK.length > 0;
+                }else if(column === 'DescriptionTwo'){
+                    return this.selectedDescriptionTwo.length > 0;
+                }else if(column === 'ARAKONT'){
+                    return this.selectedARAKONT.length > 0;
+                }
+                return false;
+            },
             async removeAccountGroup(value){
                 console.log(value);
                 this.$swal.fire({
