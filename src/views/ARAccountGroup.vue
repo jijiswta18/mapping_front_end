@@ -144,6 +144,7 @@
                                     <v-col cols="8">
 
                                         <InputSearch 
+                                            :rules="validationRules"
                                             ref="KTOKK"
                                             title="KTOKK"
                                             label="Text" 
@@ -190,6 +191,7 @@
                                     <v-col cols="8">
 
                                         <InputSearch 
+                                            :rules="validationRules"
                                             ref="AR_AKONT"
                                             title="AR_AKONT"
                                             label="Text" 
@@ -227,6 +229,7 @@
                                     <v-col cols="8">
 
                                         <InputSearch 
+                                            :rules="validationRules"
                                             ref="AP_AKONT"
                                             title="AP_AKONT"
                                             label="Text" 
@@ -423,7 +426,8 @@
                 { text: 'Description', align: 'center', sortable: false, value: 'Description' },
                 { text: 'AR_AKONT', align: 'center', sortable: false, value: 'ARAKONT' },
             ],
-            isError: false
+            isError: false,
+            validationRules: [v => !!v || ''],
 
         }),
 
@@ -473,24 +477,7 @@
 
         },
         methods: {
-            isActive(column) {
-                if(column === 'CompanyCode'){
-                    return this.selectedCompanyCode.length > 0;
-                }else if (column === 'SystemCode'){
-                    return this.selectedSystemCode.length > 0;
-                }else if (column === 'ARComposeCategory') {
-                    return this.selectedARComposeCategory.length > 0;
-                }else if (column === 'Description') {
-                    return this.selectedDescription.length > 0;
-                }else if(column === 'KTOKK'){
-                    return this.selectedKTOKK.length > 0;
-                }else if(column === 'DescriptionTwo'){
-                    return this.selectedDescriptionTwo.length > 0;
-                }else if(column === 'ARAKONT'){
-                    return this.selectedARAKONT.length > 0;
-                }
-                return false;
-            },
+
             async removeAccountGroup(value){
                 console.log(value);
                 this.$swal.fire({
@@ -596,6 +583,25 @@
                 }
             },
 
+            isActive(column) {
+                if(column === 'CompanyCode'){
+                    return this.selectedCompanyCode.length > 0;
+                }else if (column === 'SystemCode'){
+                    return this.selectedSystemCode.length > 0;
+                }else if (column === 'ARComposeCategory') {
+                    return this.selectedARComposeCategory.length > 0;
+                }else if (column === 'Description') {
+                    return this.selectedDescription.length > 0;
+                }else if(column === 'KTOKK'){
+                    return this.selectedKTOKK.length > 0;
+                }else if(column === 'DescriptionTwo'){
+                    return this.selectedDescriptionTwo.length > 0;
+                }else if(column === 'ARAKONT'){
+                    return this.selectedARAKONT.length > 0;
+                }
+                return false;
+            },
+
             exportToExcel() {
                 const datas = this.filteredData.map(item => ({
                     "Company Code": item.CompanyCode,
@@ -631,22 +637,6 @@
                 );
             },
 
-            updateSelectedARComposeCategory(value){
-                this.selectedARComposeCategory = value;
-            },
-            updateSelectedDescription(value){
-                this.selectedADescription = value;
-            },
-            updateSelectedKTOKK(value){
-                this.selectedKTOKK = value;
-            },
-            updateSelectedDescriptionTwo(value){
-                this.selectedDescriptionTwo = value;
-            },
-            updateSelectedARAKONT(value){
-                this.selectedARAKONT = value;
-            },
-
             clearData(){
                 this.$refs.formMapping.resetValidation()
                 this.$refs.ARComposeCategory.selectedItem   = {}
@@ -660,6 +650,27 @@
                 this.$refs.selectCompanyCode.selecItem      = null 
                 this.$refs.selectSystemCode.selecItem       = null 
                 this.isError                                = false
+            },
+
+            // update select data export
+            updateSelectedARComposeCategory(value){
+                this.selectedARComposeCategory = value;
+            },
+
+            updateSelectedDescription(value){
+                this.selectedADescription = value;
+            },
+
+            updateSelectedKTOKK(value){
+                this.selectedKTOKK = value;
+            },
+
+            updateSelectedDescriptionTwo(value){
+                this.selectedDescriptionTwo = value;
+            },
+            
+            updateSelectedARAKONT(value){
+                this.selectedARAKONT = value;
             },
         
         }
@@ -680,17 +691,6 @@
         display: none;
     }
 
-    /* ::v-deep .style-table thead.v-data-table-header {
-        background: #D9D9D9!important;
-    }
-
-    ::v-deep .style-table thead.v-data-table-header span{
-        color: #000;
-    }
-  
-    ::v-deep .style-table td{
-        border: 1px solid #D9D9D9;
-    } */
 
     .border-b-lg{
         height: 5px!important;

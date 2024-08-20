@@ -1,8 +1,11 @@
 <template>
     <div>
+        <v-form ref="formRef">
+       
+
         <v-text-field
             v-model="selectedItem.Code"
-            :rules="[v => !!v || '']"
+            :rules="rules"
             append-icon="mdi-magnify"
             :label="label"
             dense
@@ -14,7 +17,7 @@
             @click:clear="clearTextField"
             :class="{ 'text-danger': isError }"
         ></v-text-field>
-          
+        </v-form>
         <v-dialog
             v-model="dialogSearch"
             persistent
@@ -110,7 +113,19 @@
 <script>
     export default{
         
-        props: ['title', 'label', 'code', 'name',  'type', 'dataUpdate', 'isError'],
+        props: {
+            rules: {
+                type: Array,
+                default: () => []
+            },
+            title:String,
+            label:String,
+            code:String,
+            name:String,
+            type:String,
+            isError: Boolean,
+            dataUpdate:String
+        },
         data: () => ({
             dialogSearch: false,
             selectData: [],
@@ -308,6 +323,13 @@
             emitToPage() {
                 this.$emit('data-updated', this.selectedItem.Code, this.dataUpdate);
             },
+
+            // clearData() {
+            //     this.$emit('input', '');
+            // },
+            resetValidation() {
+                this.$refs.formRef.resetValidation();
+            }
 
           
         }

@@ -10,66 +10,65 @@
             </div>
             <h2 class="mb-7">Mapping Interface</h2>
             <v-form
-                    ref="form"
-                    class="form-login mt-2"
-                    v-model="valid"
-                    lazy-validation
-                    @submit.prevent="login"    
-                >
-                    <v-row>
-                        <v-col>
+                ref="form"
+                class="form-login mt-2"
+                v-model="valid"
+                lazy-validation
+                @submit.prevent="login"    
+            >
+                <v-row>
+                    <v-col>
 
-                            <v-text-field
-                                v-model="username"
-                                :rules="usernameRules"
-                                label="Username รหัสพนักงาน"
-                                required
-                                solo
-                                prepend-inner-icon="fa-solid fa-user"
-                                class="style-input-login"
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
+                        <v-text-field
+                            v-model="username"
+                            :rules="usernameRules"
+                            label="Username รหัสพนักงาน"
+                            required
+                            solo
+                            prepend-inner-icon="fa-solid fa-user"
+                            class="style-input-login"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
 
-                    <v-row no-gutters>
-                        <v-col>
-                            <v-text-field
-                                v-model="password"
-                                :rules="passwordRules"
-                                label="Password wifi"
-                                required
-                                solo
-                                prepend-inner-icon="fa-solid fa-lock"
-                                class="style-input-login"
-                                :type="showPassword ? 'text' : 'password'"
-                                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                                @click:append="showPassword = !showPassword"
-                                autocomplete="on"
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row no-gutters>
-                        <v-col>
-                            <v-btn 
-                                class="btn-login mb-1"
-                                type="submit"
-                                :disabled="disabled == true"
-                            >เข้าสู่ระบบ</v-btn>
-                        </v-col>
-                    </v-row>
-                    <v-row no-gutters class="mt-7">
-                        <v-col>
-                            <a class="forgot-password" href="https://passwordreset.microsoftonline.com/">Forgot your password?</a>
-                        </v-col>
-                    </v-row>
-                 
-                </v-form>
+                <v-row no-gutters>
+                    <v-col>
+                        <v-text-field
+                            v-model="password"
+                            :rules="passwordRules"
+                            label="Password wifi"
+                            required
+                            solo
+                            prepend-inner-icon="fa-solid fa-lock"
+                            class="style-input-login"
+                            :type="showPassword ? 'text' : 'password'"
+                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                            @click:append="showPassword = !showPassword"
+                            autocomplete="on"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row no-gutters>
+                    <v-col>
+                        <v-btn 
+                            class="btn-login mb-1"
+                            type="submit"
+                            :disabled="disabled == true"
+                        >เข้าสู่ระบบ</v-btn>
+                    </v-col>
+                </v-row>
+                <v-row no-gutters class="mt-7">
+                    <v-col>
+                        <a class="forgot-password" href="https://passwordreset.microsoftonline.com/">Forgot your password?</a>
+                    </v-col>
+                </v-row>
+            </v-form>
         </div>
 
     </div>
     
 </template>
-<!--  -->
+
 <script>
     import store  from '../store/index.js';
 

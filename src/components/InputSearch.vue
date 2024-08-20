@@ -2,7 +2,7 @@
     <div>
         <v-text-field
             v-model="selectedItem.GLNo"
-            :rules="[v => !!v || '']"
+            :rules="rules"
             append-icon="mdi-magnify"
             :label="label"
             dense
@@ -113,7 +113,20 @@
 
 <script>
     export default{
-        props: ['title', 'label', 'code', 'name', 'type', 'dataUpdate', 'isError'],
+        props:{
+            rules: {
+                type: Array,
+                default: () => []
+            },
+            title:String,
+            label:String,
+            code:String,
+            name:String,
+            type:String,
+            isError: Boolean,
+            dataUpdate:String
+            
+        },
         data: () => ({
             search: '',
             dialogSearch: false,
@@ -122,6 +135,7 @@
             header: [],
             dataCode: null,
             dataName: null,
+            select : {},
             selectedItem: {GLNo: '', GLDes: ''},
             textFieldValue: '',
             textFieldClass: '',
@@ -130,18 +144,10 @@
             rowItem: null,
         }),
         mounted() {
-            this.generateHeader();
-
-            
+            this.generateHeader(); 
         },
         computed: {
             filteredData() {
-                // return this.selectData.filter(item => {
-                //     const codeMatch = !this.searchCode || this.searchCheck(item.GLNo.toLowerCase(), this.searchCode.toLowerCase());
-                //     const nameMatch = !this.searchName || this.searchCheck(item.GLDes.toLowerCase(), this.searchName.toLowerCase());
-                    
-                //     return codeMatch && nameMatch;
-                // }); 
 
                 return this.selectData.filter(item => {
                     // Ensure item.Code and item.LocalName are strings
@@ -155,13 +161,6 @@
                 });
 
             }
-            // filteredData() {
-            //     return this.selectData.filter(item => {
-            //         const codeMatch = (!this.searchCode || item.GLNo?.toLowerCase().includes(this.searchCode.toLowerCase()));
-            //         const nameMatch = (!this.searchName || item.GLDes?.toLowerCase().includes(this.searchName.toLowerCase()));
-            //         return codeMatch && nameMatch;
-            //     });
-            // }
         },
         methods:{
     
@@ -177,7 +176,6 @@
             },
 
             selectRowData(){
-
                 if(this.rowItem){
                     this.selectedItem = this.rowItem
                     this.$emit('childEvent', this.rowItem)
@@ -192,7 +190,6 @@
             },
             
             searchCheck(inputString, searchTerm) {
-
                 // Check if searchTerm starts and ends with *
                 if (searchTerm.startsWith('*') && searchTerm.endsWith('*')) {
                     const term = searchTerm.substring(1, searchTerm.length - 1); // Remove the leading and trailing '*'
@@ -263,9 +260,23 @@
 
                     let response        = await this.$axios.get(LoadDataPath);
                     
-                    await setTimeout(() => {
+                    setTimeout(() => {
                         this.loading = false;
                         this.selectData = response.data;
+
+                        // this.updateSelectOptions(response.data);
+
+                        // this.selectData = data.map(item => ({
+                        //     text: item.GLDes, // Or whatever field holds the display text
+                        //     value: item.GLNo // Or whatever field holds the value
+                        // }));
+
+
+                        // this.selectData.text =  response.data.GLDes;
+                        // this.selectData.value =  response.data.GLNo;
+
+                        // console.log(this.selectData);
+                        
 
                         this.findItemByCode(code);
 
@@ -274,6 +285,18 @@
                 } catch (error) {
                     this.loading = false;
                 }
+            },
+
+            updateSelectOptions(data) {
+                // Assuming data.GLDes and data.GLNo are the new values
+              
+                this.selectData = data.map(item => ({
+                    text: item.GLDes, // Or whatever field holds the display text
+                    value: item.GLNo // Or whatever field holds the value
+                }));
+
+                console.log(this.selectData);
+                
             },
 
             findItemByCode(code) {

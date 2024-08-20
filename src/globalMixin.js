@@ -15,6 +15,7 @@ Vue.mixin({
     datasExport : [],
     selectedCompanyCode: [], 
     selectedSystemCode: [], 
+    currentTab: null
   }),
 
   methods: {
@@ -105,8 +106,13 @@ Vue.mixin({
       this.selectedCompanyCode = value;
     },
 
+    formatDate(value) {
+      return this.$moment(value).format("DD-MM-YYYY HH:mm:ss")
+    },
+
     selectOptionsForColumn(columnName) {
-      let filteredOptions = this.datasExport;
+      let filteredOptions = this.filteredData;
+      // let filteredOptions = this.datasExport;
 
       let searchTerm = '';
     
@@ -128,11 +134,16 @@ Vue.mixin({
             item[columnName]?.toLowerCase()?.includes(searchTermLowerCase)
         );
       }
- 
+
       const allValues = filteredOptions.map(item => ({
-          text: item[columnName],
-          value: item[columnName],
-      }));
+        text: item[columnName],
+        value: item[columnName],
+      })).filter(value => value.value != null && value.value !== '');
+ 
+      // const allValues = filteredOptions.map(item => ({
+      //     text: item[columnName],
+      //     value: item[columnName],
+      // }));
 
       // Remove duplicates based on 'value'
       const uniqueValues = allValues.filter((value, index, self) =>
@@ -196,11 +207,13 @@ Vue.mixin({
 
     // function Click Tab
     handleTabClick(tab, url) {
+      this.currentTab = tab.name;
       switch (tab.name) {
         case "Create/Change":
             break;
         case "Export":
             this.getExportData(`${url}`)
+          
             break;
         default:
             // Default action
@@ -230,14 +243,25 @@ Vue.mixin({
 
     // API Data Export
     async getExportData(url){
+   
+      
       try {
         this.loading        = await true
         let response        = await this.$axios.get(`${url}`);
         setTimeout(() => {
             this.loading = false;
             this.datasExport = response.data;
+
+            // this.filteredData = [...this.datasExport];
             this.filteredData = this.datasExport.slice();
 
+            // this.filteredData = this.filteredData.map(item => ({
+            //   ...item,
+            //   UpdateDateTime: this.formatDate(item.UpdateDateTime) // Assuming each item has a 'date' field
+            // }));
+            
+            // console.log(this.filteredData);
+            
         }, 300);
       } catch (error) {
         this.loading = await false

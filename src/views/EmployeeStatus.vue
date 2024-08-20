@@ -1,4 +1,5 @@
 <template>
+
     <div>
         <v-tabs v-model="tab" class="mb-2">
           <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/EmployeeStatus`)">{{ tab.name }}</v-tab>
@@ -27,6 +28,7 @@
                                         code="Active Status Code" 
                                         name="Active Status name"
                                         type="EmployeeStatus" 
+                                        :rules="validationRules"
                                         @childEvent="getselectedItemEmpStatus"
                                         @data-updated="handleClearData('selectedItemEmpStatus', 'EmployeeStatus')"
                                     />
@@ -103,6 +105,7 @@
                                             name="Active Status name"
                                             type="EmployeeStatus" 
                                             ref="ActivityStatusSSB"
+                                            :rules="validationRules"
                                             @childEvent="getselectedItemActiveStatusSSB"
                                             @data-updated="handleClearData('selectedItemActiveStatusSSB', 'ActiveStatusSSB')"
                                         />
@@ -142,6 +145,7 @@
                                             name="Active Status name"
                                             type="EmployeeStatus" 
                                             ref="ActiveStatusSAP"
+                                            :rules="validationRules"
                                             @childEvent="getselectedItemActiveStatusSAP"
                                             @data-updated="handleClearData('selectedItemActiveStatusSAP', 'ActiveStatusSAP')"
                                         />
@@ -195,7 +199,7 @@
                     </v-row>
                     <v-data-table
                         :headers="headersExport"
-                        :items="datasExport"
+                        :items="filteredData"
                         :loading="loading"
                         density="compact"
                         item-key="name"
@@ -207,7 +211,7 @@
                             <HeaderSelect
                                 :header-text="header.text"
                                 :selected-value="selectedCompanyCode"
-                                :select-items="selectOptionsForColumn('CompanyCode', datasExport)"
+                                :select-items="selectOptionsForColumn('CompanyCode')"
                                 @update:selectedValue="updateSelectedCompanyCode"
                                 @sort="handleSort('CompanyCode', $event)"
                                 :class="{ active_select: isActive('CompanyCode') }"
@@ -231,7 +235,7 @@
                             <HeaderSelect
                                 :header-text="header.text"
                                 :selected-value="selectedActiveStatusCode"
-                                :select-items="selectOptionsForColumn('ActiveStatusCode', datasExport)"
+                                :select-items="selectOptionsForColumn('ActiveStatusCode')"
                                 @update:selectedValue="updateSelectedActiveStatusCode"
                                 @sort="handleSort('ActiveStatusCode', $event)"
                                 :class="{ active_select: isActive('ActiveStatusCode') }"
@@ -243,7 +247,7 @@
                             <HeaderSelect
                                 :header-text="header.text"
                                 :selected-value="selectedLocalName"
-                                :select-items="selectOptionsForColumn('LocalName', datasExport)"
+                                :select-items="selectOptionsForColumn('LocalName')"
                                 @update:selectedValue="updateSelectedLocalName"
                                 @sort="handleSort('LocalName', $event)"
                                 :class="{ active_select: isActive('LocalName') }"
@@ -255,7 +259,7 @@
                             <HeaderSelect
                                 :header-text="header.text"
                                 :selected-value="selectedSTAT2"
-                                :select-items="selectOptionsForColumn('STAT2', datasExport)"
+                                :select-items="selectOptionsForColumn('STAT2')"
                                 @update:selectedValue="updateSelectedSTAT2"
                                 @sort="handleSort('STAT2', $event)"
                                 :class="{ active_select: isActive('STAT2') }"
@@ -267,7 +271,7 @@
                             <HeaderSelect
                                 :header-text="header.text"
                                 :selected-value="selectedDescription"
-                                :select-items="selectOptionsForColumn('Description', datasExport)"
+                                :select-items="selectOptionsForColumn('Description')"
                                 @update:selectedValue="updateSelectedDescription"
                                 @sort="handleSort('Description', $event)"
                                 :class="{ active_select: isActive('Description') }"
@@ -278,13 +282,11 @@
                 </v-card>
             </v-tab-item>
         </v-tabs-items>
-
     </div>
 
 </template>
 
 <script>
-    // import * as XLSX from 'xlsx';
     import SelectCompanyCode from '@/components/SelectCompanyCode.vue';
     import SelectSystemCode from '@/components/SelectSystemCode.vue';
     import InputSearch from '@/components/InputSearch.vue';
@@ -334,7 +336,9 @@
             selectedLocalName: [],
             selectedSTAT2: [],
             selectedDescription: [],
-            isError: false
+            isError: false,
+            validationRules: [v => !!v || ''],
+            filteredData: [],
         }),
 
         watch: {
@@ -379,6 +383,23 @@
 
         methods: {
 
+            updateSelectedActiveStatusCode(value) {
+                this.selectedActiveStatusCode = value;
+            },
+            
+            updateSelectedLocalName(value) {
+                this.selectedLocalName = value;
+            },
+
+            updateSelectedSTAT2(value) {
+                this.selectedSTAT2 = value;
+            },
+
+            updateSelectedDescription(value) {
+                this.selectedDescription = value;
+            },
+
+
             isActive(column) {
                 if(column === 'CompanyCode'){
                     return this.selectedCompanyCode.length > 0;
@@ -396,6 +417,33 @@
                 return false;
             },
 
+            clearData(){
+                this.$refs.formMapping.resetValidation()
+                this.$refs.ActivityStatusSSB.selectedItem = {}
+                this.$refs.ActiveStatusSAP.selectedItem = {},
+                this.$refs.selectCompanyCode.selecItem = null 
+                this.$refs.selectSystemCode.selecItem = null 
+                this.selectedItemActiveStatusSSB = {},
+                this.selectedItemActiveStatusSAP = {},
+                this.isError = false
+            },
+
+            filterData() {
+
+                this.filteredData = this.datasExport.filter(item =>
+
+                    (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
+                    (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) && 
+                    (this.selectedActiveStatusCode.length === 0 || this.selectedActiveStatusCode.includes(item.ActiveStatusCode)) && 
+                    (this.selectedLocalName.length === 0 || this.selectedLocalName.includes(item.LocalName)) && 
+                    (this.selectedSTAT2.length === 0 || this.selectedSTAT2.includes(item.STAT2)) && 
+                    (this.selectedDescription.length === 0 || this.selectedDescription.includes(item.Description))
+                    
+
+              
+                );
+            },
+            
             async removeEmpStatus(value){
                 console.log(value);
                 this.$swal.fire({
@@ -455,16 +503,8 @@
                         const fd  = {
                             "companyCode": selectCompanyCode,
                             "systemCode": selectSystemCode,
-                            "hnReceiveCode": this.selectedItemHNTwo.Code,
-                            "localName": this.selectedItemHNTwo.LocalName,
-                            "englishName": this.selectedItemHNTwo.EnglishName,
-                            "glsarCode": this.selectedItemGLSAR.GLNo,
-                            "glsarName": this.selectedItemGLSAR.GLDes,
-                            "postingKey": this.posting_key,
-                            "postingKey2": this.posting_key2,
-                            "glsapCode": this.selectedItemGLSAP.GLNo,
-                            "key2Description": "string",
-                            "specialGL":this.selectedItemspecialGL.GLNo,
+                            // "activeStatusSSB" : 
+                            // "activeStatusSAP" : 
                         }
 
                          // globalMixin.js
@@ -512,36 +552,7 @@
               
             },
 
-            updateSelectedActiveStatusCode(value) {
-                this.selectedActiveStatusCode = value;
-            },
-            
-            updateSelectedLocalName(value) {
-                this.selectedLocalName = value;
-            },
-
-            updateSelectedSTAT2(value) {
-                this.selectedSTAT2 = value;
-            },
-
-            updateSelectedDescription(value) {
-                this.selectedDescription = value;
-            },
-
-            clearData(){
-                this.$refs.formMapping.resetValidation()
-                this.$refs.ActivityStatusSSB.selectedItem = {}
-                this.$refs.ActiveStatusSAP.selectedItem = {},
-                this.$refs.selectCompanyCode.selecItem = null 
-                this.$refs.selectSystemCode.selecItem = null 
-                this.selectedItemActiveStatusSSB = {},
-                this.selectedItemActiveStatusSAP = {},
-                this.isError = false
-            },
-
-          
-          
-        
+         
         }
     }
 </script>
@@ -558,18 +569,6 @@
     ::v-deep .v-tabs-slider{
         display: none;
     }
-
-    /* ::v-deep .style-table thead.v-data-table-header {
-        background: #D9D9D9!important;
-    }
-
-    ::v-deep .style-table thead.v-data-table-header span{
-        color: #000;
-    }
-  
-    ::v-deep .style-table td{
-        border: 1px solid #D9D9D9;
-    } */
 
     .border-b-lg{
         height: 5px!important;

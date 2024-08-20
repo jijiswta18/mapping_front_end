@@ -2,10 +2,11 @@
     <div>
 
         <v-tabs v-model="tab" class="mb-2">
-          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/ActivityGL`)">{{ tab.name }}</v-tab>
+          <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/ArPaymentTerm`)">{{ tab.name }}</v-tab>
         </v-tabs>
 
         <v-tabs-items v-model="tab">
+            
             <!-- Create/Change -->
             <v-tab-item>
                 <v-card outlined class="mx-auto style-card" color="surface-variant">
@@ -28,6 +29,7 @@
                                         code="Term Of Payment" 
                                         name="Term Of Payment Des."
                                         type="Term Of Payment" 
+                                        :rules="validationRules"
                                         @childEvent="getselectedTermPayment"
                                         @data-updated="handleClearData('selectedTermPayment', 'TermPayment')"
                                 
@@ -111,6 +113,7 @@
                                             name="Term Of Payment Des."
                                             type="Term Of Payment" 
                                             :isError="isError"
+                                            :rules="validationRules"
                                             @childEvent="getselectedTermPayment2"
                                             @data-updated="handleClearData('selectedTermPayment2', 'TermPayment')"
                                         />
@@ -143,6 +146,7 @@
                                     </v-col>
                                     <v-col cols="8">
                                         <InputSearch 
+                                            :rules="validationRules"
                                             title="Term of Payment in SAP"  
                                             label="Text" 
                                             code="Term Of Payment" 
@@ -211,52 +215,12 @@
                         class="style-table"
                     >
                  
-                        <!-- Header Template for HNActivity Code -->
-                        <template v-slot:[`header.HNActivityCode`]="{ header }">
-                            <HeaderSelect
-                                :header-text="header.text"
-                                :selected-value="selectedHNActivity"
-                                :data-filters="filteredData"
-                                column-name="HNActivityCode"
-                                @update:selectedValue="updateSelectedHNActivity"
-                                @sort="handleSort('HNActivityCode', $event)"
-                                :class="{ active_select: isActive('HNActivityCode') }"
-                            />
-                        </template>
-
-                          <!-- Header Template for HNActivity Name -->
-                          <template v-slot:[`header.LocalName`]="{ header }">
-                            <HeaderSelect
-                                :header-text="header.text"
-                                :selected-value="selectedHNActivityName"
-                                :data-filters="filteredData"
-                                column-name="LocalName"
-                                @update:selectedValue="updateSelectedHNActivityName"
-                                @sort="handleSort('LocalName', $event)"
-                                :class="{ active_select: isActive('LocalName') }"
-                            />
-                        </template>
-
-                        <template v-slot:[`header.GLSAPNameIPD`]="{ header }">
-                            <HeaderSelect
-                                :header-text="header.text"
-                                :selected-value="selectedGLIPDName"
-                                :data-filters="filteredData"
-                                column-name="GLSAPNameIPD"
-                                @update:selectedValue="updateSelectedGLIPDName"
-                                @sort="handleSort('GLSAPNameIPD', $event)"
-                                :class="{ active_select: isActive('GLSAPNameIPD') }"
-                            />
-                        </template>
-
-
                         <template v-slot:[`header.CompanyCode`]="{ header }">
                                 <HeaderSelect
                                     :header-text="header.text"
                                     :selected-value="selectedCompanyCode"
                                     :select-items="selectOptionsForColumn('CompanyCode')"
                                     @update:selectedValue="updateSelectedCompanyCode"
-                                    @search="searchCompanies('CompanyCode', $event)"
                                     @sort="handleSort('CompanyCode', $event)"
                                     :class="{ active_select: isActive('CompanyCode') }"
                                 />
@@ -329,7 +293,6 @@
 
     </div>
 
-
 </template>
 
 <script>
@@ -354,11 +317,7 @@
             selectedTermPaymentDes: [], 
             selectedTermPaymentSAP: [], 
             selectedDescription: [], 
-            selectedHNActivity: [], 
-            selectedHNActivityName: [], 
-            selectedGLIPDName: [],
             headers: [
-              
                 { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
                 { text: 'Term of payment', align: 'center', sortable: false, value: 'TermOfPayment' },
                 { text: 'Term of payment Des.', align: 'center', sortable: false, value: 'TermOfPaymentDes' },
@@ -368,9 +327,6 @@
                 { text: 'Delete', align: 'center', sortable: false, value: 'Action' },
             ],
             headersExport: [
-            { text: 'HNActivity Code', align: 'center', sortable: false, value: 'HNActivityCode' },
-                { text: 'HNActivity Name', align: 'center', sortable: false, value: 'LocalName' },
-                { text: 'GL IPD  Name', align: 'center', sortable: false, value: 'GLSAPNameIPD' },
                 { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
                 { text: 'Term of payment', align: 'center', sortable: false, value: 'TermOfPayment' },
                 { text: 'Term of payment Des.', align: 'center', sortable: false, value: 'TermOfPaymentDes' },
@@ -379,34 +335,15 @@
                 { text: 'Description', align: 'center', sortable: false, value: 'Description' },
         
             ],
-            isError: false
+            isError: false,
+            validationRules: [v => !!v || ''],
         
         }),
 
         mounted(){},
 
         watch: {
-            selectedHNActivity: {
-                handler() {
-                    this.filterData();
-                    
-                },
-                deep: true,
-            },
-
-            selectedHNActivityName: {
-                handler() {
-                    this.filterData();
-                },
-                deep: true,
-            },
-
-            selectedGLIPDName: {
-                handler() {
-                    this.filterData();
-                },
-                deep: true,
-            },
+           
             selectedCompanyCode: {
                 handler() {
                     this.filterData();
@@ -447,24 +384,6 @@
 
 
         methods: {
-
-            isActive(column) {
-                if(column === 'CompanyCode'){
-                    return this.selectedCompanyCode.length > 0;
-                }else if (column === 'SystemCode'){
-                    return this.selectedSystemCode.length > 0;
-                }else if (column === 'TermOfPayment') {
-                    return this.selectedTermPayment.length > 0;
-                }else if (column === 'TermOfPaymentDes') {
-                    return this.selectedTermPaymentDes.length > 0;
-                }else if(column === 'TermOfPaymentSAP'){
-                    return this.selectedTermPaymentSAP.length > 0;
-                }else if(column === 'Description'){
-                    return this.selectedDescription.length > 0;
-                }
-                return false;
-            },
-
             async removeTermPayment(value){
                 console.log(value);
                 this.$swal.fire({
@@ -507,8 +426,8 @@
                         const TermOfPaymentSAP          = this.checkData[0].TermOfPaymentSAP
                         const selectedTermPaymentSAP    = this.selectedTermPaymentSAP.GLNo
                         
-                        const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;
-                        const selectSystemCode    = this.$refs.selectSystemCode.selecItem;   
+                        const selectCompanyCode         = this.$refs.selectCompanyCode.selecItem;
+                        const selectSystemCode          = this.$refs.selectSystemCode.selecItem;   
 
                         // เช็คค่า TermPayment และ TermOfPaymentSAP เหมือนกัน จะเข้าเงื่อนไข if
                         const checkRecord = (
@@ -561,6 +480,24 @@
                 }
             },
 
+            isActive(column) {
+                
+                if(column === 'CompanyCode'){
+                    return this.selectedCompanyCode.length > 0;
+                }else if (column === 'SystemCode'){
+                    return this.selectedSystemCode.length > 0;
+                }else if (column === 'TermOfPayment') {
+                    return this.selectedTermPayment.length > 0;
+                }else if (column === 'TermOfPaymentDes') {
+                    return this.selectedTermPaymentDes.length > 0;
+                }else if(column === 'TermOfPaymentSAP'){
+                    return this.selectedTermPaymentSAP.length > 0;
+                }else if(column === 'Description'){
+                    return this.selectedDescription.length > 0;
+                }
+                return false;
+            },
+
             exportToExcel() {
                 const datas = this.filteredData.map(item => ({
                     "System Code": item.SystemCode,
@@ -579,33 +516,6 @@
                 /* Generate XLSX file and send to client */
                 XLSX.writeFile(wb, fileName);
               
-            },
-
-            updateSelectedHNActivity(value) {
-                
-                this.selectedHNActivity = value;
-
-                
-            },
-            updateSelectedHNActivityName(value) {
-                this.selectedHNActivityName = value;
-            },
-
-            updateSelectedGLIPDName(value) {
-            this.selectedGLIPDName = value;
-            },
-            
-            updateSelectedTermPayment(value) {
-                this.SelectedTermPayment = value;
-            },
-            updateSelectedTermPaymentDes(value) {
-                this.selectedTermPaymentDes = value;
-            },
-            updateSelectedTermPaymentSAP(value) {
-                this.selectedTermPaymentSAP = value;
-            },
-            updateSelectedDescription(value) {
-                this.selectedDescription = value;
             },
 
             filterData() {
@@ -632,8 +542,23 @@
                 this.isError                            = false
             },
 
+            // update select data export
+            updateSelectedTermPayment(value) {
+                this.SelectedTermPayment = value;
+            },
 
-        
+            updateSelectedTermPaymentDes(value) {
+                this.selectedTermPaymentDes = value;
+            },
+
+            updateSelectedTermPaymentSAP(value) {
+                this.selectedTermPaymentSAP = value;
+            },
+
+            updateSelectedDescription(value) {
+                this.selectedDescription = value;
+            },
+
         }
     }
 </script>
@@ -651,23 +576,10 @@
         display: none;
     }
 
-    /* ::v-deep .style-table thead.v-data-table-header {
-        background: #D9D9D9!important;
-    }
-
-    ::v-deep .style-table thead.v-data-table-header span{
-        color: #000;
-    }
-  
-    ::v-deep .style-table td{
-        border: 1px solid #D9D9D9;
-    } */
-
     .border-b-lg{
         height: 5px!important;
         width: 100%!important;
         background: #F9BA7F;
-
     }
     .style-card{
         padding: 16px

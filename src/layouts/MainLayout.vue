@@ -75,7 +75,7 @@
       items: [
         { title: 'ArPaymentTerm', route: '/' },
         { title: 'ARAccountGroup', route: '/ARAccountGroup' },
-        // { title: 'StoreMedecine', route: '/StoreMedecine' },
+        { title: 'StoreMedecine', route: '/StoreMedecine' },
         { title: 'TMHNActivityAndGL', route: '/TMHNActivity' },
         { title: 'CashAndGL', route: '/CashAndGL' },
         { title: 'EmployeeStatus', route: '/EmployeeStatus' }

@@ -35,6 +35,11 @@ const router = new VueRouter({
           component: () => import('../views/ARAccountGroup.vue'), 
         },
         {
+          path: 'StoreMedecine',
+          // component: ARAccountGroup, 
+          component: () => import('../views/StoreMedecine.vue'), 
+        },
+        {
           path: 'TMHNActivity',
           // component: TMHNActivity, 
           component: () => import('../views/TMHNActivity.vue'),

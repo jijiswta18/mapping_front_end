@@ -5,6 +5,7 @@ import vuetify from './plugins/vuetify'
 
 import axios from "axios";
 import Swal from 'sweetalert2';
+import moment from 'moment';
 
 import './globalMixin'; // เรียกใช้ Global Mixin
 
@@ -13,6 +14,7 @@ import '@mdi/font/css/materialdesignicons.css'
 
 Vue.prototype.$axios = axios;
 Vue.prototype.$swal = Swal;
+Vue.prototype.$moment = moment;
 
 Vue.config.productionTip = false
 

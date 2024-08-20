@@ -1,9 +1,9 @@
 <template>
+
     <div>
         <v-tabs v-model="tab" class="mb-2">
           <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/ActivityGL`)">{{ tab.name }}</v-tab>
         </v-tabs>
-
         <v-tabs-items v-model="tab">
 
             <!-- Create/Change -->
@@ -29,6 +29,7 @@
                                         code="HNActivity Code" 
                                         name="HNActivity name"
                                         type="Activity" 
+                                        :rules="validationRules"
                                         @childEvent="getselectedItemHNOne"
                                         @data-updated="handleClearData('selectedItemHNOne', 'HNActivityCode')"
 
@@ -120,6 +121,7 @@
                                             type="Activity"
                                             ref="selectHNActivity"
                                             :isError="isError" 
+                                            :rules="validationRules"
                                             @childEvent="getselectedItemHNTwo"
                                             @data-updated="handleClearData('selectedItemHNTwo', 'HNActivityCode')"
                                         />
@@ -147,13 +149,13 @@
                                     <v-col cols="8">
 
                                         <InputSearch 
+                                            :rules="validationRules"
                                             title="G/L Account OPD"
                                             label="Text" 
                                             code="GL OPD Code" 
                                             name="GL OPD Name" 
                                             ref="slectGLOPD" 
                                             type="SapGL"
-                                           
                                             :isError="isError"
                                             @childEvent="getselectedItemGLOPD"
                                             @data-updated="handleClearData('selectedItemGLOPD', 'SapGL')"
@@ -187,6 +189,7 @@
                                     <v-col cols="8">
 
                                         <InputSearch 
+                                            :rules="validationRules"
                                             title="G/L Account IPD"
                                             label="Text" 
                                             code="GL IPD Code" 
@@ -257,7 +260,8 @@
                         :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                         class="style-table"
                     >
-                       
+                        <template v-slot:[`item.UpdateDateTime`]="{ item }">{{ item.UpdateDateTime == null ? '' : formatDate(item.UpdateDateTime)}}</template>
+
                         <!-- Header Template for CompanyCode -->
                         <template v-slot:[`header.CompanyCode`]="{ header }">
                             <HeaderSelect
@@ -266,7 +270,8 @@
                                 :select-items="selectOptionsForColumn('CompanyCode')"
                                 @update:selectedValue="updateSelectedCompanyCode"
                                 @sort="handleSort('CompanyCode', $event)"
-                                :class="{ active_select: isActive('CompanyCode') }"
+                           
+                                :class="{ active_select:  currentTab === 'Create/Change' && isActive('CompanyCode') }"
                             />
                         </template>
 
@@ -308,7 +313,6 @@
 
                         <!-- Header Template for GLSAPCodeOPD -->
                         <template v-slot:[`header.GLSAPCodeOPD`]="{ header }">
-
                             <HeaderSelect
                                 :header-text="header.text"
                                 :selected-value="selectedGLOPDCode"
@@ -367,15 +371,27 @@
                             />
                         </template>
 
+                            <!-- Header Template for UpdateDateTime -->
+                            <template v-slot:[`header.UpdateDateTime`]="{ header }">
+                            <HeaderSelect
+                                :header-text="header.text"
+                                :selected-value="selectedDate"
+                                :select-items="selectOptionsForColumn('UpdateDateTime')"
+                                @update:selectedValue="updateSelectedDate"
+                                @sort="handleSort('UpdateDateTime', $event)"
+                                :class="{ active_select: isActive('UpdateDateTime') }"
+                            />
+                        </template>
+
+
+
                     </v-data-table>
 
                 </v-card>
             </v-tab-item>
         </v-tabs-items>
-
     </div>
-
-
+    
 </template>
 
 <script>
@@ -409,7 +425,9 @@
             selectedGLIPDCode: [],
             selectedGLIPDName: [],
             selectedPostingKey: [],
+            selectedDate: [],
             posting_key: null,
+            validationRules: [v => !!v || ''],
             headersDataHNActivity: [
                 { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
                 { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
@@ -432,6 +450,7 @@
                 { text: 'GL IPD Code', align: 'center', sortable: false, value: 'GLSAPCodeIPD' },
                 { text: 'GL IPD  Name', align: 'center', sortable: false, value: 'GLSAPNameIPD' },
                 { text: 'Posting Key', align: 'center', sortable: false, value: 'PostingKey' },
+                { text: 'Update Date Time', align: 'center', sortable: false, value: 'UpdateDateTime' },
             ],
             columnNameFiled: '',
             isError: false
@@ -505,12 +524,52 @@
                 },
                 deep: true,
             },
+            selectedDate: {
+                handler() {
+                    this.filterData();
+                },
+                deep: true,
+            },
         },
 
         methods: {
+            /* search table export */
+            updateSelectedHNActivity(value, column) {
+                this.selectedHNActivity = value;
+                this.columnNameFiled = column
+            },
+
+            updateSelectedHNActivityName(value) {
+                this.selectedHNActivityName = value;
+            },
+
+            updateSelectedGLOPDCode(value) {
+                this.selectedGLOPDCode = value;
+            },
+
+            updateSelectedGLOPDName(value) {
+                this.selectedGLOPDName = value;
+            },
+
+            updateSelectedGLIPDCode(value) {
+                this.selectedGLIPDCode = value;
+            },
+
+            updateSelectedGLIPDName(value) {
+                this.selectedGLIPDName = value;
+            },
+
+            updateSelectedPostingKey(value) {          
+                this.selectedPostingKey = value;
+            },
+
+            updateSelectedDate(value){
+                this.selectedDate = value;
+            },
 
             // Active column fiter export
             isActive(column) {
+
                 if(column === 'CompanyCode'){
                     return this.selectedCompanyCode.length > 0;
                 }else if (column === 'SystemCode'){
@@ -545,7 +604,7 @@
                     "GL IPD Name": item.GLSAPNameIPD,
                     "Posting Key": item.PostingKey,
                 }));
-     
+
                 const fileName = 'TMHNActivity.xlsx';
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.json_to_sheet(datas);
@@ -553,43 +612,14 @@
 
                 /* Generate XLSX file and send to client */
                 XLSX.writeFile(wb, fileName);
-              
-            },
-           
-            /* search table export */
-            updateSelectedHNActivity(value, column) {
-                
-                this.selectedHNActivity = value;
-                this.columnNameFiled = column
-                // console.log(column);
-                
-            },
-            updateSelectedHNActivityName(value) {
-                this.selectedHNActivityName = value;
-            },
-            updateSelectedGLOPDCode(value) {
-                this.selectedGLOPDCode = value;
-            },
-            updateSelectedGLOPDName(value) {
-                this.selectedGLOPDName = value;
-            },
-            updateSelectedGLIPDCode(value) {
-                this.selectedGLIPDCode = value;
-            },
-            updateSelectedGLIPDName(value) {
 
-                this.selectedGLIPDName = value;
             },
-            updateSelectedPostingKey(value) {
 
-                
-                this.selectedPostingKey = value;
-            },
-            
-        
             clearData(){
                 this.$refs.formMapping.resetValidation()
-                this.$refs.selectHNActivity.selectedItem = {}
+                this.$refs.selectHNActivity.resetValidation()
+                this.$refs.selectHNActivity.clearTextField()
+                // this.$refs.selectHNActivity.selectedItem = {}
                 this.$refs.slectGLOPD.selectedItem = {},
                 this.$refs.slectGLIPD.selectedItem = {},
                 this.$refs.selectCompanyCode.selecItem = null 
@@ -613,7 +643,8 @@
                     (this.selectedGLOPDName.length === 0 || this.selectedGLOPDName.includes(item.GLSAPNameOPD)) &&
                     (this.selectedGLIPDCode.length === 0 || this.selectedGLIPDCode.includes(item.GLSAPCodeIPD)) &&
                     (this.selectedGLIPDName.length === 0 || this.selectedGLIPDName.includes(item.GLSAPNameIPD)) &&
-                    (this.selectedPostingKey.length === 0 || this.selectedPostingKey.includes(item.PostingKey))
+                    (this.selectedPostingKey.length === 0 || this.selectedPostingKey.includes(item.PostingKey)) &&
+                    (this.selectedDate.length === 0 || this.selectedDate.includes(item.UpdateDateTime))
                 );
 
 
@@ -621,14 +652,59 @@
             },
 
             async removeHNActivity(value){
-                console.log(value);
-                this.$swal.fire({
-                    title: "ไม่สามารถลบข้อมูลได้",
-                    icon: "question"
+
+                await this.$swal.fire({
+                    title: "Warning",
+                    text: "Are you sure you want to delete this item? ",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#52A1DB",
+                    cancelButtonColor: "#52A1DB",
+                    confirmButtonText: "OK",
+                    customClass: {
+                        title: 'text-warning'
+                    }
+                }).then(async(result) => {
+                    if (result.isConfirmed) {
+
+                        try {
+                            let FlagHNActivityPath       =   `/api/SAP/FlagHNActivity?HNActivityCode=${value.Code}&DFLAG=1`
+
+                            await this.$axios.get(`${FlagHNActivityPath}`)
+
+                            this.$swal.fire({
+                                icon: "success",
+                                title: "Complete",
+                                text: "You data was saved.",
+                                customClass: {
+                                    title: 'text-success' // Add your custom class here
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    this.checkMapping()
+                                }
+                            });
+
+                        } catch (error) {
+                            this.$swal.fire({
+                                icon: "error",
+                                title: "Incomplete",
+                                text: "update data not success",
+                                customClass: {
+                                    title: 'text-error'
+                                }
+                            });
+                        }
+                        
+                      
+                    }
                 });
             },
 
+
             async checkMapping(){
+
+
             
                 if(this.selectedItemHNOne && !this.selectedItemHNOne.Code){    
                     
@@ -639,8 +715,8 @@
                     this.loading                = await true
                     let GetTmActivityIDPath     = `/api/SAP/GetTmActivityID?HNActivityCode=${this.selectedItemHNOne.Code}`
                     let response                = await this.$axios.get(GetTmActivityIDPath);
-                    this.dataHNActivity         = response.data;
-
+                    this.dataHNActivity         = response.data;   
+                    
                     } catch (error) {
                         this.loading = await false
                         console.error('Error fetching data:', error);
@@ -721,7 +797,6 @@
                 }
             },
 
-
         }
     }
 </script>
@@ -741,22 +816,7 @@
         display: none;
     }
 
-    /* ::v-deep .style-table thead.v-data-table-header {
-        background: #D9D9D9!important;
-    }
-
-    ::v-deep .style-table thead.v-data-table-header span{
-        color: #000;
-    }
-  
-    ::v-deep .style-table td{
-        border: 1px solid #D9D9D9;
-    }
-
-    ::v-deep .style-table td{
-        border: 1px solid #D9D9D9;
-    } */
-
+   
 
     .border-b-lg{
         height: 5px!important;
