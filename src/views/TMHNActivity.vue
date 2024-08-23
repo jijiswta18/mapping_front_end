@@ -371,8 +371,8 @@
                             />
                         </template>
 
-                            <!-- Header Template for UpdateDateTime -->
-                            <template v-slot:[`header.UpdateDateTime`]="{ header }">
+                        <!-- Header Template for UpdateDateTime -->
+                        <template v-slot:[`header.UpdateDateTime`]="{ header }">
                             <HeaderSelect
                                 :header-text="header.text"
                                 :selected-value="selectedDate"
@@ -382,9 +382,6 @@
                                 :class="{ active_select: isActive('UpdateDateTime') }"
                             />
                         </template>
-
-
-
                     </v-data-table>
 
                 </v-card>
@@ -518,18 +515,21 @@
                 },
                 deep: true,
             },
+
             selectedPostingKey: {
                 handler() {
                     this.filterData();
                 },
                 deep: true,
             },
+
             selectedDate: {
                 handler() {
                     this.filterData();
                 },
                 deep: true,
             },
+
         },
 
         methods: {
@@ -701,7 +701,6 @@
                 });
             },
 
-
             async checkMapping(){
 
 
@@ -816,27 +815,25 @@
         display: none;
     }
 
-   
-
     .border-b-lg{
         height: 5px!important;
         width: 100%!important;
         background: #F9BA7F;
-
     }
+
     .style-card{
         padding: 16px
     }
+
     .bg-blue{
         background-color: #7FA9F9!important;
     }
+
     .bg-orange{
         background-color: #F9BA7F!important;
         
     }
-    ::v-deep .dialog-search{
-        height: 550px!important;
-    }
+
     .h25{
         height: 25px;
     }
@@ -846,11 +843,13 @@
         border-bottom-width: thin;
         border-bottom-color: #D9D9D9;
     }
+
     .border-gray{
         height: 3px !important;
         width: 100% !important;
         background: #D9D9D9;
     }
+
     .btn-with-icon{
         height: auto!important;
         min-width: auto!important;
@@ -863,6 +862,11 @@
         display: ruby;
         flex: none;
     }
+
+    .line-height{
+        line-height: 1.8;
+    }
+
     ::v-deep .custom-v-select .v-select__selections {
         display: none!important;
     }
@@ -878,9 +882,11 @@
     ::v-deep .v-text-field > .v-input__control > .v-input__slot:before {
       border-style: none;
     }
-    
-    .line-height{
-        line-height: 1.8;
+
+    ::v-deep .dialog-search{
+        height: 550px!important;
     }
+    
+
 
 </style>

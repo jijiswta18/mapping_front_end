@@ -129,10 +129,6 @@
                                 timer: 1000
                             })
 
-                            // const expiryDate = new Date().getTime() + (60 * 60 * 1000);
-                        
-                            // store.dispatch('setLoginExpiry', expiryDate);
-
                             
                         }
 
@@ -169,7 +165,6 @@
         margin: 0 1rem;
         width: 100%;
         max-width: 450px;
-        /* max-height: 570px; */
         padding: 1.5rem;
         background-color: #fff;
         border-radius: 15px;
