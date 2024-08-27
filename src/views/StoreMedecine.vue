@@ -29,7 +29,9 @@
                                         code="Store Medicine Code" 
                                         name="Store Medicine Name"
                                         type="ActiveStatus" 
+                                        :rules="validationRules"
                                         @childEvent="getselectedItemStorMedicine"
+                                          @data-updated="handleClearData('selectedItemStorMedicine', 'StoreMedicine')"
                                     />
 
                                 </v-col>
@@ -37,7 +39,7 @@
                                 <v-col cols="12" md="6"  align-self="center" class="d-flex justify-space-between align-center">
                                     
                                     <span class="f-12 pr-3">Store Medicine Name : {{ selectedItemStorMedicine.LocalName }}</span>
-                                    <v-btn @click="checkStoreMedicine" class="bg-orange">Check</v-btn>
+                                    <v-btn @click="checkMapping" class="bg-orange">Check</v-btn>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -45,8 +47,8 @@
                         <div class="border-gray border-b-lg mb-3" style="height: 64px; width: 64px;"></div>
                         <h1 class="f-16 mb-1">Table Mapping</h1>
                         <v-data-table
-                            :headers="headersDataHNActivity"
-                            :items="dataHNReceive"
+                            :headers="headers"
+                            :items="checkData"
                             density="compact"
                             item-key="name"
                             :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
@@ -117,7 +119,10 @@
                                             code="Store Medicine Code" 
                                             name="Store Medicine Name"
                                             type="ActiveStatus" 
-                                            @childEvent="getselectedItemStorMedicine"
+                                            :isError="isError"
+                                            :rules="validationRules"
+                                            @childEvent="getselectedItemStorMedicineTwo"
+                                            @data-updated="handleClearData('selectedItemStorMedicineTwo', 'StoreMedicine')"
                                         />
                                         </v-col>
                                     </v-row>
@@ -149,7 +154,7 @@
                        
                         <p v-if="isError" class="text-error f-13 mt-3">*ข้อมูลไม่ถูกต้อง</p>
                             <div class="text-center">
-                                <v-btn class="bg-orange">Update Data</v-btn>
+                                <v-btn @click="MappingStoreMedicine" class="bg-orange">Update Data</v-btn>
                             </div>
                         </v-form>
 
@@ -243,15 +248,17 @@
             tabs: [{ name: 'Create/Change' },{ name: 'Export' }],
             search: '',
             loading: true,
-            dataHNReceive : [],
+            checkData : [],
             selectedItemStorMedicine: {},
+            selectedItemStorMedicineTwo: {},
             filteredData: [],
             selectedCompanyCode: [],
             selectedSystemCode: [],
             selectedStoreMedicine: [],
             selectedLocalName: [],
             selectedEnglishName: [],
-            headersDataHNActivity: [
+            validationRules: [v => !!v || ''],
+            headers: [
                 { text: 'Store Medicine Code', align: 'center', sortable: false, value: 'StoreMedicineCode' },
                 { text: 'Local Name', align: 'center', sortable: false, value: 'LocalName' },
                 { text: 'English Name', align: 'center', sortable: false, value: 'EnglishName' },
@@ -370,7 +377,7 @@
                 });
             },
 
-            async checkStoreMedicine(){
+            async checkMapping(){
 
                 if(this.selectedItemStorMedicine){
                     this.checkInputData('Store Medicine', this.$refs.StoreMedicineField)
@@ -379,7 +386,7 @@
                         this.loading                = await true
                         let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetStoreMedicineFieldID?StoreMedicineFieldCode=${this.selectedItemStorMedicine.Code}`
                         let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                        this.dataHNReceive         = response.data;
+                        this.checkData         = response.data;
                     
                     } catch (error) {
                         this.loading = await false
@@ -388,9 +395,38 @@
                 }
             
             },
+            
+            async MappingStoreMedicine(){
+                // เช็ค value
+                if(this.$refs.formMapping.validate()){
+                    // เช็คค่าใน Table Mapping กับค่าที่จะ Mapping
+                    if(this.checkData.length > 0){
+                        
+                        const selectCompanyCode         = this.$refs.selectCompanyCode.selecItem;
+                        const selectSystemCode          = this.$refs.selectSystemCode.selecItem;
+
+                        const MappingStoreMedicinePath       =   `/api/`
+                        const fd  = {
+                            "companyCode": selectCompanyCode,
+                            "systemCode": selectSystemCode,
+                            "storeMedicineCode": this.selectedItemStorMedicineTwo.Code,
+                            "localName": this.selectedItemStorMedicineTwo.LocalName,
+                            "englishName": this.selectedItemStorMedicineTwo.EnglishName,
+                           
+                        }
+
+                         // globalMixin.js
+                        this.MappingData(false, MappingStoreMedicinePath, fd)
+                    }
+
+                }
+            },
 
             getselectedItemStorMedicine(data) {
                 this.selectedItemStorMedicine = data;
+            },
+            getselectedItemStorMedicineTwo(data) {
+                this.selectedItemStorMedicineTwo = data;
             },
 
             updateSelectedStoreMedicine(value) {

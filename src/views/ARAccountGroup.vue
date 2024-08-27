@@ -28,6 +28,7 @@
                                         code="AR Compose Category" 
                                         name="Description"
                                         type="Term Of Payment" 
+                                        :rules="validationRules"
                                         @childEvent="getselectedItemAccGroup"
                                         @data-updated="handleClearData('selectedItemAccGroup', 'AccountGroup')"
                                     />
@@ -111,6 +112,8 @@
                                             code="AR Compose Category" 
                                             name="Description"
                                             type="Term Of Payment" 
+                                            :isError="isError"
+                                            :rules="validationRules"
                                             @childEvent="getselectedItemAccGroupTwo"
                                             @data-updated="handleClearData('selectedItemAccGroupTwo', 'AccountGroup')"
                                         />
@@ -151,6 +154,7 @@
                                             code="KTOKK" 
                                             name="Description"
                                             type="KTOKK" 
+                                            :isError="isError"
                                             @childEvent="getselectedItemKTOKK"
                                             @data-updated="handleClearData('selectedItemKTOKK', 'KTOKK')"
                                         />
@@ -198,6 +202,7 @@
                                             code="AR_AKONT" 
                                             name="Description"
                                             type="AR_AKONT" 
+                                            :isError="isError"
                                             @childEvent="getselectedItemAR_AKONT"
                                             @data-updated="handleClearData('selectedItemAR_AKONT', 'AR_AKONT')"
                                         />
@@ -236,6 +241,7 @@
                                             code="AP_AKONT" 
                                             name="Description"
                                             type="AP_AKONT" 
+                                            :isError="isError"
                                             @childEvent="getselectedItemAP_AKONT"
                                             @data-updated="handleClearData('selectedItemAP_AKONT', 'AP_AKONT')"
                                         />
@@ -480,9 +486,54 @@
 
             async removeAccountGroup(value){
                 console.log(value);
-                this.$swal.fire({
-                    title: "ไม่สามารถลบข้อมูลได้",
-                    icon: "question"
+
+                await this.$swal.fire({
+                    title: "Warning",
+                    text: "Are you sure you want to delete this item? ",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#52A1DB",
+                    cancelButtonColor: "#52A1DB",
+                    confirmButtonText: "OK",
+                    customClass: {
+                        title: 'text-warning'
+                    }
+                }).then(async(result) => {
+                    if (result.isConfirmed) {
+
+                        try {
+                            // // เส้น API ArpaymentTerm Remove
+
+                            // let FlagHNActivityPath       =   `/api/SAP/FlagHNActivity?HNActivityCode=${value.Code}&DFLAG=1`
+
+                            // await this.$axios.get(`${FlagHNActivityPath}`)
+
+                            this.$swal.fire({
+                                icon: "success",
+                                title: "Complete",
+                                text: "You data was saved.",
+                                customClass: {
+                                    title: 'text-success' // Add your custom class here
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    this.checkMapping()
+                                }
+                            });
+
+                        } catch (error) {
+                            this.$swal.fire({
+                                icon: "error",
+                                title: "Incomplete",
+                                text: "update data not success",
+                                customClass: {
+                                    title: 'text-error'
+                                }
+                            });
+                        }
+                        
+                      
+                    }
                 });
             },
 
@@ -496,8 +547,8 @@
                     try {
 
                         this.loading                = await true
-                        let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetAccGroupID?AccGroup=${this.selectedItemAccGroup}`
-                        let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                        let GetArAccountGroupPath    = `/api/SAP/CashAndGL/GetAccGroupID?AccGroup=${this.selectedItemAccGroup}`
+                        let response                = await this.$axios.get(GetArAccountGroupPath);
                         this.checkData              = response.data;
 
                     } catch (error) {

@@ -31,7 +31,7 @@
                                         type="Term Of Payment" 
                                         :rules="validationRules"
                                         @childEvent="getselectedTermPayment"
-                                        @data-updated="handleClearData('selectedTermPayment', 'TermPayment')"
+                                        @data-updated="handleClearData('selectedTermPayment', 'TermPayment')" 
                                 
                                     />
                                 </v-col>
@@ -385,10 +385,55 @@
 
         methods: {
             async removeTermPayment(value){
-                console.log(value);
-                this.$swal.fire({
-                    title: "ไม่สามารถลบข้อมูลได้",
-                    icon: "question"
+               console.log(value);
+               
+                await this.$swal.fire({
+                    title: "Warning",
+                    text: "Are you sure you want to delete this item? ",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#52A1DB",
+                    cancelButtonColor: "#52A1DB",
+                    confirmButtonText: "OK",
+                    customClass: {
+                        title: 'text-warning'
+                    }
+                }).then(async(result) => {
+                    if (result.isConfirmed) {
+
+                        try {
+                            // // เส้น API ArpaymentTerm Remove
+
+                            // let FlagHNActivityPath       =   `/api/SAP/FlagHNActivity?HNActivityCode=${value.Code}&DFLAG=1`
+
+                            // await this.$axios.get(`${FlagHNActivityPath}`)
+
+                            this.$swal.fire({
+                                icon: "success",
+                                title: "Complete",
+                                text: "You data was saved.",
+                                customClass: {
+                                    title: 'text-success' // Add your custom class here
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    this.checkMapping()
+                                }
+                            });
+
+                        } catch (error) {
+                            this.$swal.fire({
+                                icon: "error",
+                                title: "Incomplete",
+                                text: "update data not success",
+                                customClass: {
+                                    title: 'text-error'
+                                }
+                            });
+                        }
+                        
+                      
+                    }
                 });
             },
             
@@ -400,8 +445,8 @@
                 }else{
                     try {
                         this.loading                = await true
-                        let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetTermPaymentID?TermPayment=${this.selectedItemTermPayment}`
-                        let response                = await this.$axios.get(GetTmCashAndGLIDPath);
+                        let GetArPaymentTermPath    = `/api`
+                        let response                = await this.$axios.get(GetArPaymentTermPath);
                         this.checkData              = response.data
 
                     } catch (error) {

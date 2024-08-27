@@ -1,8 +1,5 @@
 <template>
     <div>
-        <v-form ref="formRef">
-       
-
         <v-text-field
             v-model="selectedItem.Code"
             :rules="rules"
@@ -17,7 +14,7 @@
             @click:clear="clearTextField"
             :class="{ 'text-danger': isError }"
         ></v-text-field>
-        </v-form>
+
         <v-dialog
             v-model="dialogSearch"
             persistent
