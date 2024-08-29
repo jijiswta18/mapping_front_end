@@ -12,9 +12,10 @@
                     <div class="box-check">
                         <h1 class="f-20 mb-1">Check</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Check -->
                         <v-container>
                             <v-row class="my-2">
-
                                 <v-col cols="12" md="6" class="text-center px-0 py-0">
                                     <span>Account Group</span>
                                 </v-col>
@@ -42,8 +43,11 @@
                                 </v-col>
                             </v-row>
                         </v-container>
+                        <!-- /Check -->
 
                         <div class="border-gray border-b-lg mb-3" style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Table Mapping -->
                         <h1 class="f-16 mb-1">Table Mapping</h1>
                         <v-data-table
                             :headers="headersData"
@@ -59,45 +63,35 @@
                                 </v-btn>
                             </template>
                         </v-data-table>
+                        <!-- /Table Mapping -->
                     </div>
 
+                    <!-- Relationship Mapping -->
                     <div class="box-relationship-mapping">
                         <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
-
-                        <v-form
-                            ref="formMapping"
-                            v-model="valid"
-                            lazy-validation
-                        
-                        >
-
-                     
+                        <v-form ref="formMapping" v-model="valid" lazy-validation>
                         <v-row class="mb-3">
-
                             <v-col cols="12" md="2" class="d-xs-none"></v-col>
-
+                            <!-- select Company Code -->
                             <v-col cols="12" md="4">
                                 <SelectCompanyCode ref="selectCompanyCode"/>
-                         
-                            
                             </v-col>
 
+                            <!-- select System Code -->
                             <v-col cols="12" md="4">
                                 <SelectSystemCode ref="selectSystemCode"/>
                             </v-col>
 
                             <v-col cols="12" md="2" class="d-xs-none"></v-col>
-                         
-
                         </v-row>
 
                         <div class=" border-bottom pb-0"></div>
 
                         <v-row class="my-2">  
-                            
                             <v-col cols="12" md="1"></v-col>
-                         
+
+                            <!-- input AR Compose Category -->
                             <v-col cols="12" md="5">
                                 <h2 class="f-16">AR Compose Category</h2>
                                 <v-row class="mt-3">
@@ -137,7 +131,9 @@
                                 </v-row>
 
                             </v-col>
+                            <!-- /input AR Compose Category -->
 
+                            <!-- input KTOKK -->
                             <v-col cols="12" md="5">
                                 <h2 class="f-16">KTOKK</h2>
                                 <v-row class="mt-3">
@@ -176,16 +172,17 @@
                                     
                                 </v-row>
                             </v-col>
+                            <!-- /input KTOKK -->
+
                             <v-col cols="12" md="1"></v-col>
-                        
                         </v-row>
 
                         <div class=" border-bottom pb-0"></div>
 
                         <v-row class="my-2">  
-
                             <v-col cols="12" md="1"></v-col>
-                         
+
+                            <!-- input AR_AKONT -->
                             <v-col cols="12" md="5">
                                 <h2 class="f-16">AR_AKONT</h2>
                                 <v-row class="mt-3">
@@ -193,7 +190,6 @@
                                         <span class="f-12">AR_AKONT</span>
                                     </v-col>
                                     <v-col cols="8">
-
                                         <InputSearch 
                                             :rules="validationRules"
                                             ref="AR_AKONT"
@@ -206,8 +202,6 @@
                                             @childEvent="getselectedItemAR_AKONT"
                                             @data-updated="handleClearData('selectedItemAR_AKONT', 'AR_AKONT')"
                                         />
-                                    
-                                       
                                     </v-col>
                                 </v-row>
 
@@ -224,7 +218,9 @@
                                 </v-row>
 
                             </v-col>
-
+                            <!-- /input AR_AKONT -->
+                            
+                            <!-- input AP_AKONT -->
                             <v-col cols="12" md="5">
                                 <h2 class="f-16">AP_AKONT</h2>
                                 <v-row class="mt-3">
@@ -263,18 +259,16 @@
                                     </v-col>
                                 </v-row>
                             </v-col>
+                            <!-- /input AP_AKONT -->
                             <v-col cols="12" md="1"></v-col>
-                        
                         </v-row>
                             <p v-if="isError" class="text-error f-13">*ข้อมูลไม่ถูกต้อง</p>
                             <div class="text-center">
                                 <v-btn @click="MappingAccountGroup" class="bg-orange">Update Data</v-btn>
                             </div>
-                       
                         </v-form>
-
-                    
                     </div>
+                    <!-- /Relationship Mapping -->
                 </v-card>
             </v-tab-item>
 
@@ -406,6 +400,7 @@
             selectedItemAR_AKONT: {},
             selectedItemAP_AKONT: {},
             filteredData: [],
+            // select export //
             selectedCompanyCode: [], 
             selectedARComposeCategory: [], 
             selectedDescription: [], 
@@ -413,6 +408,9 @@
             selectedKTOKK: [], 
             selectedDescriptionTwo: [], 
             selectedARAKONT: [], 
+            // select export //
+            isError: false,
+            validationRules: [v => !!v || ''],
             headersData: [
                 { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
                 { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
@@ -432,12 +430,10 @@
                 { text: 'Description', align: 'center', sortable: false, value: 'Description' },
                 { text: 'AR_AKONT', align: 'center', sortable: false, value: 'ARAKONT' },
             ],
-            isError: false,
-            validationRules: [v => !!v || ''],
-
         }),
 
         watch: {
+            // filter หน้า Export
             selectedCompanyCode: {
                 handler() {
                     this.filterData();
@@ -634,6 +630,7 @@
                 }
             },
 
+            // Active column fiter export
             isActive(column) {
                 if(column === 'CompanyCode'){
                     return this.selectedCompanyCode.length > 0;

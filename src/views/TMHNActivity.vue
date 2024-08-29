@@ -5,7 +5,6 @@
           <v-tab v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(tab, `/api/SAP/ActivityGL`)">{{ tab.name }}</v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
-
             <!-- Create/Change -->
             <v-tab-item>
                 <v-card outlined class="mx-auto style-card" color="surface-variant">
@@ -13,6 +12,7 @@
                         <h1 class="f-20 mb-1">Check</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
                         
+                        <!-- Check -->
                         <v-container>
                             <v-row class="my-2">
 
@@ -32,7 +32,6 @@
                                         :rules="validationRules"
                                         @childEvent="getselectedItemHNOne"
                                         @data-updated="handleClearData('selectedItemHNOne', 'HNActivityCode')"
-
                                     />
 
                                 </v-col>
@@ -44,10 +43,12 @@
                                 </v-col>
                             </v-row>
                         </v-container>
-
+                        <!-- /Check -->
+                        
                         <div class="border-gray border-b-lg mb-3" style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Table Mapping -->
                         <h1 class="f-16 mb-1">Table Mapping</h1>
-                      
                         <v-data-table
                             :headers="headersDataHNActivity"
                             :items="dataHNActivity"
@@ -62,175 +63,171 @@
                                 </v-btn>
                             </template>
                         </v-data-table>
+                        <!-- /Table Mapping -->
                     </div>
 
+                    <!-- Relationship Mapping -->
                     <div class="box-relationship-mapping">
                         <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
-
                         <v-form ref="formMapping" v-model="valid" lazy-validation>
-
-                        <v-row class="mb-3">
-
-                            <v-col cols="12" md="4">
-                                <SelectCompanyCode ref="selectCompanyCode"/>
-                            </v-col>
-
-                            <v-col cols="12" md="4">
-                                <SelectSystemCode ref="selectSystemCode"/>
-                            </v-col>
-
-                            <v-col cols="12" md="4">
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">Posting Key</span>
-                                    </v-col>
-                                    <v-col cols="8">
-                                        <v-text-field
-                                            v-model="posting_key"
-                                            :rules="[v => !!v || '']"
-                                            label="Text"
-                                            dense
-                                            outlined
-                                            single-line
-                                            hide-details="auto"
-                                            clearable 
-                                            @keyup="handleInput('posting_key')"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row> 
-                            </v-col>
-                        </v-row>
-
-                        <div class=" border-bottom pb-0"></div>
-                        <v-row class="my-2">
-                            
-                            <v-col cols="12" md="4">
-                                <h2 class="f-16">HN Activity</h2>
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">HNActivity Code</span>
-                                    </v-col>
-                                    <v-col cols="8">
-
-                                        <InputSearchHN 
-                                            title="HN Activity"
-                                            label="Text" 
-                                            code="HNActivity Code" 
-                                            name="HNActivity name"
-                                            type="Activity"
-                                            ref="selectHNActivity"
-                                            :isError="isError" 
-                                            :rules="validationRules"
-                                            @childEvent="getselectedItemHNTwo"
-                                            @data-updated="handleClearData('selectedItemHNTwo', 'HNActivityCode')"
-                                        />
-
-                                    </v-col>
-                                </v-row>
-
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">HNActivity Name</span>
-                                    </v-col>
-                                    <v-col cols="8">
-                                        <p class="f-12 border-bottom pb-0 h25 line-height" :class="{ 'text-error': isError}">{{selectedItemHNTwo.LocalName}}</p>
-                                    </v-col>
-                                </v-row>
-
-                            </v-col>
-                          
-                            <v-col cols="12" md="4">
-                                <h2 class="f-16">G/L Account OPD</h2>
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">GL Code</span>
-                                    </v-col>
-                                    <v-col cols="8">
-
-                                        <InputSearch 
-                                            :rules="validationRules"
-                                            title="G/L Account OPD"
-                                            label="Text" 
-                                            code="GL OPD Code" 
-                                            name="GL OPD Name" 
-                                            ref="slectGLOPD" 
-                                            type="SapGL"
-                                            :isError="isError"
-                                            @childEvent="getselectedItemGLOPD"
-                                            @data-updated="handleClearData('selectedItemGLOPD', 'SapGL')"
-                                        />
-
-                                    </v-col>
-                                </v-row>
-
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">GL Name</span>
-                                    </v-col>
-                                    <v-col cols="8">
-                                        <p 
-                                            class="f-12 border-bottom pb-0 h25 line-height"
-                                            :class="{ 'text-error': isError}"
-                                        >
-                                            {{selectedItemGLOPD.GLDes}}
-                                        </p>
-                                    </v-col>
-                                </v-row>
-
-                            </v-col>
-
-                            <v-col cols="12" md="4">
-                                <h2 class="f-16">G/L Account IPD</h2>
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">GL Code</span>
-                                    </v-col>
-                                    <v-col cols="8">
-
-                                        <InputSearch 
-                                            :rules="validationRules"
-                                            title="G/L Account IPD"
-                                            label="Text" 
-                                            code="GL IPD Code" 
-                                            name="GL IPD Name" 
-                                            type="SapGL"
-                                            ref="slectGLIPD" 
-                                            :isError="isError"
-                                            @childEvent="getselectedItemGLIPD"
-                                            @data-updated="handleClearData('selectedItemGLIPD', 'SapGL')"
-                                        />
-
-                                    </v-col>
-                                </v-row>
-
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">GL Name</span>
-                                    </v-col>
-                                    <v-col cols="8">
-                                        <p 
-                                            class="f-12 border-bottom pb-0 h25 line-height"
-                                            :class="{ 'text-error': isError}"
-                                        >
-                                            {{selectedItemGLIPD.GLDes}}
-                                        </p>
-                                    </v-col>
-                                </v-row>
+                            <v-row class="mb-3">
+                                <!-- select Company Code -->
+                                <v-col cols="12" md="4">
+                                    <SelectCompanyCode ref="selectCompanyCode"/>
+                                </v-col>
                                 
-                            
-                            </v-col>
-                         
-                        </v-row>
-                        <p v-if="isError" class="text-error f-13">*ข้อมูลไม่ถูกต้อง</p>
-                        <div class="text-center">
-                            <v-btn @click="MappingActivityGL" class="bg-orange">Update Data</v-btn>
-                        </div>
-                      
-                        </v-form>
+                                <!-- select System Code -->
+                                <v-col cols="12" md="4">
+                                    <SelectSystemCode ref="selectSystemCode"/>
+                                </v-col>
 
-                    
+                                <!-- input Posting Key -->
+                                <v-col cols="12" md="4">
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">Posting Key</span>
+                                        </v-col>
+                                        <v-col cols="8">
+                                            <v-text-field
+                                                v-model="posting_key"
+                                                :rules="[v => !!v || '']"
+                                                label="Text"
+                                                dense
+                                                outlined
+                                                single-line
+                                                hide-details="auto"
+                                                clearable 
+                                                @keyup="handleInput('posting_key')"
+                                            ></v-text-field>
+                                        </v-col>
+                                    </v-row> 
+                                </v-col>
+                            </v-row>
+                            <div class=" border-bottom pb-0"></div>
+                            <v-row class="my-2">
+                                <!-- input HNActivity Code -->
+                                <v-col cols="12" md="4">
+                                    <h2 class="f-16">HN Activity</h2>
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">HNActivity Code</span>
+                                        </v-col>
+                                        <v-col cols="8">
+                                            <InputSearchHN 
+                                                title="HN Activity"
+                                                label="Text" 
+                                                code="HNActivity Code" 
+                                                name="HNActivity name"
+                                                type="Activity"
+                                                ref="selectHNActivity"
+                                                :isError="isError" 
+                                                :rules="validationRules"
+                                                @childEvent="getselectedItemHNTwo"
+                                                @data-updated="handleClearData('selectedItemHNTwo', 'HNActivityCode')"
+                                            />
+                                        </v-col>
+                                    </v-row>
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">HNActivity Name</span>
+                                        </v-col>
+                                        <v-col cols="8">
+                                            <p class="f-12 border-bottom pb-0 h25 line-height" :class="{ 'text-error': isError}">{{selectedItemHNTwo.LocalName}}</p>
+                                        </v-col>
+                                    </v-row>
+                                </v-col>
+                            
+                                <!-- input G/L Account OPD -->
+                                <v-col cols="12" md="4">
+                                    <h2 class="f-16">G/L Account OPD</h2>
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">GL Code</span>
+                                        </v-col>
+                                        <v-col cols="8">
+
+                                            <InputSearch 
+                                                :rules="validationRules"
+                                                title="G/L Account OPD"
+                                                label="Text" 
+                                                code="GL OPD Code" 
+                                                name="GL OPD Name" 
+                                                ref="slectGLOPD" 
+                                                type="SapGL"
+                                                :isError="isError"
+                                                @childEvent="getselectedItemGLOPD"
+                                                @data-updated="handleClearData('selectedItemGLOPD', 'SapGL')"
+                                            />
+
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">GL Name</span>
+                                        </v-col>
+                                        <v-col cols="8">
+                                            <p 
+                                                class="f-12 border-bottom pb-0 h25 line-height"
+                                                :class="{ 'text-error': isError}"
+                                            >
+                                                {{selectedItemGLOPD.GLDes}}
+                                            </p>
+                                        </v-col>
+                                    </v-row>
+
+                                </v-col>
+
+                                <!-- input G/L Account IPD -->
+                                <v-col cols="12" md="4">
+                                    <h2 class="f-16">G/L Account IPD</h2>
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">GL Code</span>
+                                        </v-col>
+                                        <v-col cols="8">
+
+                                            <InputSearch 
+                                                :rules="validationRules"
+                                                title="G/L Account IPD"
+                                                label="Text" 
+                                                code="GL IPD Code" 
+                                                name="GL IPD Name" 
+                                                type="SapGL"
+                                                ref="slectGLIPD" 
+                                                :isError="isError"
+                                                @childEvent="getselectedItemGLIPD"
+                                                @data-updated="handleClearData('selectedItemGLIPD', 'SapGL')"
+                                            />
+
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">GL Name</span>
+                                        </v-col>
+                                        <v-col cols="8">
+                                            <p 
+                                                class="f-12 border-bottom pb-0 h25 line-height"
+                                                :class="{ 'text-error': isError}"
+                                            >
+                                                {{selectedItemGLIPD.GLDes}}
+                                            </p>
+                                        </v-col>
+                                    </v-row>
+                                    
+                                
+                                </v-col>
+                            </v-row>
+                            <p v-if="isError" class="text-error f-13">*ข้อมูลไม่ถูกต้อง</p>
+                            <div class="text-center">
+                                <v-btn @click="MappingActivityGL" class="bg-orange">Update Data</v-btn>
+                            </div>
+                        </v-form>
                     </div>
+                    <!-- /Relationship Mapping -->
                 </v-card>
             </v-tab-item>
 
@@ -240,17 +237,11 @@
                     <h1 class="f-20">Export</h1>
                     <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
                     <v-row class="py-3 align-center">
-                        <v-col>
-                            <h2 class="f-16">
-                                Table Mapping
-                            </h2>
-                        </v-col>
-
+                        <v-col><h2 class="f-16"> Table Mapping</h2></v-col>
                         <v-col class="text-right">
                             <v-btn class="bg-blue"  @click="exportToExcel">Export</v-btn>
                         </v-col>
                     </v-row>
-                    
                     <v-data-table
                         :headers="headersExport"
                         :items="filteredData"
@@ -383,7 +374,6 @@
                             />
                         </template>
                     </v-data-table>
-
                 </v-card>
             </v-tab-item>
         </v-tabs-items>
@@ -398,7 +388,6 @@
     import InputSearchHN from '@/components/InputSearchHN.vue';
     import HeaderSelect from '@/components/HeaderSelect.vue';
     import * as XLSX from 'xlsx';
-
     export default{
         components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
         data: () => ({
@@ -414,7 +403,9 @@
             selectedItemHNTwo: {},
             selectedItemGLIPD:{},
             selectedItemGLOPD: {},
+            posting_key: null,
             filteredData: [],
+            // select export //
             selectedHNActivity: [], 
             selectedHNActivityName: [], 
             selectedGLOPDCode: [],
@@ -423,7 +414,8 @@
             selectedGLIPDName: [],
             selectedPostingKey: [],
             selectedDate: [],
-            posting_key: null,
+            // select export //
+            isError: false,
             validationRules: [v => !!v || ''],
             headersDataHNActivity: [
                 { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
@@ -448,17 +440,12 @@
                 { text: 'GL IPD  Name', align: 'center', sortable: false, value: 'GLSAPNameIPD' },
                 { text: 'Posting Key', align: 'center', sortable: false, value: 'PostingKey' },
                 { text: 'Update Date Time', align: 'center', sortable: false, value: 'UpdateDateTime' },
-            ],
-            columnNameFiled: '',
-            isError: false
-        
+            ]
         }),
-
 
         watch: {
             // filter หน้า Export
             selectedCompanyCode: {
-              
                 handler() {
                     this.filterData();
         
@@ -475,8 +462,7 @@
 
             selectedHNActivity: {
                 handler() {
-                    this.filterData();
-                    
+                    this.filterData(); 
                 },
                 deep: true,
             },
@@ -533,10 +519,9 @@
         },
 
         methods: {
-            /* search table export */
-            updateSelectedHNActivity(value, column) {
+            /* search select table export */
+            updateSelectedHNActivity(value) {
                 this.selectedHNActivity = value;
-                this.columnNameFiled = column
             },
 
             updateSelectedHNActivityName(value) {
@@ -619,7 +604,6 @@
                 this.$refs.formMapping.resetValidation()
                 this.$refs.selectHNActivity.resetValidation()
                 this.$refs.selectHNActivity.clearTextField()
-                // this.$refs.selectHNActivity.selectedItem = {}
                 this.$refs.slectGLOPD.selectedItem = {},
                 this.$refs.slectGLIPD.selectedItem = {},
                 this.$refs.selectCompanyCode.selecItem = null 
@@ -703,8 +687,6 @@
 
             async checkMapping(){
 
-
-            
                 if(this.selectedItemHNOne && !this.selectedItemHNOne.Code){    
                     
                     this.checkInputData('HNACtivity', this.$refs.HNActivityField)

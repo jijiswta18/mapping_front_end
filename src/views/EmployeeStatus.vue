@@ -12,6 +12,8 @@
                     <div class="box-check">
                         <h1 class="f-20 mb-1">Check</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Check -->
                         <v-container>
                             <v-row class="my-2">
 
@@ -42,12 +44,15 @@
                                 </v-col>
                             </v-row>
                         </v-container>
+                        <!-- /Check -->
 
                         <div class="border-gray border-b-lg mb-3" style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Table Mapping -->
                         <h1 class="f-16 mb-1">Table Mapping</h1>
                         <v-data-table
                             :headers="headersData"
-                            :items="dataTermPayment"
+                            :items="dataEmpStatus"
                             density="compact"
                             item-key="name"
                             class="style-table"
@@ -59,124 +64,118 @@
                                 </v-btn>
                             </template>
                         </v-data-table>
+                        <!-- /Table Mapping -->
                     </div>
 
+                    <!-- Relationship Mapping -->
                     <div class="box-relationship-mapping">
                         <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
-
                         <v-form ref="formMapping" v-model="valid" lazy-validation>
+                            <v-row class="mb-3">
+                                <v-col cols="12" md="2" class="d-xs-none"></v-col>
+                                <!-- select System Code -->
+                                <v-col cols="12" md="4">
+                                    <SelectSystemCode ref="selectSystemCode"/>
+                                </v-col>
 
-                     
-                        <v-row class="mb-3">
+                                <!-- select Company Code -->
+                                <v-col cols="12" md="4">
+                                    <SelectCompanyCode ref="selectCompanyCode"/>
+                                </v-col>
 
-                            <v-col cols="12" md="2" class="d-xs-none"></v-col>
+                                <v-col cols="12" md="2" class="d-xs-none"></v-col>
+                            </v-row>
 
-                            <v-col cols="12" md="4">
-                                <SelectSystemCode ref="selectSystemCode"/>
-                            
-                            </v-col>
+                            <div class=" border-bottom pb-0"></div>
 
-                            <v-col cols="12" md="4">
-                                <SelectCompanyCode ref="selectCompanyCode"/>
-                            </v-col>
+                            <v-row class="my-2">  
+                                <!-- input Active Status SSB -->
+                                <v-col cols="12" md="6">
+                                    <h2 class="f-16">Active Status SSB</h2>
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">Active Status Code</span>
+                                        </v-col>
+                                        <v-col cols="8">
 
-                            <v-col cols="12" md="2" class="d-xs-none"></v-col>
-                         
+                                            <InputSearch 
+                                                title="Active Status"
+                                                label="Active Status" 
+                                                code="Active Status Code" 
+                                                name="Active Status name"
+                                                type="EmployeeStatus" 
+                                                ref="ActivityStatusSSB"
+                                                :rules="validationRules"
+                                                @childEvent="getselectedItemActiveStatusSSB"
+                                                @data-updated="handleClearData('selectedItemActiveStatusSSB', 'ActiveStatusSSB')"
+                                            />
 
-                        </v-row>
-
-                        <div class=" border-bottom pb-0"></div>
-
-                        <v-row class="my-2">  
-                         
-                            <v-col cols="12" md="6">
-                                <h2 class="f-16">Active Status SSB</h2>
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">Active Status Code</span>
-                                    </v-col>
-                                    <v-col cols="8">
-
-                                        <InputSearch 
-                                            title="Active Status"
-                                            label="Active Status" 
-                                            code="Active Status Code" 
-                                            name="Active Status name"
-                                            type="EmployeeStatus" 
-                                            ref="ActivityStatusSSB"
-                                            :rules="validationRules"
-                                            @childEvent="getselectedItemActiveStatusSSB"
-                                            @data-updated="handleClearData('selectedItemActiveStatusSSB', 'ActiveStatusSSB')"
-                                        />
-
-                                       
-                                    </v-col>
-                                </v-row>
-
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">Active Status Name</span>
-                                    </v-col>
-                                    <v-col cols="8">
-                                        <p 
-                                            class="f-12 border-bottom pb-0 h25"
-                                            :class="{ 'text-error': isError}"
-                                        >
-                                            {{selectedItemActiveStatusSSB.LocalName
-                                        }}</p>
-                                    </v-col>
-                                </v-row>
-
-                            </v-col>
-
-                            <v-col cols="12" md="6">
-                                <h2 class="f-16">Active Status SAP</h2>
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">Active Status Code</span>
-                                    </v-col>
-                                    <v-col cols="8">
                                         
-                                        <InputSearch 
-                                            title="Active Status"
-                                            label="Active Status" 
-                                            code="Active Status Code" 
-                                            name="Active Status name"
-                                            type="EmployeeStatus" 
-                                            ref="ActiveStatusSAP"
-                                            :rules="validationRules"
-                                            @childEvent="getselectedItemActiveStatusSAP"
-                                            @data-updated="handleClearData('selectedItemActiveStatusSAP', 'ActiveStatusSAP')"
-                                        />
-                                    </v-col>
-                                </v-row>
+                                        </v-col>
+                                    </v-row>
 
-                                <v-row class="mt-3">
-                                    <v-col>
-                                        <span class="f-12">Active Status Name</span>
-                                    </v-col>
-                                    <v-col cols="8">
-                                        <p 
-                                            class="f-12 border-bottom pb-0 h25"
-                                            :class="{ 'text-error': isError}"
-                                        >
-                                            {{selectedItemActiveStatusSAP.GLDes}}
-                                        </p>
-                                    </v-col>
-                                    
-                                </v-row>
-                            </v-col>
-                        
-                        </v-row>
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">Active Status Name</span>
+                                        </v-col>
+                                        <v-col cols="8">
+                                            <p 
+                                                class="f-12 border-bottom pb-0 h25"
+                                                :class="{ 'text-error': isError}"
+                                            >
+                                                {{selectedItemActiveStatusSSB.LocalName
+                                            }}</p>
+                                        </v-col>
+                                    </v-row>
+
+                                </v-col>
+
+                                <!-- input Active Status SAP -->
+                                <v-col cols="12" md="6">
+                                    <h2 class="f-16">Active Status SAP</h2>
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">Active Status Code</span>
+                                        </v-col>
+                                        <v-col cols="8">
+                                            
+                                            <InputSearch 
+                                                title="Active Status"
+                                                label="Active Status" 
+                                                code="Active Status Code" 
+                                                name="Active Status name"
+                                                type="EmployeeStatus" 
+                                                ref="ActiveStatusSAP"
+                                                :rules="validationRules"
+                                                @childEvent="getselectedItemActiveStatusSAP"
+                                                @data-updated="handleClearData('selectedItemActiveStatusSAP', 'ActiveStatusSAP')"
+                                            />
+                                        </v-col>
+                                    </v-row>
+
+                                    <v-row class="mt-3">
+                                        <v-col>
+                                            <span class="f-12">Active Status Name</span>
+                                        </v-col>
+                                        <v-col cols="8">
+                                            <p 
+                                                class="f-12 border-bottom pb-0 h25"
+                                                :class="{ 'text-error': isError}"
+                                            >
+                                                {{selectedItemActiveStatusSAP.GLDes}}
+                                            </p>
+                                        </v-col>
+                                        
+                                    </v-row>
+                                </v-col>
+                            </v-row>
+
                             <p v-if="isError" class="text-error f-13">*ข้อมูลไม่ถูกต้อง</p>
                             <div class="text-center">
                                 <v-btn @click="MappingEmpStatus" class="bg-orange">Update Data</v-btn>
                             </div>
-                        
                         </v-form>
-
-                    
                     </div>
                 </v-card>
             </v-tab-item>
@@ -297,22 +296,27 @@
         components: {SelectCompanyCode, SelectSystemCode, InputSearch, InputSearchHN, HeaderSelect},
         data: () => ({
             tab: null,
-            tabs: [
-                { name: 'Create/Change' },
-                { name: 'Export' },
-            ],
+            tabs: [{ name: 'Create/Change' },{ name: 'Export' }],
             selectedItem: null,
             search: '',
             selectedItems: [],
+            valid:true,
             loading: true,
-            dataTermPayment : [],
+            dataEmpStatus : [],
             selectedItemEmpStatus: {},
             selectedItemActiveStatusSSB: {},
             selectedItemActiveStatusSAP: {},
-            datasExport : [],
-            SelectHNActivity:[],
-            posting_key: null,
-            posting_key2: null,
+            filteredData: [],
+             // select export //
+            selectedCompanyCode: [],
+            selectedSystemCode: [],
+            selectedActiveStatusCode: [],
+            selectedLocalName: [],
+            selectedSTAT2: [],
+            selectedDescription: [],
+             // select export //
+            isError: false,
+            validationRules: [v => !!v || ''],
             headersData: [
                 { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
                 { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
@@ -330,15 +334,7 @@
                 { text: 'STAT2', align: 'center', sortable: false, value: 'STAT2' },
                 { text: 'Description', align: 'center', sortable: false, value: 'Description' },
             ],
-            selectedCompanyCode: [],
-            selectedSystemCode: [],
-            selectedActiveStatusCode: [],
-            selectedLocalName: [],
-            selectedSTAT2: [],
-            selectedDescription: [],
-            isError: false,
-            validationRules: [v => !!v || ''],
-            filteredData: [],
+        
         }),
 
         watch: {
@@ -382,7 +378,7 @@
         },
 
         methods: {
-
+            /* search select table export */
             updateSelectedActiveStatusCode(value) {
                 this.selectedActiveStatusCode = value;
             },
@@ -399,7 +395,7 @@
                 this.selectedDescription = value;
             },
 
-
+            // Active column fiter export
             isActive(column) {
                 if(column === 'CompanyCode'){
                     return this.selectedCompanyCode.length > 0;
@@ -461,7 +457,7 @@
                         this.loading                = await true
                         let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetEmpStatusID?HNReceiveCode=${this.selectedItemEmpStatus}`
                         let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                        this.checkData              = response.data;
+                        this.dataEmpStatus          = response.data;
                         
                     } catch (error) {
                         this.loading = await false
@@ -477,12 +473,12 @@
                 // เช็ค value ใน ฟอร์ม Relationship Mapping
                 if(this.$refs.formMapping.validate()){
                     // เช็คค่าใน Table Mapping กับค่าที่จะ Mapping
-                    if(this.checkData.length > 0){
+                    if(this.dataEmpStatus.length > 0){
 
-                        const ActiveStatusSSB           = this.checkData[0].ActiveStatusSSB
+                        const ActiveStatusSSB           = this.dataEmpStatus[0].ActiveStatusSSB
                         const selectActiveStatusSSB     = this.selectedItemActiveStatusSSB.GLNo;
 
-                        const ActiveStatusSAP           = this.checkData[0].ActiveStatusSAP
+                        const ActiveStatusSAP           = this.dataEmpStatus[0].ActiveStatusSAP
                         const selectActiveStatusSAP     = this.$refs.selectedItemActiveStatusSAP.GLNo;
 
                         const selectCompanyCode   = this.$refs.selectCompanyCode.selecItem;

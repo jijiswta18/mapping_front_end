@@ -6,16 +6,16 @@
         </v-tabs>
 
         <v-tabs-items v-model="tab">
-            
             <!-- Create/Change -->
             <v-tab-item>
                 <v-card outlined class="mx-auto style-card" color="surface-variant">
                     <div class="box-check">
                         <h1 class="f-20 mb-1">Check</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Check -->
                         <v-container>
                             <v-row class="my-2">
-
                                 <v-col cols="12" md="6" class="text-center px-0 py-0">
                                     <span>Term of Payment</span>
                                 </v-col>
@@ -32,10 +32,8 @@
                                         :rules="validationRules"
                                         @childEvent="getselectedTermPayment"
                                         @data-updated="handleClearData('selectedTermPayment', 'TermPayment')" 
-                                
                                     />
                                 </v-col>
-
                                 <v-col cols="12" md="6"  align-self="center" class="d-flex justify-space-between align-center">
                                     
                                     <span class="f-12 pr-3">Term of Payment Des. : {{ selectedItemHNOne.LocalName }}</span>
@@ -44,8 +42,11 @@
                                 </v-col>
                             </v-row>
                         </v-container>
+                        <!-- /Check -->
 
                         <div class="border-gray border-b-lg mb-3" style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Table Mapping -->
                         <h1 class="f-16 mb-1">Table Mapping</h1>
                         <v-data-table
                             :headers="headers"
@@ -61,29 +62,23 @@
                                 </v-btn>
                             </template>
                         </v-data-table>
+                         <!-- /Table Mapping -->
                     </div>
 
+                    <!-- Relationship Mapping -->
                     <div class="box-relationship-mapping">
                         <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
-
-                        <v-form
-                            ref="formMapping"
-                            v-model="valid"
-                            lazy-validation
-                        
-                        >
-
-                     
+                        <v-form ref="formMapping" v-model="valid" lazy-validation>
                         <v-row class="mb-3">
 
                             <v-col cols="12" md="2" class="d-xs-none"></v-col>
-
+                            <!-- select Company Code -->
                             <v-col cols="12" md="4">
                                 <SelectSystemCode ref="selectSystemCode"/>
-                            
                             </v-col>
 
+                            <!-- select System Code -->
                             <v-col cols="12" md="4">
                                 <SelectCompanyCode ref="selectCompanyCode"/>
                             </v-col>
@@ -96,7 +91,7 @@
                         <div class=" border-bottom pb-0"></div>
 
                         <v-row class="my-2">  
-                         
+                           <!-- input Term of Payment -->
                             <v-col cols="12" md="6">
                                 <h2 class="f-16">Term of Payment</h2>
                                 <v-row class="mt-3">
@@ -117,7 +112,6 @@
                                             @childEvent="getselectedTermPayment2"
                                             @data-updated="handleClearData('selectedTermPayment2', 'TermPayment')"
                                         />
-                                       
                                     </v-col>
                                 </v-row>
 
@@ -135,9 +129,11 @@
                                         </p>
                                     </v-col>
                                 </v-row>
-
                             </v-col>
+
                             <!-- <div class=" border-right"></div> -->
+
+                             <!-- input Term of Payment in SAP -->
                             <v-col cols="12" md="6">
                                 <h2 class="f-16">Term of Payment in SAP</h2>
                                 <v-row class="mt-3">
@@ -311,12 +307,16 @@
             selectedItemTermPayment2: {},
             selectedItemTermPaymentSAP: {},
             filteredData: [],
+             // select export //
             selectedCompanyCode: [], 
             selectedSystemCode: [], 
             selectedTermPayment: [], 
             selectedTermPaymentDes: [], 
             selectedTermPaymentSAP: [], 
             selectedDescription: [], 
+            // select export //
+            isError: false,
+            validationRules: [v => !!v || ''],
             headers: [
                 { text: 'System Code', align: 'center', sortable: false, value: 'SystemCode' },
                 { text: 'Term of payment', align: 'center', sortable: false, value: 'TermOfPayment' },
@@ -333,17 +333,10 @@
                 { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
                 { text: 'Term of payment in SAP', align: 'center', sortable: false, value: 'TermOfPaymentSAP' },
                 { text: 'Description', align: 'center', sortable: false, value: 'Description' },
-        
             ],
-            isError: false,
-            validationRules: [v => !!v || ''],
-        
         }),
-
-        mounted(){},
-
         watch: {
-           
+             // filter หน้า Export
             selectedCompanyCode: {
                 handler() {
                     this.filterData();

@@ -12,16 +12,16 @@
                     <div class="box-check">
                         <h1 class="f-20 mb-1">Check</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Check -->
                         <v-container>
                             <v-row class="my-2">
-
                                 <v-col cols="12" md="6" class="text-center px-0 py-0">
                                     <span>Store Medicine</span>
                                 </v-col>
                                 <v-col cols="12" md="6" class="px-0 py-0"></v-col>
 
                                 <v-col cols="12" md="6"  class="text-center">
-
                                     <InputSearchHN 
                                         ref="StoreMedicineField"
                                         title="Active Status"
@@ -31,7 +31,7 @@
                                         type="ActiveStatus" 
                                         :rules="validationRules"
                                         @childEvent="getselectedItemStorMedicine"
-                                          @data-updated="handleClearData('selectedItemStorMedicine', 'StoreMedicine')"
+                                        @data-updated="handleClearData('selectedItemStorMedicine', 'StoreMedicine')"
                                     />
 
                                 </v-col>
@@ -43,12 +43,15 @@
                                 </v-col>
                             </v-row>
                         </v-container>
+                        <!-- Check -->
 
                         <div class="border-gray border-b-lg mb-3" style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Table Mapping -->
                         <h1 class="f-16 mb-1">Table Mapping</h1>
                         <v-data-table
                             :headers="headers"
-                            :items="checkData"
+                            :items="dataStoreMedicine"
                             density="compact"
                             item-key="name"
                             :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
@@ -61,36 +64,28 @@
                                 </v-btn>
                             </template>
                         </v-data-table>
+                         <!-- /Table Mapping -->
                     </div>
 
+                    <!-- Relationship Mapping -->
                     <div class="box-relationship-mapping">
                         <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
-
-                        <v-form
-                            ref="formMapping"
-                            v-model="valid"
-                            lazy-validation
-                        >
-
-                     
+                        <v-form ref="formMapping" v-model="valid" lazy-validation>
                         <v-row class="mb-3">
-
                             <v-col cols="12" md="2" class="d-xs-none"></v-col>
-
+  
+                            <!-- select Company Code -->
                             <v-col cols="12" md="4">
                                 <SelectCompanyCode ref="selectCompanyCode"/>
-
-
                             </v-col>
 
+                            <!-- select System Code -->
                             <v-col cols="12" md="4">
                                 <SelectSystemCode ref="selectSystemCode"/>
                             </v-col>
 
                             <v-col cols="12" md="2" class="d-xs-none"></v-col>
-
-
                         </v-row>
 
 
@@ -98,13 +93,12 @@
                         <p v-if="isError" class="text-error f-13 mt-3">*ข้อมูลไม่ถูกต้อง</p>
 
                         <v-container>
-                          
+                          <!-- input Store Medicine SAP -->
                             <v-row class="my-2">  
                                <v-col cols="12" class="pt-0">
                                     <h2 class="f-16">Store Medicine SAP</h2>
                                </v-col>
                                 <v-col cols="12" md="6">
-                                
                                     <v-row >
                                         <v-col>
                                             <span class="f-12">Store Medicine Code</span>
@@ -127,7 +121,6 @@
                                         </v-col>
                                     </v-row>
                                 </v-col>
-
                                 <v-col cols="12" md="4">
 
                                     <v-row >
@@ -160,6 +153,7 @@
 
                     
                     </div>
+                     <!-- /Relationship Mapping -->
                 </v-card>
             </v-tab-item>
 
@@ -248,15 +242,18 @@
             tabs: [{ name: 'Create/Change' },{ name: 'Export' }],
             search: '',
             loading: true,
-            checkData : [],
+            dataStoreMedicine : [],
             selectedItemStorMedicine: {},
             selectedItemStorMedicineTwo: {},
             filteredData: [],
+             // select export //
             selectedCompanyCode: [],
             selectedSystemCode: [],
             selectedStoreMedicine: [],
             selectedLocalName: [],
             selectedEnglishName: [],
+             // select export //
+            isError: false,
             validationRules: [v => !!v || ''],
             headers: [
                 { text: 'Store Medicine Code', align: 'center', sortable: false, value: 'StoreMedicineCode' },
@@ -271,14 +268,13 @@
                 { text: 'English Name', align: 'center', sortable: false, value: 'EnglishName' },
             ],
         
-            isError: false
+        
         
         }),
 
         watch: {
-        
+            // filter หน้า Export
             selectedCompanyCode: {
-            
                 handler() {
                     this.filterData();
                 },
@@ -317,6 +313,28 @@
 
         methods: {
 
+            getselectedItemStorMedicine(data) {
+                this.selectedItemStorMedicine = data;
+            },
+
+            getselectedItemStorMedicineTwo(data) {
+                this.selectedItemStorMedicineTwo = data;
+            },
+
+            /* search select table export */
+            updateSelectedStoreMedicine(value) {
+                this.selectedStoreMedicine = value;
+            },
+
+            updateSelectedLocalName(value) {
+                this.selectedLocalName = value;
+            },
+        
+            updateSelectedEnglishName(value) {
+                this.selectedEnglishName = value;
+            },
+
+            // Active column fiter export
             isActive(column) {
                 if(column === 'StoreMedicineCode'){
                     return this.selectedStoreMedicine.length > 0;
@@ -328,6 +346,25 @@
                 return false;
             },
         
+            filterData() {
+                this.filteredData = this.datasExport.filter(item =>
+                (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
+                (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
+                (this.selectedStoreMedicine.length === 0 || this.selectedStoreMedicine.includes(item.StoreMedicineCode)) &&
+                (this.selectedLocalName.length === 0 || this.selectedLocalName.includes(item.LocalName)) &&
+                (this.selectedEnglishName.length === 0 || this.selectedEnglishName.includes(item.EnglishName))
+                );
+            },
+
+            clearData(){
+                this.$refs.formMapping.resetValidation()
+                this.$refs.StoreMedicineField.selectedItem = {}
+                this.$refs.selectStoreMedicine.selectedItem = {},
+                this.$refs.selectCompanyCode.selecItem = null 
+                this.$refs.selectSystemCode.selecItem = null 
+                this.isError = false
+            },
+
             async removeCashGL(){
 
                 await this.$swal.fire({
@@ -384,9 +421,9 @@
                 }else{
                     try {
                         this.loading                = await true
-                        let GetTmCashAndGLIDPath     = `/api/SAP/CashAndGL/GetStoreMedicineFieldID?StoreMedicineFieldCode=${this.selectedItemStorMedicine.Code}`
+                        let GetTmCashAndGLIDPath    = `/api/SAP/CashAndGL/GetStoreMedicineFieldID?StoreMedicineFieldCode=${this.selectedItemStorMedicine.Code}`
                         let response                = await this.$axios.get(GetTmCashAndGLIDPath);
-                        this.checkData         = response.data;
+                        this.dataStoreMedicine      = response.data;
                     
                     } catch (error) {
                         this.loading = await false
@@ -400,7 +437,7 @@
                 // เช็ค value
                 if(this.$refs.formMapping.validate()){
                     // เช็คค่าใน Table Mapping กับค่าที่จะ Mapping
-                    if(this.checkData.length > 0){
+                    if(this.dataStoreMedicine.length > 0){
                         
                         const selectCompanyCode         = this.$refs.selectCompanyCode.selecItem;
                         const selectSystemCode          = this.$refs.selectSystemCode.selecItem;
@@ -422,43 +459,6 @@
                 }
             },
 
-            getselectedItemStorMedicine(data) {
-                this.selectedItemStorMedicine = data;
-            },
-            getselectedItemStorMedicineTwo(data) {
-                this.selectedItemStorMedicineTwo = data;
-            },
-
-            updateSelectedStoreMedicine(value) {
-                this.selectedStoreMedicine = value;
-            },
-
-            updateSelectedLocalName(value) {
-                this.selectedLocalName = value;
-            },
-        
-            updateSelectedEnglishName(value) {
-                this.selectedEnglishName = value;
-            },
-        
-            filterData() {
-                this.filteredData = this.datasExport.filter(item =>
-                (this.selectedCompanyCode.length === 0 || this.selectedCompanyCode.includes(item.CompanyCode)) &&
-                (this.selectedSystemCode.length === 0 || this.selectedSystemCode.includes(item.SystemCode)) &&
-                (this.selectedStoreMedicine.length === 0 || this.selectedStoreMedicine.includes(item.StoreMedicineCode)) &&
-                (this.selectedLocalName.length === 0 || this.selectedLocalName.includes(item.LocalName)) &&
-                (this.selectedEnglishName.length === 0 || this.selectedEnglishName.includes(item.EnglishName))
-                );
-            },
-
-            clearData(){
-                this.$refs.formMapping.resetValidation()
-                this.$refs.StoreMedicineField.selectedItem = {}
-                this.$refs.selectStoreMedicine.selectedItem = {},
-                this.$refs.selectCompanyCode.selecItem = null 
-                this.$refs.selectSystemCode.selecItem = null 
-                this.isError = false
-            },
             
         }
     }

@@ -12,17 +12,16 @@
                     <div class="box-check">
                         <h1 class="f-20 mb-1">Check</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Check -->
                         <v-container>
                             <v-row class="my-2">
-
                                 <v-col cols="12" md="6" class="text-center px-0 py-0">
                                     <span>HNReceive Code</span>
                                 </v-col>
                                 <v-col cols="12" md="6" class="px-0 py-0"></v-col>
 
                                 <v-col cols="12" md="6"  class="text-center">
-
-                                   
                                     <InputSearchHN 
                                         ref="HNReceiveField"
                                         title="HN Receive"
@@ -44,8 +43,11 @@
                                 </v-col>
                             </v-row>
                         </v-container>
+                        <!-- /Check -->
 
                         <div class="border-gray border-b-lg mb-3" style="height: 64px; width: 64px;"></div>
+                        
+                        <!-- Table Mapping -->
                         <h1 class="f-16 mb-1">Table Mapping</h1>
                         <v-data-table
                             :headers="headersDataHNActivity"
@@ -61,30 +63,27 @@
                                 </v-btn>
                             </template>
                         </v-data-table>
+                        <!-- /Table Mapping -->
                     </div>
 
+                    <!-- Relationship Mapping -->
                     <div class="box-relationship-mapping">
                         <h1 class="f-20 mb-1 mt-4">Relationship Mapping</h1>
                         <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
-
-                        <v-form
-                            ref="formMapping"
-                            v-model="valid"
-                            lazy-validation
-                        
-                        >
-
-                     
+                        <v-form ref="formMapping" v-model="valid" lazy-validation>
                         <v-row class="mb-3">
 
+                            <!-- select Company Code -->
                             <v-col cols="12" md="6" lg="3">
                                 <SelectCompanyCode ref="selectCompanyCode"/>
                             </v-col>
 
+                            <!-- select System Code -->
                             <v-col cols="12" md="6" lg="3">
                                 <SelectSystemCode ref="selectSystemCode"/>
                             </v-col>
 
+                            <!-- input Posting Key -->
                             <v-col cols="12" md="6" lg="3">
                                 <v-row class="mt-3">
                                     <v-col>
@@ -107,6 +106,7 @@
                                  
                             </v-col>
 
+                            <!-- input Posting Key 2 -->
                             <v-col cols="12" md="6" lg="3">
                                 <v-row class="mt-3">
                                     <v-col>
@@ -134,6 +134,8 @@
                         <div class=" border-bottom pb-0"></div>
                         <v-row class="my-2">  
                             <v-col cols="12"  lg="2" class="d-xs-none"></v-col>
+
+                            <!-- input HNReceive Code -->
                             <v-col cols="12" md="6" lg="4">
                                 <h2 class="f-16">HN Receive</h2>
                                 <v-row class="mt-3">
@@ -169,6 +171,7 @@
 
                             </v-col>
 
+                            <!-- input GLSAR Code -->
                             <v-col cols="12" md="6" lg="4">
                                 <h2 class="f-16">GLSAR Code</h2>
                                 <v-row class="mt-3">
@@ -205,9 +208,11 @@
                             </v-col>
                             <v-col cols="12"  lg="2" class="d-xs-none"></v-col>
                         </v-row>
-                        
+
                         <v-row class="my-2">  
                             <v-col cols="12" lg="2" class="d-xs-none"></v-col>
+
+                            <!-- input GLSAP Code -->
                             <v-col cols="12" md="6" lg="4">
                                 <h2 class="f-16">GLSAP Code</h2>
                                 <v-row class="mt-3">
@@ -243,6 +248,7 @@
 
                             </v-col>
 
+                            <!-- input SpecialGL Code -->
                             <v-col cols="12" md="6" lg="4">
                                 <h2 class="f-16">SpecialGL Code</h2>
                                 <v-row class="mt-3">
@@ -274,6 +280,7 @@
                                     </v-col>
                                 </v-row>
                             </v-col>
+                            
                             <v-col cols="12"  lg="2" class="d-xs-none"></v-col>
                         </v-row>
                        
@@ -286,6 +293,7 @@
 
                     
                     </div>
+                    <!-- /Relationship Mapping -->
                 </v-card>
             </v-tab-item>
 
@@ -295,14 +303,10 @@
                     <h1 class="f-20">Export</h1>
                     <div class="border border-b-lg " style="height: 64px; width: 64px;"></div>
                     <v-row class="py-3">
-                        <v-col>
-                            <h2 class="f-16">Table Mapping</h2>
-                        </v-col>
-
+                        <v-col><h2 class="f-16">Table Mapping</h2></v-col>
                         <v-col class="text-right">
                             <v-btn class="bg-blue"  @click="exportToExcel(filteredData, 'CashAndGL')">Export</v-btn>
-                        </v-col>
-                        
+                        </v-col> 
                     </v-row>
                     <v-data-table
                         :headers="headersExport"
@@ -313,7 +317,6 @@
                         :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
                         class="style-table"
                     >
-               
                         <template v-slot:[`item.UpdateDateTime`]="{ item }">{{ item.UpdateDateTime == null ? '' : formatDate(item.UpdateDateTime)}}</template>
                         
                         <!-- Header Template for CompanyCode -->
@@ -502,6 +505,7 @@
     import * as XLSX from 'xlsx';
     
     export default{
+
         components: {
             SelectCompanyCode, 
             SelectSystemCode, 
@@ -524,6 +528,7 @@
             selectedItemGLSAP: {},
             selectedItemSpecialGL: {},
             filteredData: [],
+            // select export //
             selectedCompanyCode: [],
             selectedSystemCode: [],
             selectedHNReceiveCode: [],
@@ -539,6 +544,8 @@
             selectedDate: [],
             posting_key: null,
             posting_key2: null,
+            // select export //
+            isError: false,
             validationRules: [v => !!v || ''],
             headersDataHNActivity: [
                 { text: 'Company Code', align: 'center', sortable: false, value: 'CompanyCode' },
@@ -571,9 +578,6 @@
                 { text: 'Update Date Time', align: 'center', sortable: false, value: 'UpdateDateTime' },
         
             ],
-        
-            isError: false
-        
         }),
 
         watch: {
@@ -672,7 +676,7 @@
 
         methods: {
 
-            /* search table export */
+            /* search select table export */
             updateSelectedHNReceiveCode(value) {
                 this.selectedHNReceiveCode = value;
             },
@@ -967,10 +971,6 @@
                     })
                 }
             },
-
-            
-          
-
         }
     }
 </script>
